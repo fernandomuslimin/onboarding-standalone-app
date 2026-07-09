@@ -1,0 +1,77 @@
+/* Extracted from the main app's src/app/globals.css — only the custom
+   properties and base rules the onboarding component actually uses.
+   The main app defines these via Tailwind v4's @theme block; here
+   they're plain :root variables since this standalone app has no
+   Tailwind setup. */
+:root {
+  /* Brand */
+  --color-brand: #5761fe;
+  --color-brand-hover: #4750e8;
+  --color-brand-tint: #ece9f5;
+  --color-brand-faint: #f4f3fb;
+
+  /* Text */
+  --color-heading: #050c46;
+  --color-body: #475467;
+  --color-muted: #8891a8;
+  --color-subtle: #b8bcc9;
+
+  /* Surfaces */
+  --color-page: #ffffff;
+  --color-surface: #f8f8fa;
+
+  /* Borders */
+  --color-border: rgba(5, 12, 70, 0.08);
+  --color-border-strong: rgba(5, 12, 70, 0.16);
+
+  /* Status */
+  --color-success: #07bc0c;
+  --color-error: #e74c3c;
+  --color-warning: #f1c40f;
+  --color-info: #2970ff;
+
+  /* Fonts */
+  --font-sans: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-display: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Helvetica, Arial, sans-serif;
+
+  /* Shadows */
+  --shadow-card: 3px 5px 30px rgba(5, 12, 70, 0.06);
+  --shadow-elevated: 4px 8px 40px rgba(5, 12, 70, 0.1);
+  --shadow-focus: 0 0 0 3px rgba(87, 97, 254, 0.24);
+
+  /* Animation */
+  --ease-apple: cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  background: var(--color-page);
+  color: var(--color-body);
+  font-family: var(--font-sans);
+  font-size: 17px;
+  line-height: 1.47;
+  letter-spacing: -0.374px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  color: var(--color-heading);
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+::selection {
+  background: var(--color-brand-tint);
+  color: var(--color-heading);
+}
