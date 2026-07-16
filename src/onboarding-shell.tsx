@@ -2564,8 +2564,99 @@ const STEP_ORDER: StepName[] = [
   "senders", "split", "connect", "connect_calendar", "invite", "review_intro", "review_order", "researching", "company_research", "products_services", "tam_icp", "personas", "outreach_campaign",
 ];
 
+/* ─── Resume draft ──────────────────────────────────────────────── */
+const ALL_STEPS: StepName[] = [
+  "splash", "welcome", "website", "products", "starting_research",
+  "infra_intro", "primary_domain", "forwarding_domain", "volume", "senders", "split",
+  "connections_intro", "connect", "connect_calendar", "invite",
+  "review_intro", "review_order", "researching", "company_research",
+  "products_services", "tam_icp", "personas", "outreach_campaign",
+  "all_set", "cleared_for_launch",
+];
+
+// Last step of Section 1. Leaving before this means nothing worth resuming
+// exists yet; leaving at or after it is always "at least one section done"
+// since the flow is linear — no per-section branching needed.
+const RESUME_THRESHOLD = ALL_STEPS.indexOf("products");
+
+interface OnboardingDraft {
+  savedAt: string;
+  step: StepName;
+  website: string;
+  products: Product[];
+  primaryDomain: string;
+  forwardingDomain: string;
+  selectedPackage: PackageKey;
+  senders: Sender[];
+  confirmedDomains: string[];
+  confirmedMailboxes: string[];
+}
+
+const ONBOARDING_DRAFT_KEY = "ob_pending_progress";
+
+function loadDraft(): OnboardingDraft | null {
+  try {
+    const raw = typeof window !== "undefined" ? localStorage.getItem(ONBOARDING_DRAFT_KEY) : null;
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as OnboardingDraft;
+    if (!parsed.savedAt || !parsed.step) return null;
+    return parsed;
+  } catch { return null; }
+}
+function saveDraft(draft: OnboardingDraft): void {
+  try { localStorage.setItem(ONBOARDING_DRAFT_KEY, JSON.stringify(draft)); } catch {}
+}
+function clearDraft(): void {
+  try { localStorage.removeItem(ONBOARDING_DRAFT_KEY); } catch {}
+}
+
+// The phase the user was last working on, for the resume screen's copy.
+function lastPhaseLabel(step: StepName): string | null {
+  const stepIdx = ALL_STEPS.indexOf(step);
+  let label: string | null = null;
+  for (const phase of PHASES) {
+    const phaseStartIdx = Math.min(...phase.steps.map((s) => ALL_STEPS.indexOf(s)));
+    if (phaseStartIdx <= stepIdx) label = phase.label;
+  }
+  return label;
+}
+
+function timeAgo(iso: string): string {
+  const mins = Math.floor((Date.now() - new Date(iso).getTime()) / 60000);
+  if (mins < 1) return "just now";
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  return `${Math.floor(hrs / 24)}d ago`;
+}
+
+function StepResume({ draft, onContinue }: { draft: OnboardingDraft; onContinue: () => void }) {
+  const phase = lastPhaseLabel(draft.step);
+  return (
+    <div className="ob-card" style={{ ...CARD, maxWidth: 480, textAlign: "center" as const }}>
+      <span style={{ display: "block", fontSize: 12, fontWeight: 700, color: "var(--color-brand)", letterSpacing: "0.05em", textTransform: "uppercase" as const, marginBottom: 8 }}>
+        Welcome back
+      </span>
+      <h1 style={{ fontSize: 22, fontWeight: 800, margin: "0 0 10px" }}>Pick up where you left off</h1>
+      <p style={{ fontSize: 14, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 4px" }}>
+        {phase ? `Last time, you were working on ${phase}.` : "You have some unfinished setup."}
+      </p>
+      <p style={{ fontSize: 12.5, color: "var(--color-muted)", margin: "0 0 28px" }}>Saved {timeAgo(draft.savedAt)}</p>
+      <button onClick={onContinue} style={PRIMARY_BTN} className="ob-primary-btn">
+        Continue
+      </button>
+    </div>
+  );
+}
+
 export function OnboardingShell() {
   const router = useRouter();
+
+  // Starts identical on server and client (no draft applied yet) so hydration
+  // never mismatches; the actual localStorage check happens after mount below.
+  const [draft, setDraft] = useState<OnboardingDraft | null>(null);
+  const [showResume, setShowResume] = useState(false);
+
   const [step, setStep] = useState<StepName>("splash");
 
   const [website, setWebsite] = useState("");
@@ -2578,12 +2669,83 @@ export function OnboardingShell() {
   const [confirmedMailboxes, setConfirmedMailboxes] = useState<string[]>([]);
 
   useEffect(() => {
+    const loaded = loadDraft();
+    if (loaded && ALL_STEPS.indexOf(loaded.step) > RESUME_THRESHOLD) {
+      setDraft(loaded);
+      setShowResume(true);
+      setStep(loaded.step);
+      setWebsite(loaded.website);
+      setProducts(loaded.products);
+      setPrimaryDomain(loaded.primaryDomain);
+      setForwardingDomain(loaded.forwardingDomain);
+      setSelectedPackage(loaded.selectedPackage);
+      setSenders(loaded.senders);
+      setConfirmedDomains(loaded.confirmedDomains);
+      setConfirmedMailboxes(loaded.confirmedMailboxes);
+    }
+    // Runs once on mount, after hydration, when localStorage first becomes safe to read.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
     window.scrollTo({ top: 0 });
   }, [step]);
 
   function goBack() {
     const idx = STEP_ORDER.indexOf(step);
     if (idx > 0) setStep(STEP_ORDER[idx - 1]);
+  }
+
+  // Advances to the next step and persists a snapshot — the only place
+  // progress is saved, matching "only save when they proceed."
+  function advance(nextStep: StepName, patch?: Partial<{
+    website: string;
+    products: Product[];
+    primaryDomain: string;
+    forwardingDomain: string;
+    selectedPackage: PackageKey;
+    senders: Sender[];
+    confirmedDomains: string[];
+    confirmedMailboxes: string[];
+  }>) {
+    const next = {
+      website: patch?.website ?? website,
+      products: patch?.products ?? products,
+      primaryDomain: patch?.primaryDomain ?? primaryDomain,
+      forwardingDomain: patch?.forwardingDomain ?? forwardingDomain,
+      selectedPackage: patch?.selectedPackage ?? selectedPackage,
+      senders: patch?.senders ?? senders,
+      confirmedDomains: patch?.confirmedDomains ?? confirmedDomains,
+      confirmedMailboxes: patch?.confirmedMailboxes ?? confirmedMailboxes,
+    };
+    if (patch?.website !== undefined) setWebsite(patch.website);
+    if (patch?.products !== undefined) setProducts(patch.products);
+    if (patch?.primaryDomain !== undefined) setPrimaryDomain(patch.primaryDomain);
+    if (patch?.forwardingDomain !== undefined) setForwardingDomain(patch.forwardingDomain);
+    if (patch?.selectedPackage !== undefined) setSelectedPackage(patch.selectedPackage);
+    if (patch?.senders !== undefined) setSenders(patch.senders);
+    if (patch?.confirmedDomains !== undefined) setConfirmedDomains(patch.confirmedDomains);
+    if (patch?.confirmedMailboxes !== undefined) setConfirmedMailboxes(patch.confirmedMailboxes);
+    setStep(nextStep);
+    saveDraft({
+      savedAt: new Date().toISOString(),
+      step: nextStep,
+      ...next,
+      // File objects aren't JSON-serializable and can't be restored anyway.
+      products: next.products.map((p) => ({ ...p, files: [] })),
+    });
+  }
+
+  if (showResume && draft) {
+    return (
+      <div className="ob-shell" style={PAGE_STYLE}>
+        <style>{STYLES}</style>
+        <PageChrome />
+        <div className="ob-shell-content" style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", padding: "80px 24px 40px", position: "relative", zIndex: 1 }}>
+          <StepResume draft={draft} onContinue={() => setShowResume(false)} />
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -2601,85 +2763,86 @@ export function OnboardingShell() {
         <PhaseStepper step={step} />
 
         {step === "splash" && (
-          <StepSplash onNext={() => setStep("welcome")} />
+          <StepSplash onNext={() => advance("welcome")} />
         )}
         {step === "welcome" && (
-          <StepWelcome onNext={() => setStep("website")} />
+          <StepWelcome onNext={() => advance("website")} />
         )}
         {step === "website" && (
-          <StepWebsite onNext={(w) => { setWebsite(w); setStep("products"); }} />
+          <StepWebsite onNext={(w) => advance("products", { website: w })} />
         )}
         {step === "products" && (
-          <StepProducts initialProducts={products} onNext={(p) => { setProducts(p); setStep("starting_research"); }} onBack={goBack} />
+          <StepProducts initialProducts={products} onNext={(p) => advance("starting_research", { products: p })} onBack={goBack} />
         )}
         {step === "starting_research" && (
-          <StepStartingResearch onNext={() => setStep("infra_intro")} />
+          <StepStartingResearch onNext={() => advance("infra_intro")} />
         )}
         {step === "infra_intro" && (
-          <StepInfraIntro onNext={() => setStep("primary_domain")} />
+          <StepInfraIntro onNext={() => advance("primary_domain")} />
         )}
         {step === "primary_domain" && (
-          <StepPrimaryDomain onNext={(d) => { setPrimaryDomain(d); setStep("forwarding_domain"); }} />
+          <StepPrimaryDomain onNext={(d) => advance("forwarding_domain", { primaryDomain: d })} />
         )}
         {step === "forwarding_domain" && (
-          <StepForwardingDomain primaryDomain={primaryDomain} onNext={(d) => { setForwardingDomain(d); setStep("volume"); }} onBack={goBack} />
+          <StepForwardingDomain primaryDomain={primaryDomain} onNext={(d) => advance("volume", { forwardingDomain: d })} onBack={goBack} />
         )}
         {step === "volume" && (
-          <StepVolume onNext={(pkg) => { setSelectedPackage(pkg); setStep("senders"); }} onBack={goBack} />
+          <StepVolume onNext={(pkg) => advance("senders", { selectedPackage: pkg })} onBack={goBack} />
         )}
         {step === "senders" && (
-          <StepSenders onNext={(s) => { setSenders(s); setStep("split"); }} onBack={goBack} />
+          <StepSenders onNext={(s) => advance("split", { senders: s })} onBack={goBack} />
         )}
         {step === "split" && (
-          <StepSplit senders={senders} onNext={(s) => { setSenders(s); setStep("connections_intro"); }} onBack={goBack} />
+          <StepSplit senders={senders} onNext={(s) => advance("connections_intro", { senders: s })} onBack={goBack} />
         )}
         {step === "connections_intro" && (
-          <StepConnectionsIntro onNext={() => setStep("connect")} />
+          <StepConnectionsIntro onNext={() => advance("connect")} />
         )}
         {step === "connect" && (
-          <StepConnect onNext={() => setStep("connect_calendar")} onBack={goBack} />
+          <StepConnect onNext={() => advance("connect_calendar")} onBack={goBack} />
         )}
         {step === "connect_calendar" && (
-          <StepConnectCalendar onNext={() => setStep("invite")} onBack={goBack} />
+          <StepConnectCalendar onNext={() => advance("invite")} onBack={goBack} />
         )}
         {step === "invite" && (
-          <StepInvite onNext={() => setStep("review_intro")} onBack={goBack} />
+          <StepInvite onNext={() => advance("review_intro")} onBack={goBack} />
         )}
         {step === "review_intro" && (
-          <StepReviewIntro onNext={() => setStep("review_order")} onBack={goBack} />
+          <StepReviewIntro onNext={() => advance("review_order")} onBack={goBack} />
         )}
         {step === "review_order" && (
           <StepReviewOrder
             forwardingDomain={forwardingDomain}
             selectedPackage={selectedPackage}
             senders={senders}
-            onNext={(d, m) => { setConfirmedDomains(d); setConfirmedMailboxes(m); setStep("researching"); }}
+            onNext={(d, m) => advance("researching", { confirmedDomains: d, confirmedMailboxes: m })}
             onBack={goBack}
           />
         )}
         {step === "researching" && (
-          <StepResearch onFinish={() => setStep("company_research")} />
+          <StepResearch onFinish={() => advance("company_research")} />
         )}
         {step === "company_research" && (
-          <StepCompanyResearch products={products} onNext={() => setStep("products_services")} />
+          <StepCompanyResearch products={products} onNext={() => advance("products_services")} />
         )}
         {step === "products_services" && (
-          <StepProductsServices products={products} onNext={() => setStep("tam_icp")} />
+          <StepProductsServices products={products} onNext={() => advance("tam_icp")} />
         )}
         {step === "tam_icp" && (
-          <StepTamIcp products={products} onNext={() => setStep("personas")} />
+          <StepTamIcp products={products} onNext={() => advance("personas")} />
         )}
         {step === "personas" && (
-          <StepPersonas onNext={() => setStep("outreach_campaign")} />
+          <StepPersonas onNext={() => advance("outreach_campaign")} />
         )}
         {step === "outreach_campaign" && (
-          <StepOutreachCampaign onNext={() => setStep("all_set")} />
+          <StepOutreachCampaign onNext={() => advance("all_set")} />
         )}
         {step === "all_set" && (
-          <StepAllSet onNext={() => setStep("cleared_for_launch")} />
+          <StepAllSet onNext={() => advance("cleared_for_launch")} />
         )}
         {step === "cleared_for_launch" && (
           <StepClearedForLaunch onFinish={() => {
+            clearDraft();
             if (typeof window !== "undefined") {
               localStorage.setItem("ob_state", JSON.stringify({
                 website,
