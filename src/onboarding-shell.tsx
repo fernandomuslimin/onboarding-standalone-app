@@ -293,7 +293,7 @@ function PageChrome() {
 /* ─── Progress bar ──────────────────────────────────────────────── */
 const PHASES: { label: string; steps: StepName[] }[] = [
   { label: "Setup AI Agent", steps: ["website", "products"] },
-  { label: "Setup Infrastructure", steps: ["primary_domain", "forwarding_domain", "volume", "senders", "split", "connect", "invite", "review_order"] },
+  { label: "Setup Infrastructure", steps: ["primary_domain", "forwarding_domain", "volume", "senders", "split", "connect", "connect_calendar", "invite", "review_intro", "review_order"] },
   { label: "Review AI Research", steps: ["company_research", "products_services", "tam_icp", "personas", "outreach_campaign"] },
 ];
 
@@ -323,55 +323,87 @@ function PhaseStepper({ step }: { step: StepName }) {
 }
 
 /* ════════════════════════════════════════════════════════════════════
-   WELCOME — Intro to the two onboarding processes
+   SPLASH — Landing page shown before onboarding starts
 ══════════════════════════════════════════════════════════════════════ */
-const WELCOME_ITEMS = [
-  {
-    title: "Setup AI Agent",
-    desc: "Tell us about your company and products so AI can research and personalize your outreach.",
-    icon: (
-      <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
-    ),
-  },
-  {
-    title: "Setup Infrastructure",
-    desc: "Configure sending domains, mailboxes, and volume.",
-    icon: (
-      <>
-        <rect x="3" y="4" width="18" height="6" rx="1.5" /><rect x="3" y="14" width="18" height="6" rx="1.5" />
-        <circle cx="7" cy="7" r="0.6" fill="var(--color-brand)" /><circle cx="7" cy="17" r="0.6" fill="var(--color-brand)" />
-      </>
-    ),
-  },
+function StepSplash({ onNext }: { onNext: () => void }) {
+  return (
+    <div className="ob-card" style={{ ...CARD, maxWidth: 480, textAlign: "center" as const }}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/b2brocket-logo.png" alt="B2B Rocket — powered by BlackPearl" style={{ height: 40, margin: "0 auto 28px", display: "block" }} />
+      <p style={{ fontSize: 15, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 32px" }}>
+        Answer a few quick questions and your AI agents get to work — prospecting, personalizing, and booking meetings for you.
+      </p>
+      <button onClick={onNext} style={PRIMARY_BTN} className="ob-primary-btn">
+        Get started
+      </button>
+    </div>
+  );
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   WELCOME — Intro to the AI agent research process
+══════════════════════════════════════════════════════════════════════ */
+const WELCOME_BULLETS = [
+  "Your website & offerings",
+  "Any docs to learn from",
+  "AI research & knowledge base",
+  "Your ideal customer profile",
 ];
 
 function StepWelcome({ onNext }: { onNext: () => void }) {
   return (
-    <div className="ob-card" style={{ ...CARD, maxWidth: 480 }}>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/b2brocket-logo.png" alt="B2B Rocket" style={{ height: 34, margin: "0 auto 24px", display: "block" }} />
-      <h1 style={{ fontSize: 24, margin: "0 0 8px", textAlign: "center" as const }}>Let's set up your outreach</h1>
+    <div className="ob-card" style={{ ...CARD, maxWidth: 480, textAlign: "center" as const }}>
+      <span style={{ display: "block", fontSize: 12, fontWeight: 700, color: "var(--color-brand)", letterSpacing: "0.05em", textTransform: "uppercase" as const, marginBottom: 8 }}>
+        Section 1 of 4
+      </span>
+      <h1 style={{ fontSize: 22, fontWeight: 800, margin: "0 0 10px" }}>AI Agent Research</h1>
       <p style={{ fontSize: 14, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 24px" }}>
-        You'll complete two quick processes to get everything running.
+        First, tell us about your business. Your agents read it, research your market, and draft everything they need to sound like you.
       </p>
-      <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 28 }}>
-        {WELCOME_ITEMS.map(({ title, desc, icon }, i) => (
-          <div key={title} style={{ display: "flex", alignItems: "flex-start", gap: 14, padding: 14, borderRadius: 14, background: "var(--color-surface)" }}>
-            <div style={{ width: 24, height: 24, borderRadius: "50%", flexShrink: 0, background: "var(--color-brand-tint)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, color: "var(--color-brand)" }}>
-              {i + 1}
-            </div>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: 1 }}>
-              {icon}
-            </svg>
-            <div>
-              <div style={{ fontSize: 14, fontWeight: 600, color: "var(--color-heading)", marginBottom: 2 }}>{title}</div>
-              <div style={{ fontSize: 12.5, color: "var(--color-body)", lineHeight: 1.5 }}>{desc}</div>
-            </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 6, textAlign: "left" as const, marginBottom: 28 }}>
+        {WELCOME_BULLETS.map((item, i) => (
+          <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+            <span style={{ width: 4, height: 4, borderRadius: "50%", background: "var(--color-brand)", marginTop: 7, flexShrink: 0 }} />
+            <span style={{ fontSize: 12.5, color: "var(--color-heading)", lineHeight: 1.5 }}>{item}</span>
           </div>
         ))}
       </div>
       <button onClick={onNext} style={PRIMARY_BTN} className="ob-primary-btn">
-        Get Started
+        Continue
+      </button>
+    </div>
+  );
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   INFRA INTRO — Intro to the infrastructure setup process
+══════════════════════════════════════════════════════════════════════ */
+const INFRA_INTRO_BULLETS = [
+  "Your sending domain",
+  "Volume & mailboxes",
+  "Who's sending & the split",
+];
+
+function StepInfraIntro({ onNext }: { onNext: () => void }) {
+  return (
+    <div className="ob-card" style={{ ...CARD, maxWidth: 480, textAlign: "center" as const }}>
+      <span style={{ display: "block", fontSize: 12, fontWeight: 700, color: "var(--color-brand)", letterSpacing: "0.05em", textTransform: "uppercase" as const, marginBottom: 8 }}>
+        Section 2 of 4
+      </span>
+      <h1 style={{ fontSize: 22, fontWeight: 800, margin: "0 0 10px" }}>Infrastructure</h1>
+      <p style={{ fontSize: 14, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 24px" }}>
+        Now let&apos;s set up how you send — the domains and mailboxes your agents send from.
+      </p>
+      <div style={{ display: "flex", flexDirection: "column", gap: 6, textAlign: "left" as const, marginBottom: 28 }}>
+        {INFRA_INTRO_BULLETS.map((item, i) => (
+          <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+            <span style={{ width: 4, height: 4, borderRadius: "50%", background: "var(--color-brand)", marginTop: 7, flexShrink: 0 }} />
+            <span style={{ fontSize: 12.5, color: "var(--color-heading)", lineHeight: 1.5 }}>{item}</span>
+          </div>
+        ))}
+      </div>
+      <button onClick={onNext} style={PRIMARY_BTN} className="ob-primary-btn">
+        Continue
       </button>
     </div>
   );
@@ -931,6 +963,41 @@ function StepSplit({ senders, onNext, onBack }: {
 }
 
 /* ════════════════════════════════════════════════════════════════════
+   CONNECTIONS INTRO — Intro to the connect-accounts step
+══════════════════════════════════════════════════════════════════════ */
+const CONNECTIONS_INTRO_BULLETS = [
+  "Your primary mailbox",
+  "LinkedIn accounts",
+  "CRM & scheduling",
+  "Invite your team",
+];
+
+function StepConnectionsIntro({ onNext }: { onNext: () => void }) {
+  return (
+    <div className="ob-card" style={{ ...CARD, maxWidth: 480, textAlign: "center" as const }}>
+      <span style={{ display: "block", fontSize: 12, fontWeight: 700, color: "var(--color-brand)", letterSpacing: "0.05em", textTransform: "uppercase" as const, marginBottom: 8 }}>
+        Section 3 of 4
+      </span>
+      <h1 style={{ fontSize: 22, fontWeight: 800, margin: "0 0 10px" }}>Connections</h1>
+      <p style={{ fontSize: 14, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 24px" }}>
+        Plug in the tools your agents work alongside — your inbox, CRM, calendar, and teammates.
+      </p>
+      <div style={{ display: "flex", flexDirection: "column", gap: 6, textAlign: "left" as const, marginBottom: 28 }}>
+        {CONNECTIONS_INTRO_BULLETS.map((item, i) => (
+          <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+            <span style={{ width: 4, height: 4, borderRadius: "50%", background: "var(--color-brand)", marginTop: 7, flexShrink: 0 }} />
+            <span style={{ fontSize: 12.5, color: "var(--color-heading)", lineHeight: 1.5 }}>{item}</span>
+          </div>
+        ))}
+      </div>
+      <button onClick={onNext} style={PRIMARY_BTN} className="ob-primary-btn">
+        Continue
+      </button>
+    </div>
+  );
+}
+
+/* ════════════════════════════════════════════════════════════════════
    STEP 8 — Connect accounts
 ══════════════════════════════════════════════════════════════════════ */
 function StepConnect({ onNext, onBack }: { onNext: () => void; onBack: () => void }) {
@@ -967,6 +1034,71 @@ function StepConnect({ onNext, onBack }: { onNext: () => void; onBack: () => voi
       </p>
       <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 24 }}>
         {accounts.map(({ id, label, email, icon }) => {
+          const isDone = connected.has(id);
+          const isLoading = connecting === id;
+          return (
+            <div key={id} style={{ display: "flex", alignItems: "center", gap: 14, padding: "14px 16px", borderRadius: 12, background: "var(--color-surface)", border: "1px solid transparent", transition: "all 250ms" }}>
+              <div style={{ width: 38, height: 38, flexShrink: 0, background: "var(--color-page)", border: "1px solid var(--color-border)", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                {icon}
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 14, fontWeight: 600, color: "var(--color-heading)" }}>{label}</div>
+                {isDone && <div style={{ fontSize: 12, color: "var(--color-muted)", marginTop: 2 }}>{email}</div>}
+              </div>
+              <button type="button" onClick={() => handleConnect(id)} disabled={isDone || isLoading}
+                style={{ flexShrink: 0, height: 30, padding: "0 12px", borderRadius: 8, fontSize: 12, fontWeight: 600, fontFamily: "inherit", cursor: isDone ? "default" : "pointer", display: "flex", alignItems: "center", gap: 5, transition: "all 200ms", border: "none", ...(isDone ? { background: "rgba(7,188,12,0.12)", color: "var(--color-success)" } : { background: "var(--color-brand-tint)", color: "var(--color-brand)" }) }}>
+                {isDone ? <><span>✓</span> Connected</> : isLoading ? <><Spinner />Connecting…</> : "Connect →"}
+              </button>
+            </div>
+          );
+        })}
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        {connected.size > 0 && <button onClick={onNext} className="ob-primary-btn" style={PRIMARY_BTN}>Continue</button>}
+        <button onClick={onNext} className="ob-ghost-btn" style={GHOST_BTN}>Skip for now</button>
+        <button onClick={onBack} className="ob-ghost-btn" style={{ ...GHOST_BTN, color: "var(--color-subtle)" }}>Back</button>
+      </div>
+    </div>
+  );
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   STEP 8b — Connect calendar
+══════════════════════════════════════════════════════════════════════ */
+function StepConnectCalendar({ onNext, onBack }: { onNext: () => void; onBack: () => void }) {
+  const [connected, setConnected] = useState<Set<string>>(new Set());
+  const [connecting, setConnecting] = useState<string | null>(null);
+
+  function handleConnect(id: string) {
+    if (connected.has(id)) return;
+    setConnecting(id);
+    setTimeout(() => { setConnected((prev) => new Set([...prev, id])); setConnecting(null); }, 1200);
+  }
+
+  const calendars = [
+    {
+      id: "google_calendar", label: "Google Calendar", email: "you@gmail.com",
+      icon: <svg width="20" height="20" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="19" rx="3" fill="#fff" stroke="var(--color-border-strong)" strokeWidth="1.2" /><rect x="2" y="3" width="20" height="6" rx="3" fill="#4285F4" /><rect x="6" y="12" width="4.5" height="4.5" rx="0.8" fill="#4285F4" /><rect x="13.5" y="12" width="4.5" height="4.5" rx="0.8" fill="#34A853" /></svg>,
+    },
+    {
+      id: "outlook_calendar", label: "Outlook Calendar", email: "you@outlook.com",
+      icon: <svg width="20" height="20" viewBox="0 0 24 24"><rect x="1" y="1" width="10" height="10" fill="#F25022" /><rect x="13" y="1" width="10" height="10" fill="#7FBA00" /><rect x="1" y="13" width="10" height="10" fill="#00A4EF" /><rect x="13" y="13" width="10" height="10" fill="#FFB900" /></svg>,
+    },
+    {
+      id: "calendly", label: "Calendly", email: "you@calendly.com",
+      icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" fill="#006BFF" /><path d="M12 6a6 6 0 1 0 4.24 10.24" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" /><circle cx="12" cy="12" r="1.6" fill="#fff" /></svg>,
+    },
+  ];
+
+  return (
+    <div className="ob-card" style={{ ...CARD, maxWidth: 520 }}>
+      <span style={{ fontSize: 12, fontWeight: 700, color: "var(--color-brand)", letterSpacing: "0.05em", textTransform: "uppercase" as const }}>Connect</span>
+      <h1 style={{ fontSize: 24, margin: "8px 0 8px" }}>Connect your calendar</h1>
+      <p style={{ fontSize: 14, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 24px" }}>
+        Let agents check availability and book meetings straight onto your calendar.
+      </p>
+      <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 24 }}>
+        {calendars.map(({ id, label, email, icon }) => {
           const isDone = connected.has(id);
           const isLoading = connecting === id;
           return (
@@ -1081,6 +1213,43 @@ function StepInvite({ onNext, onBack }: { onNext: () => void; onBack: () => void
           </button>
         )}
         <button onClick={onNext} className="ob-ghost-btn" style={GHOST_BTN}>Skip for now</button>
+        <button onClick={onBack} className="ob-ghost-btn" style={{ ...GHOST_BTN, color: "var(--color-subtle)" }}>Back</button>
+      </div>
+    </div>
+  );
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   REVIEW INTRO — Intro to the review-and-approve step
+══════════════════════════════════════════════════════════════════════ */
+const REVIEW_INTRO_BULLETS = [
+  "Your sending domains",
+  "Mailboxes & package",
+  "Senders & split",
+];
+
+function StepReviewIntro({ onNext, onBack }: { onNext: () => void; onBack: () => void }) {
+  return (
+    <div className="ob-card" style={{ ...CARD, maxWidth: 480, textAlign: "center" as const }}>
+      <span style={{ display: "block", fontSize: 12, fontWeight: 700, color: "var(--color-brand)", letterSpacing: "0.05em", textTransform: "uppercase" as const, marginBottom: 8 }}>
+        Section 4 of 4
+      </span>
+      <h1 style={{ fontSize: 22, fontWeight: 800, margin: "0 0 10px" }}>Review &amp; Approve</h1>
+      <p style={{ fontSize: 14, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 24px" }}>
+        Last step — review what we&apos;ve set up and approve it before your infrastructure goes live.
+      </p>
+      <div style={{ display: "flex", flexDirection: "column", gap: 6, textAlign: "left" as const, marginBottom: 28 }}>
+        {REVIEW_INTRO_BULLETS.map((item, i) => (
+          <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+            <span style={{ width: 4, height: 4, borderRadius: "50%", background: "var(--color-brand)", marginTop: 7, flexShrink: 0 }} />
+            <span style={{ fontSize: 12.5, color: "var(--color-heading)", lineHeight: 1.5 }}>{item}</span>
+          </div>
+        ))}
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        <button onClick={onNext} style={PRIMARY_BTN} className="ob-primary-btn">
+          Continue
+        </button>
         <button onClick={onBack} className="ob-ghost-btn" style={{ ...GHOST_BTN, color: "var(--color-subtle)" }}>Back</button>
       </div>
     </div>
@@ -2108,50 +2277,237 @@ function StepClearedForLaunch({ onFinish }: { onFinish: () => void }) {
 }
 
 /* ════════════════════════════════════════════════════════════════════
-   STEP 18 — Ideal Customer Profile (AI-drafted result)
+   STEP 18 — ICP Scoring Matrix (AI-drafted result)
 ══════════════════════════════════════════════════════════════════════ */
-type IcpData = { industries: string; titles: string; painPoints: string };
+const SCORE_DIMENSIONS = ["Market Size", "Product Fit", "Pain Urgency", "Reachability", "Competition"] as const;
+type ScoreDimension = (typeof SCORE_DIMENSIONS)[number];
 
-function StepTamIcp({ onNext }: { onNext: (icp: IcpData) => void }) {
-  const [industries, setIndustries] = useState("B2B SaaS · Fintech · Prof. services");
-  const [titles, setTitles] = useState("VP Sales, Head of RevOps, CRO");
-  const [painPoints, setPainPoints] = useState("Fragmented tooling, slow pipeline velocity.");
+type Recommendation = "Launch First" | "Test Small" | "Defer";
+const RECOMMENDATION_BADGE: Record<Recommendation, React.CSSProperties> = {
+  "Launch First": { color: "var(--color-success)", background: "rgba(7,188,12,0.1)", border: "1px solid rgba(7,188,12,0.3)" },
+  "Test Small": { color: "var(--color-warning)", background: "rgba(241,196,15,0.15)", border: "1px solid rgba(241,196,15,0.35)" },
+  Defer: { color: "var(--color-muted)", background: "var(--color-surface)", border: "1px solid var(--color-border)" },
+};
 
-  const fieldStyle: React.CSSProperties = {
-    width: "100%", background: "var(--color-surface)", border: "none", borderRadius: 12,
-    padding: "16px 18px", fontSize: 15, color: "var(--color-heading)", resize: "none" as const,
-    fontFamily: "inherit", lineHeight: 1.4,
-  };
+const MONO_FONT = "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace";
+
+function scoreTone(value: number): string {
+  if (value >= 8) return "var(--color-success)";
+  if (value >= 5) return "var(--color-warning)";
+  return "var(--color-error)";
+}
+
+function overallScore(icp: IcpScore): number {
+  const values = SCORE_DIMENSIONS.map((d) => icp.scores[d]);
+  return values.reduce((sum, v) => sum + v, 0) / values.length;
+}
+
+interface MarketSegment {
+  name: string;
+  size: string;
+}
+
+interface IcpScore {
+  name: string;
+  scores: Record<ScoreDimension, number>;
+  recommendation: Recommendation;
+}
+
+const TAM_DESCRIPTION =
+  "The total addressable market centres on B2B companies running outbound sales motions who still personalize outreach manually or through generic templates. The core pain — reps hand-crafting sequences that convert at a fraction of what personalized, AI-assisted outreach could — is universal across any company running structured outbound. The serviceable market is bounded by company stage (teams big enough to run outbound at volume but not yet locked into enterprise sales-engagement contracts), function (dedicated outbound ownership, whether in-house or agency-run), and appetite for AI-assisted messaging. Rough combined TAM across the three segments is 175,000–230,000 companies and agencies actively running B2B outbound today.";
+
+const MARKET_SEGMENTS: MarketSegment[] = [
+  { name: "Mid-Market B2B SaaS, Fintech & Professional Services (50–500 employees)", size: "~90,000–120,000 companies" },
+  { name: "Early-Stage Startups running founder-led sales", size: "~70,000–90,000 companies" },
+  { name: "Outbound Agencies & Fractional SDR Teams", size: "~15,000–20,000 practices managing 5–20 client accounts" },
+];
+
+const ICP_SCORES: IcpScore[] = [
+  {
+    name: "VP Sales / Head of RevOps — Mid-Market B2B",
+    scores: { "Market Size": 8, "Product Fit": 10, "Pain Urgency": 9, Reachability: 8, Competition: 6 },
+    recommendation: "Launch First",
+  },
+  {
+    name: "Founder-led Sales — Early-Stage Startups",
+    scores: { "Market Size": 9, "Product Fit": 6, "Pain Urgency": 6, Reachability: 6, Competition: 7 },
+    recommendation: "Test Small",
+  },
+  {
+    name: "Agency / Fractional SDR Teams",
+    scores: { "Market Size": 3, "Product Fit": 6, "Pain Urgency": 4, Reachability: 3, Competition: 5 },
+    recommendation: "Defer",
+  },
+];
+
+const GRAPH_LEGEND: { label: string; color: string }[] = [
+  { label: "Company", color: "var(--color-brand)" },
+  { label: "Product / service", color: "var(--color-success)" },
+  { label: "ICP", color: "var(--color-warning)" },
+];
+
+function IcpGraph({ productName, icps }: { productName: string; icps: IcpScore[] }) {
+  const companyPos = { x: 6, y: 50 };
+  const productPos = { x: 40, y: 50 };
+  const icpYs = icps.map((_, i) => (icps.length === 1 ? 50 : 15 + (i * 70) / (icps.length - 1)));
 
   return (
-    <div className="ob-card" style={{ ...CARD, maxWidth: 480 }}>
+    <div style={{ position: "relative", width: "100%", height: 210, marginTop: 8 }}>
+      <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none" style={{ position: "absolute", inset: 0 }}>
+        <path d={`M ${companyPos.x} ${companyPos.y} L ${productPos.x} ${productPos.y}`} stroke="var(--color-border-strong)" strokeWidth="0.6" fill="none" vectorEffect="non-scaling-stroke" />
+        {icpYs.map((y, i) => (
+          <path key={i} d={`M ${productPos.x} ${productPos.y} C 58 ${productPos.y}, 58 ${y}, 70 ${y}`} stroke="var(--color-border-strong)" strokeWidth="0.6" fill="none" vectorEffect="non-scaling-stroke" />
+        ))}
+      </svg>
+
+      <div style={{ position: "absolute", left: `${companyPos.x}%`, top: `${companyPos.y}%`, transform: "translateY(-50%)", display: "flex", alignItems: "center", gap: 8 }}>
+        <span style={{ width: 14, height: 14, borderRadius: "50%", background: "var(--color-brand)", flexShrink: 0 }} />
+        <span style={{ fontSize: 12.5, fontWeight: 600, color: "var(--color-heading)", whiteSpace: "nowrap" as const }}>Company</span>
+      </div>
+
+      <div style={{ position: "absolute", left: `${productPos.x}%`, top: `${productPos.y}%`, transform: "translateY(-50%)", display: "flex", alignItems: "center", gap: 8 }}>
+        <span style={{ width: 12, height: 12, borderRadius: "50%", background: "var(--color-success)", flexShrink: 0 }} />
+        <span style={{ fontSize: 12.5, fontWeight: 600, color: "var(--color-heading)", whiteSpace: "nowrap" as const }}>{productName}</span>
+      </div>
+
+      {icps.map((icp, i) => (
+        <div key={icp.name} style={{ position: "absolute", left: "70%", top: `${icpYs[i]}%`, transform: "translateY(-50%)", display: "flex", alignItems: "center", gap: 8, maxWidth: "34%" }}>
+          <span style={{ width: 10, height: 10, borderRadius: "50%", background: "var(--color-warning)", flexShrink: 0 }} />
+          <span style={{ fontSize: 12, color: "var(--color-heading)", lineHeight: 1.3 }}>{icp.name}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+const MATRIX_GRID_COLUMNS = `28px 1.7fr repeat(${SCORE_DIMENSIONS.length}, 0.62fr) 0.62fr 0.7fr`;
+const MATRIX_HEADER_CELL: React.CSSProperties = {
+  fontSize: 10, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const,
+  fontFamily: MONO_FONT, whiteSpace: "nowrap" as const, overflow: "hidden", textOverflow: "ellipsis",
+};
+
+function MatrixScoreCell({ value }: { value: number }) {
+  const tone = scoreTone(value);
+  return (
+    <span style={{ fontFamily: MONO_FONT, fontSize: 13, whiteSpace: "nowrap" as const }}>
+      <span style={{ fontWeight: 700, color: tone }}>{value}</span>
+      <span style={{ color: "var(--color-subtle)" }}>/10</span>
+    </span>
+  );
+}
+
+function IcpMatrix({ icps }: { icps: IcpScore[] }) {
+  return (
+    <div style={{ overflowX: "auto" as const }}>
+      <div style={{ minWidth: 760, borderRadius: 14, border: "1px solid var(--color-border)", overflow: "hidden" }}>
+        <div style={{ display: "grid", gridTemplateColumns: MATRIX_GRID_COLUMNS, gap: 10, padding: "10px 14px", background: "var(--color-surface)", borderBottom: "1px solid var(--color-border)" }}>
+          <span style={MATRIX_HEADER_CELL}>#</span>
+          <span style={MATRIX_HEADER_CELL}>ICP</span>
+          {SCORE_DIMENSIONS.map((d) => <span key={d} style={MATRIX_HEADER_CELL} title={d}>{d}</span>)}
+          <span style={MATRIX_HEADER_CELL}>Score</span>
+          <span style={MATRIX_HEADER_CELL}>Action</span>
+        </div>
+        {icps.map((icp, i) => (
+          <div key={icp.name} style={{ display: "grid", gridTemplateColumns: MATRIX_GRID_COLUMNS, gap: 10, alignItems: "center", padding: "18px 14px", borderBottom: i < icps.length - 1 ? "1px solid var(--color-border)" : "none" }}>
+            <span style={{ fontSize: i === 0 ? 15 : 12.5, fontWeight: 700, color: i === 0 ? "var(--color-warning)" : "var(--color-muted)" }}>
+              {i === 0 ? "★" : i + 1}
+            </span>
+            <div>
+              <div style={{ fontSize: 13.5, fontWeight: 700, color: "var(--color-heading)", lineHeight: 1.4, marginBottom: 8, paddingRight: 8 }}>{icp.name}</div>
+              <span style={{ display: "inline-block", fontFamily: MONO_FONT, fontSize: 10.5, fontWeight: 700, padding: "3px 9px", borderRadius: 6, whiteSpace: "nowrap" as const, ...RECOMMENDATION_BADGE[icp.recommendation] }}>{icp.recommendation}</span>
+            </div>
+            {SCORE_DIMENSIONS.map((d) => <MatrixScoreCell key={d} value={icp.scores[d]} />)}
+            <span style={{ fontFamily: MONO_FONT, fontSize: 17, fontWeight: 800, color: scoreTone(overallScore(icp)) }}>
+              {overallScore(icp).toFixed(1)}
+            </span>
+            <button type="button" className="ob-primary-btn" style={{ ...PRIMARY_BTN, width: "auto", padding: "7px 16px", fontSize: 12.5, justifySelf: "start" as const }}>
+              Plan
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function StepTamIcp({ products, onNext }: { products: Product[]; onNext: () => void }) {
+  const [view, setView] = useState<"Graph" | "Matrix">("Graph");
+  const [rescoring, setRescoring] = useState(false);
+  const productName = products[0]?.name?.trim() || "Your product";
+
+  function handleRescore() {
+    setRescoring(true);
+    setTimeout(() => setRescoring(false), 900);
+  }
+
+  return (
+    <div className="ob-card" style={{ ...CARD, maxWidth: 760 }}>
       <span style={{ fontSize: 12, fontWeight: 700, color: "var(--color-brand)", letterSpacing: "0.05em", textTransform: "uppercase" as const }}>Ideal Customer Profile</span>
-      <h1 style={{ fontSize: 30, fontWeight: 800, margin: "8px 0 8px" }}>Here&apos;s your ICP</h1>
-      <p style={{ fontSize: 14, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 24px" }}>
-        AI-drafted from your business. Tweak anything.
-      </p>
-      <div style={{ display: "flex", flexDirection: "column", gap: 18, marginBottom: 24 }}>
-        <div>
-          <label style={{ ...LABEL, marginBottom: 8 }}>
-            Industries <span style={{ color: "var(--color-subtle)", fontWeight: 400 }}>— optional</span>
-          </label>
-          <textarea value={industries} onChange={(e) => setIndustries(e.target.value)} rows={1} style={fieldStyle} />
-        </div>
-        <div>
-          <label style={{ ...LABEL, marginBottom: 8 }}>
-            Target titles <span style={{ color: "var(--color-subtle)", fontWeight: 400 }}>— optional</span>
-          </label>
-          <textarea value={titles} onChange={(e) => setTitles(e.target.value)} rows={1} style={fieldStyle} />
-        </div>
-        <div>
-          <label style={{ ...LABEL, marginBottom: 8 }}>
-            Pain points <span style={{ color: "var(--color-subtle)", fontWeight: 400 }}>— optional</span>
-          </label>
-          <textarea value={painPoints} onChange={(e) => setPainPoints(e.target.value)} rows={2} style={fieldStyle} />
+
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, flexWrap: "wrap" as const, margin: "8px 0 8px" }}>
+        <h1 style={{ fontSize: 26, fontWeight: 800, margin: 0 }}>ICP Scoring Matrix</h1>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+          <div style={{ display: "inline-flex", background: "var(--color-surface)", borderRadius: 999, padding: 3, gap: 2 }}>
+            {(["Graph", "Matrix"] as const).map((v) => (
+              <button key={v} type="button" onClick={() => setView(v)} style={{
+                border: "none", borderRadius: 999, padding: "6px 14px", fontSize: 12.5, fontWeight: 600, fontFamily: "inherit", cursor: "pointer", transition: "all 150ms",
+                background: view === v ? "var(--color-page)" : "transparent",
+                color: view === v ? "var(--color-brand)" : "var(--color-muted)",
+                boxShadow: view === v ? "var(--shadow-card)" : "none",
+              }}>
+                {v}
+              </button>
+            ))}
+          </div>
+          <button type="button" onClick={handleRescore} disabled={rescoring} className="ob-primary-btn" style={{ ...PRIMARY_BTN, width: "auto", padding: "10px 18px", fontSize: 13, opacity: rescoring ? 0.7 : 1, cursor: rescoring ? "default" : "pointer" }}>
+            {rescoring && <svg style={{ animation: "ob-spin 0.8s linear infinite" }} width="12" height="12" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.35)" strokeWidth="3" /><path d="M12 2a10 10 0 0 1 10 10" stroke="#fff" strokeWidth="3" strokeLinecap="round" /></svg>}
+            {rescoring ? "Re-Scoring…" : "Re-Score"}
+          </button>
         </div>
       </div>
-      <button onClick={() => onNext({ industries, titles, painPoints })} className="ob-primary-btn" style={PRIMARY_BTN}>
-        Continue
+
+      <p style={{ fontSize: 14, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 20px" }}>
+        AI scores each ICP on 5 dimensions to identify which to launch first, test small, or defer.
+      </p>
+
+      <div style={{ borderRadius: 14, border: "1px solid var(--color-border)", padding: "20px 22px", marginBottom: 20 }}>
+        <p style={{ fontSize: 13.5, color: "var(--color-body)", lineHeight: 1.7, margin: "0 0 16px" }}>{TAM_DESCRIPTION}</p>
+        <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.05em", textTransform: "uppercase" as const, marginBottom: 10 }}>
+          Market Segments <span style={{ fontWeight: 400, textTransform: "none" as const, letterSpacing: "normal" }}>· sizes are rough estimates</span>
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          {MARKET_SEGMENTS.map((seg) => (
+            <div key={seg.name} style={{ padding: "10px 14px", borderRadius: 10, background: "var(--color-surface)", fontSize: 12.5, lineHeight: 1.5 }}>
+              <span style={{ fontWeight: 600, color: "var(--color-heading)" }}>{seg.name}</span>
+              <span style={{ color: "var(--color-muted)" }}> · {seg.size}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {view === "Graph" ? (
+        <div style={{ borderRadius: 14, border: "1px solid var(--color-border)", padding: 20 }}>
+          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8, padding: "10px 14px", border: "1px solid var(--color-border)", borderRadius: 10, background: "var(--color-page)" }}>
+              {GRAPH_LEGEND.map((l) => (
+                <div key={l.label} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span style={{ width: 9, height: 9, borderRadius: "50%", background: l.color, flexShrink: 0 }} />
+                  <span style={{ fontSize: 12, color: "var(--color-muted)", whiteSpace: "nowrap" as const }}>{l.label}</span>
+                </div>
+              ))}
+            </div>
+            <button type="button" className="ob-ghost-btn" style={{ ...GHOST_BTN, width: "auto", padding: "6px 12px", fontSize: 12, border: "1px solid var(--color-border)", borderRadius: 8 }}>
+              Fit
+            </button>
+          </div>
+          <IcpGraph productName={productName} icps={ICP_SCORES} />
+        </div>
+      ) : (
+        <IcpMatrix icps={ICP_SCORES} />
+      )}
+
+      <button onClick={onNext} className="ob-primary-btn" style={{ ...PRIMARY_BTN, marginTop: 24 }}>
+        Approve and Continue
       </button>
     </div>
   );
@@ -2161,20 +2517,22 @@ function StepTamIcp({ onNext }: { onNext: (icp: IcpData) => void }) {
    MAIN SHELL
 ══════════════════════════════════════════════════════════════════════ */
 type StepName =
+  | "splash"
   | "welcome"
   | "website" | "products" | "starting_research"
+  | "infra_intro"
   | "primary_domain" | "forwarding_domain" | "volume"
-  | "senders" | "split" | "connect" | "invite" | "review_order" | "researching" | "company_research" | "products_services" | "tam_icp" | "personas" | "outreach_campaign" | "all_set" | "cleared_for_launch";
+  | "senders" | "split" | "connections_intro" | "connect" | "connect_calendar" | "invite" | "review_intro" | "review_order" | "researching" | "company_research" | "products_services" | "tam_icp" | "personas" | "outreach_campaign" | "all_set" | "cleared_for_launch";
 
 const STEP_ORDER: StepName[] = [
   "website", "products",
   "primary_domain", "forwarding_domain", "volume",
-  "senders", "split", "connect", "invite", "review_order", "researching", "company_research", "products_services", "tam_icp", "personas", "outreach_campaign",
+  "senders", "split", "connect", "connect_calendar", "invite", "review_intro", "review_order", "researching", "company_research", "products_services", "tam_icp", "personas", "outreach_campaign",
 ];
 
 export function OnboardingShell() {
   const router = useRouter();
-  const [step, setStep] = useState<StepName>("welcome");
+  const [step, setStep] = useState<StepName>("splash");
 
   const [website, setWebsite] = useState("");
   const [products, setProducts] = useState<Product[]>([]);
@@ -2184,7 +2542,6 @@ export function OnboardingShell() {
   const [senders, setSenders] = useState<Sender[]>([]);
   const [confirmedDomains, setConfirmedDomains] = useState<string[]>([]);
   const [confirmedMailboxes, setConfirmedMailboxes] = useState<string[]>([]);
-  const [icp, setIcp] = useState<IcpData | null>(null);
 
   useEffect(() => {
     window.scrollTo({ top: 0 });
@@ -2209,6 +2566,9 @@ export function OnboardingShell() {
       >
         <PhaseStepper step={step} />
 
+        {step === "splash" && (
+          <StepSplash onNext={() => setStep("welcome")} />
+        )}
         {step === "welcome" && (
           <StepWelcome onNext={() => setStep("website")} />
         )}
@@ -2219,7 +2579,10 @@ export function OnboardingShell() {
           <StepProducts initialProducts={products} onNext={(p) => { setProducts(p); setStep("starting_research"); }} onBack={goBack} />
         )}
         {step === "starting_research" && (
-          <StepStartingResearch onNext={() => setStep("primary_domain")} />
+          <StepStartingResearch onNext={() => setStep("infra_intro")} />
+        )}
+        {step === "infra_intro" && (
+          <StepInfraIntro onNext={() => setStep("primary_domain")} />
         )}
         {step === "primary_domain" && (
           <StepPrimaryDomain onNext={(d) => { setPrimaryDomain(d); setStep("forwarding_domain"); }} />
@@ -2234,13 +2597,22 @@ export function OnboardingShell() {
           <StepSenders onNext={(s) => { setSenders(s); setStep("split"); }} onBack={goBack} />
         )}
         {step === "split" && (
-          <StepSplit senders={senders} onNext={(s) => { setSenders(s); setStep("connect"); }} onBack={goBack} />
+          <StepSplit senders={senders} onNext={(s) => { setSenders(s); setStep("connections_intro"); }} onBack={goBack} />
+        )}
+        {step === "connections_intro" && (
+          <StepConnectionsIntro onNext={() => setStep("connect")} />
         )}
         {step === "connect" && (
-          <StepConnect onNext={() => setStep("invite")} onBack={goBack} />
+          <StepConnect onNext={() => setStep("connect_calendar")} onBack={goBack} />
+        )}
+        {step === "connect_calendar" && (
+          <StepConnectCalendar onNext={() => setStep("invite")} onBack={goBack} />
         )}
         {step === "invite" && (
-          <StepInvite onNext={() => setStep("review_order")} onBack={goBack} />
+          <StepInvite onNext={() => setStep("review_intro")} onBack={goBack} />
+        )}
+        {step === "review_intro" && (
+          <StepReviewIntro onNext={() => setStep("review_order")} onBack={goBack} />
         )}
         {step === "review_order" && (
           <StepReviewOrder
@@ -2261,7 +2633,7 @@ export function OnboardingShell() {
           <StepProductsServices products={products} onNext={() => setStep("tam_icp")} />
         )}
         {step === "tam_icp" && (
-          <StepTamIcp onNext={(icpData) => { setIcp(icpData); setStep("personas"); }} />
+          <StepTamIcp products={products} onNext={() => setStep("personas")} />
         )}
         {step === "personas" && (
           <StepPersonas onNext={() => setStep("outreach_campaign")} />
@@ -2284,7 +2656,6 @@ export function OnboardingShell() {
                 senders,
                 domains: confirmedDomains,
                 mailboxes: confirmedMailboxes,
-                icp,
                 dismissed: false,
               }));
             }
