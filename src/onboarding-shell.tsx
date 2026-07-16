@@ -187,8 +187,18 @@ interface Sender {
 
 /* ─── Helpers ───────────────────────────────────────────────────── */
 function isValidUrl(val: string) {
-  try { new URL(val.startsWith("http") ? val : `https://${val}`); return true; }
+  const trimmed = val.trim();
+  if (!trimmed) return false;
+  let url: URL;
+  try { url = new URL(/^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`); }
   catch { return false; }
+  if (!/^https?:$/.test(url.protocol)) return false;
+  const hostname = url.hostname.toLowerCase();
+  return /^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)*\.[a-z]{2,}$/.test(hostname);
+}
+
+function isValidEmail(val: string) {
+  return /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/.test(val.trim());
 }
 
 function isValidDomain(val: string) {
@@ -292,9 +302,10 @@ function PageChrome() {
 
 /* ─── Progress bar ──────────────────────────────────────────────── */
 const PHASES: { label: string; steps: StepName[] }[] = [
-  { label: "Setup AI Agent", steps: ["website", "products"] },
-  { label: "Setup Infrastructure", steps: ["primary_domain", "forwarding_domain", "volume", "senders", "split", "connect", "connect_calendar", "invite", "review_intro", "review_order"] },
-  { label: "Review AI Research", steps: ["company_research", "products_services", "tam_icp", "personas", "outreach_campaign"] },
+  { label: "AI Agent Research", steps: ["website", "products"] },
+  { label: "Infrastructure", steps: ["primary_domain", "forwarding_domain", "volume", "senders", "split"] },
+  { label: "Connections", steps: ["connect", "connect_calendar", "invite"] },
+  { label: "Review & Approve", steps: ["review_order"] },
 ];
 
 function PhaseStepper({ step }: { step: StepName }) {
@@ -424,17 +435,27 @@ function StepWebsite({ onNext }: { onNext: (website: string) => void }) {
       <p style={{ fontSize: 14, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 28px" }}>We'll scan it to learn your business</p>
       <div style={{ marginBottom: 20 }}>
         <label style={LABEL}>Company website</label>
-        <input
-          className="ob-input"
-          type="url"
-          placeholder="https://yourcompany.com"
-          value={website}
-          onChange={(e) => setWebsite(e.target.value)}
-          onFocus={() => setFocused(true)}
-          onBlur={() => setFocused(false)}
-          onKeyDown={(e) => { if (e.key === "Enter" && isValid) onNext(website); }}
-          style={{ ...INPUT, ...(focused ? { borderColor: "var(--color-border-strong)", boxShadow: "var(--shadow-focus)" } : {}) }}
-        />
+        <div style={{ position: "relative" }}>
+          <input
+            className="ob-input"
+            type="url"
+            placeholder="https://yourcompany.com"
+            value={website}
+            onChange={(e) => setWebsite(e.target.value)}
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
+            onKeyDown={(e) => { if (e.key === "Enter" && isValid) onNext(website); }}
+            style={{ ...INPUT, ...(focused ? { borderColor: "var(--color-border-strong)", boxShadow: "var(--shadow-focus)" } : {}), ...(website && isValid ? { borderColor: "rgba(7,188,12,0.5)" } : website && !isValid ? { borderColor: "rgba(231,76,60,0.5)" } : {}) }}
+          />
+          {website && (
+            <span style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", fontSize: 12, fontWeight: 600, color: isValid ? "var(--color-success)" : "var(--color-error)" }}>
+              {isValid ? "✓" : "✗"}
+            </span>
+          )}
+        </div>
+        {website && !isValid && (
+          <p style={{ fontSize: 12, color: "var(--color-error)", margin: "6px 0 0" }}>Enter a valid website, e.g. yourcompany.com</p>
+        )}
       </div>
       <button onClick={() => onNext(website)} disabled={!isValid} className="ob-primary-btn" style={{ ...PRIMARY_BTN, opacity: !isValid ? 0.5 : 1, cursor: !isValid ? "not-allowed" : "pointer" }}>
         Continue
@@ -464,7 +485,8 @@ function StepProducts({ initialProducts, onNext, onBack }: {
   }, [index]);
 
   const current = localProducts[index];
-  const canProceed = current.name.trim().length > 0 && current.description.trim().length > 0;
+  const linkValid = current.link.trim().length === 0 || isValidUrl(current.link);
+  const canProceed = current.name.trim().length > 0 && current.description.trim().length > 0 && linkValid;
   const isLast = index === localProducts.length - 1;
   const productAvatars = localProducts
     .map((p, i) => ({ i, name: p.name }))
@@ -564,10 +586,20 @@ function StepProducts({ initialProducts, onNext, onBack }: {
         </div>
         <div>
           <label style={LABEL}>Product link <span style={{ color: "var(--color-subtle)", fontWeight: 400 }}>(optional)</span></label>
-          <input className="ob-input" type="url" placeholder="https://yourcompany.com/product" value={current.link}
-            onChange={(e) => update("link", e.target.value)}
-            onFocus={() => setFocused("link")} onBlur={() => setFocused(null)}
-            style={focusStyle("link", focused)} />
+          <div style={{ position: "relative" }}>
+            <input className="ob-input" type="url" placeholder="https://yourcompany.com/product" value={current.link}
+              onChange={(e) => update("link", e.target.value)}
+              onFocus={() => setFocused("link")} onBlur={() => setFocused(null)}
+              style={{ ...focusStyle("link", focused), ...(current.link && linkValid ? { borderColor: "rgba(7,188,12,0.5)" } : current.link && !linkValid ? { borderColor: "rgba(231,76,60,0.5)" } : {}) }} />
+            {current.link && (
+              <span style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", fontSize: 12, fontWeight: 600, color: linkValid ? "var(--color-success)" : "var(--color-error)" }}>
+                {linkValid ? "✓" : "✗"}
+              </span>
+            )}
+          </div>
+          {current.link && !linkValid && (
+            <p style={{ fontSize: 12, color: "var(--color-error)", margin: "6px 0 0" }}>Enter a valid link, e.g. yourcompany.com/product</p>
+          )}
         </div>
         <div>
           <label style={LABEL}>Related files <span style={{ color: "var(--color-subtle)", fontWeight: 400 }}>(optional)</span></label>
@@ -968,7 +1000,7 @@ function StepSplit({ senders, onNext, onBack }: {
 const CONNECTIONS_INTRO_BULLETS = [
   "Your primary mailbox",
   "LinkedIn accounts",
-  "CRM & scheduling",
+  "Scheduling",
   "Invite your team",
 ];
 
@@ -980,7 +1012,7 @@ function StepConnectionsIntro({ onNext }: { onNext: () => void }) {
       </span>
       <h1 style={{ fontSize: 22, fontWeight: 800, margin: "0 0 10px" }}>Connections</h1>
       <p style={{ fontSize: 14, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 24px" }}>
-        Plug in the tools your agents work alongside — your inbox, CRM, calendar, and teammates.
+        Plug in the tools your agents work alongside — your inbox, calendar, and teammates.
       </p>
       <div style={{ display: "flex", flexDirection: "column", gap: 6, textAlign: "left" as const, marginBottom: 28 }}>
         {CONNECTIONS_INTRO_BULLETS.map((item, i) => (
@@ -1142,12 +1174,14 @@ function StepInvite({ onNext, onBack }: { onNext: () => void; onBack: () => void
   const [role, setRole] = useState("member");
   const [loading, setLoading] = useState(false);
   const [focused, setFocused] = useState(false);
-  const hasAny = invitees.length > 0 || email.trim() !== "";
+  const trimmedEmail = email.trim();
+  const hasAny = invitees.length > 0 || trimmedEmail !== "";
+  const emailValid = trimmedEmail.length === 0 || isValidEmail(trimmedEmail);
+  const canAdd = trimmedEmail.length > 0 && isValidEmail(trimmedEmail);
 
   function addInvitee() {
-    const trimmed = email.trim();
-    if (!trimmed) return;
-    setInvitees((prev) => [...prev, { email: trimmed, role }]);
+    if (!canAdd) return;
+    setInvitees((prev) => [...prev, { email: trimmedEmail, role }]);
     setEmail("");
     setRole("member");
   }
@@ -1169,11 +1203,21 @@ function StepInvite({ onNext, onBack }: { onNext: () => void; onBack: () => void
         Bring teammates in to review campaigns and replies. Add as many as you like, or skip.
       </p>
       <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: invitees.length < 5 ? 4 : 12 }}>
-        <input className="ob-input" type="email" placeholder="colleague@company.com" value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          onFocus={() => setFocused(true)} onBlur={() => setFocused(false)}
-          onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addInvitee(); } }}
-          style={{ ...INPUT, ...(focused ? { borderColor: "var(--color-border-strong)", boxShadow: "var(--shadow-focus)" } : {}) }} />
+        <div style={{ position: "relative" }}>
+          <input className="ob-input" type="email" placeholder="colleague@company.com" value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            onFocus={() => setFocused(true)} onBlur={() => setFocused(false)}
+            onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addInvitee(); } }}
+            style={{ ...INPUT, ...(focused ? { borderColor: "var(--color-border-strong)", boxShadow: "var(--shadow-focus)" } : {}), ...(trimmedEmail && emailValid ? { borderColor: "rgba(7,188,12,0.5)" } : trimmedEmail && !emailValid ? { borderColor: "rgba(231,76,60,0.5)" } : {}) }} />
+          {trimmedEmail && (
+            <span style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", fontSize: 12, fontWeight: 600, color: emailValid ? "var(--color-success)" : "var(--color-error)" }}>
+              {emailValid ? "✓" : "✗"}
+            </span>
+          )}
+        </div>
+        {trimmedEmail && !emailValid && (
+          <p style={{ fontSize: 12, color: "var(--color-error)", margin: "-4px 0 0" }}>Enter a valid email address</p>
+        )}
         <div style={{ position: "relative" }}>
           <select value={role} onChange={(e) => setRole(e.target.value)}
             style={{ ...INPUT, cursor: "pointer", appearance: "none" as const, WebkitAppearance: "none" as const, MozAppearance: "none" as const, paddingRight: 36 }}>
@@ -1188,7 +1232,7 @@ function StepInvite({ onNext, onBack }: { onNext: () => void; onBack: () => void
         </div>
       </div>
       {invitees.length < 5 && (
-        <button type="button" onClick={addInvitee} disabled={!email.trim()} className="ob-link-btn" style={{ fontSize: 13, color: "var(--color-brand)", background: "none", border: "none", cursor: email.trim() ? "pointer" : "not-allowed", opacity: email.trim() ? 1 : 0.5, padding: "0 0 16px", fontFamily: "inherit", fontWeight: 500, transition: "color 150ms" }}>
+        <button type="button" onClick={addInvitee} disabled={!canAdd} className="ob-link-btn" style={{ fontSize: 13, color: "var(--color-brand)", background: "none", border: "none", cursor: canAdd ? "pointer" : "not-allowed", opacity: canAdd ? 1 : 0.5, padding: "0 0 16px", fontFamily: "inherit", fontWeight: 500, transition: "color 150ms" }}>
           + Add another
         </button>
       )}
@@ -2432,13 +2476,7 @@ function IcpMatrix({ icps }: { icps: IcpScore[] }) {
 
 function StepTamIcp({ products, onNext }: { products: Product[]; onNext: () => void }) {
   const [view, setView] = useState<"Graph" | "Matrix">("Graph");
-  const [rescoring, setRescoring] = useState(false);
   const productName = products[0]?.name?.trim() || "Your product";
-
-  function handleRescore() {
-    setRescoring(true);
-    setTimeout(() => setRescoring(false), 900);
-  }
 
   return (
     <div className="ob-card" style={{ ...CARD, maxWidth: 760 }}>
@@ -2459,10 +2497,6 @@ function StepTamIcp({ products, onNext }: { products: Product[]; onNext: () => v
               </button>
             ))}
           </div>
-          <button type="button" onClick={handleRescore} disabled={rescoring} className="ob-primary-btn" style={{ ...PRIMARY_BTN, width: "auto", padding: "10px 18px", fontSize: 13, opacity: rescoring ? 0.7 : 1, cursor: rescoring ? "default" : "pointer" }}>
-            {rescoring && <svg style={{ animation: "ob-spin 0.8s linear infinite" }} width="12" height="12" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.35)" strokeWidth="3" /><path d="M12 2a10 10 0 0 1 10 10" stroke="#fff" strokeWidth="3" strokeLinecap="round" /></svg>}
-            {rescoring ? "Re-Scoring…" : "Re-Score"}
-          </button>
         </div>
       </div>
 
