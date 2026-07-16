@@ -39,36 +39,6 @@ const STYLES = `
 .ob-primary-btn:active:not(:disabled) { transform: scale(0.98); }
 .ob-ghost-btn:hover:not(:disabled) { background: var(--color-surface); color: var(--color-heading); }
 .ob-link-btn:hover { color: var(--color-brand-hover); }
-.ob-avatar { transition: transform 150ms var(--ease-apple); position: relative; }
-.ob-avatar:hover { transform: scale(1.15); z-index: 10 !important; }
-.ob-avatar-tooltip {
-  position: absolute;
-  bottom: calc(100% + 9px);
-  left: 50%;
-  transform: translateX(-50%) translateY(4px);
-  background: var(--color-heading);
-  color: #fff;
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: -0.005em;
-  padding: 5px 9px;
-  border-radius: 6px;
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 150ms var(--ease-apple), transform 150ms var(--ease-apple);
-  z-index: 30;
-}
-.ob-avatar-tooltip::after {
-  content: "";
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  border: 4px solid transparent;
-  border-top-color: var(--color-heading);
-}
-.ob-avatar:hover .ob-avatar-tooltip { opacity: 1; transform: translateX(-50%) translateY(0); }
 
 @media (max-width: 640px) {
   .ob-shell { align-items: flex-start !important; }
@@ -217,16 +187,15 @@ function focusStyle(id: string, focused: string | null): React.CSSProperties {
   return { ...INPUT, ...(focused === id ? { borderColor: "var(--color-border-strong)", boxShadow: "var(--shadow-focus)" } : {}) };
 }
 
-function getMonogram(name: string): string {
-  const words = name.trim().split(/\s+/).filter(Boolean);
-  if (words.length === 0) return "?";
-  if (words.length >= 2) return (words[0][0] + words[1][0]).toUpperCase();
-  return words[0].slice(0, 2).toUpperCase();
-}
-
 /* ─── Domain generation ─────────────────────────────────────────── */
 const DOMAIN_PREFIXES = ["get","try","use","go","meet","with","hey","my","the","join","we","its","hi","hello","lets","run","do","be","on","up"];
 const DOMAIN_SUFFIXES = ["app","hq","io","now","pro","hub","co","ai","ly","360","365","inc","team","group","labs","cloud"];
+
+function extractDomain(website: string): string {
+  return website.trim().toLowerCase()
+    .replace(/^https?:\/\//, "").replace(/^www\./, "")
+    .replace(/[/?#].*$/, "");
+}
 
 function extractBase(domain: string): string {
   return domain.trim().toLowerCase()
@@ -302,10 +271,10 @@ function PageChrome() {
 
 /* ─── Progress bar ──────────────────────────────────────────────── */
 const PHASES: { label: string; steps: StepName[] }[] = [
-  { label: "AI Agent Research", steps: ["website", "products"] },
-  { label: "Infrastructure", steps: ["primary_domain", "forwarding_domain", "volume", "senders", "split"] },
+  { label: "AI Agent Research", steps: ["website", "products", "research_summary"] },
+  { label: "Infrastructure", steps: ["primary_domain", "forwarding_domain", "volume", "senders", "split", "infra_summary"] },
   { label: "Connections", steps: ["connect", "connect_calendar", "invite"] },
-  { label: "Review & Approve", steps: ["review_order"] },
+  { label: "Review & Approve", steps: ["review_order", "researching", "company_research", "products_services", "tam_icp", "personas", "outreach_campaign"] },
 ];
 
 function PhaseStepper({ step }: { step: StepName }) {
@@ -426,7 +395,19 @@ function StepInfraIntro({ onNext }: { onNext: () => void }) {
 function StepWebsite({ onNext }: { onNext: (website: string) => void }) {
   const [website, setWebsite] = useState("");
   const [focused, setFocused] = useState(false);
+  const [files, setFiles] = useState<File[]>([]);
+  const [dragging, setDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const isValid = isValidUrl(website);
+
+  function addFiles(newFiles: FileList | null) {
+    if (!newFiles) return;
+    setFiles((prev) => [...prev, ...Array.from(newFiles)]);
+  }
+
+  function removeFile(fileIdx: number) {
+    setFiles((prev) => prev.filter((_, i) => i !== fileIdx));
+  }
 
   return (
     <div className="ob-card" style={{ ...CARD, maxWidth: 480 }}>
@@ -457,6 +438,38 @@ function StepWebsite({ onNext }: { onNext: (website: string) => void }) {
           <p style={{ fontSize: 12, color: "var(--color-error)", margin: "6px 0 0" }}>Enter a valid website, e.g. yourcompany.com</p>
         )}
       </div>
+      <div style={{ marginBottom: 20 }}>
+        <label style={LABEL}>Docs to learn from <span style={{ color: "var(--color-subtle)", fontWeight: 400 }}>(optional)</span></label>
+        <div
+          onClick={() => fileInputRef.current?.click()}
+          onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+          onDragLeave={() => setDragging(false)}
+          onDrop={(e) => { e.preventDefault(); setDragging(false); addFiles(e.dataTransfer.files); }}
+          style={{ border: `2px dashed ${dragging ? "var(--color-brand)" : "var(--color-border-strong)"}`, borderRadius: 10, padding: "16px", textAlign: "center" as const, cursor: "pointer", background: dragging ? "var(--color-brand-tint)" : "var(--color-surface)", transition: "all 200ms" }}
+        >
+          <input ref={fileInputRef} type="file" multiple style={{ display: "none" }} onChange={(e) => addFiles(e.target.files)} />
+          <p style={{ fontSize: 12.5, color: "var(--color-body)", margin: 0 }}>
+            Drag &amp; drop or <span style={{ color: "var(--color-brand)", fontWeight: 600 }}>click to browse</span>
+          </p>
+          <p style={{ fontSize: 11, color: "var(--color-subtle)", margin: "3px 0 0" }}>Decks, one-pagers, or briefs about your company</p>
+        </div>
+        {files.length > 0 && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 8 }}>
+            {files.map((f, i) => (
+              <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 12px", borderRadius: 8, background: "var(--color-surface)" }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" />
+                </svg>
+                <span style={{ fontSize: 12, color: "var(--color-heading)", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{f.name}</span>
+                <span style={{ fontSize: 11, color: "var(--color-muted)", flexShrink: 0 }}>{(f.size / 1024).toFixed(0)} KB</span>
+                <button type="button" onClick={() => removeFile(i)} style={{ background: "none", border: "none", color: "var(--color-muted)", cursor: "pointer", padding: 0, lineHeight: 0, flexShrink: 0 }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
       <button onClick={() => onNext(website)} disabled={!isValid} className="ob-primary-btn" style={{ ...PRIMARY_BTN, opacity: !isValid ? 0.5 : 1, cursor: !isValid ? "not-allowed" : "pointer" }}>
         Continue
       </button>
@@ -467,14 +480,21 @@ function StepWebsite({ onNext }: { onNext: (website: string) => void }) {
 /* ════════════════════════════════════════════════════════════════════
    STEP 2 — Product details (dynamic list, add more from within)
 ══════════════════════════════════════════════════════════════════════ */
+const PRODUCTS_MODE_OPTIONS = [
+  { key: "text" as const, label: "Describe in text" },
+  { key: "list" as const, label: "Add one by one" },
+];
+
 function StepProducts({ initialProducts, onNext, onBack }: {
   initialProducts: Product[];
   onNext: (products: Product[]) => void;
   onBack: () => void;
 }) {
-  const [localProducts, setLocalProducts] = useState<Product[]>(
-    () => initialProducts.length ? initialProducts : [{ name: "", variant: "", description: "", link: "", files: [] }]
-  );
+  const [stage, setStage] = useState<"intro" | "detail">("intro");
+  const [mode, setMode] = useState<"text" | "list">(initialProducts.length > 1 ? "list" : "text");
+  const [freeText, setFreeText] = useState("");
+  const [count, setCount] = useState(initialProducts.length > 1 ? initialProducts.length : 1);
+  const [localProducts, setLocalProducts] = useState<Product[]>(initialProducts);
   const [index, setIndex] = useState(0);
   const [focused, setFocused] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
@@ -482,15 +502,22 @@ function StepProducts({ initialProducts, onNext, onBack }: {
 
   useEffect(() => {
     window.scrollTo({ top: 0 });
-  }, [index]);
+  }, [stage, index]);
+
+  function startList() {
+    setLocalProducts((prev) => Array.from({ length: count }, (_, i) => prev[i] ?? { name: "", variant: "", description: "", link: "", files: [] }));
+    setIndex(0);
+    setStage("detail");
+  }
+
+  function submitText() {
+    onNext([{ name: "", variant: "", description: freeText.trim(), link: "", files: [] }]);
+  }
 
   const current = localProducts[index];
-  const linkValid = current.link.trim().length === 0 || isValidUrl(current.link);
-  const canProceed = current.name.trim().length > 0 && current.description.trim().length > 0 && linkValid;
+  const linkValid = current?.link.trim().length === 0 || isValidUrl(current?.link ?? "");
+  const canProceed = !!current && current.name.trim().length > 0 && current.description.trim().length > 0 && linkValid;
   const isLast = index === localProducts.length - 1;
-  const productAvatars = localProducts
-    .map((p, i) => ({ i, name: p.name }))
-    .filter(({ name }) => name.trim().length > 0);
 
   function update(field: keyof Product, val: string) {
     setLocalProducts((prev) => prev.map((p, i) => i === index ? { ...p, [field]: val } : p));
@@ -518,45 +545,78 @@ function StepProducts({ initialProducts, onNext, onBack }: {
 
   function goBackWithinStep() {
     if (index > 0) { setIndex(index - 1); setFocused(null); }
-    else onBack();
+    else setStage("intro");
+  }
+
+  if (stage === "intro") {
+    return (
+      <div className="ob-card" style={{ ...CARD, maxWidth: 480 }}>
+        <span style={{ fontSize: 12, fontWeight: 700, color: "var(--color-brand)", letterSpacing: "0.05em", textTransform: "uppercase" as const }}>Products & Services</span>
+        <h1 style={{ fontSize: 24, margin: "8px 0 8px" }}>What do you sell?</h1>
+        <p style={{ fontSize: 14, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 24px" }}>
+          Tell the AI what to pitch. Describe everything in your own words, or add each offering one by one.
+        </p>
+        <div style={{ display: "flex", background: "var(--color-surface)", borderRadius: 999, padding: 4, gap: 4, marginBottom: 28 }}>
+          {PRODUCTS_MODE_OPTIONS.map(({ key, label }) => (
+            <button key={key} type="button" onClick={() => setMode(key)} style={{
+              flex: 1, border: "none", borderRadius: 999, padding: "12px 0", fontSize: 13.5, fontWeight: 600, fontFamily: "inherit", cursor: "pointer", transition: "all 150ms",
+              background: mode === key ? "var(--color-page)" : "transparent",
+              color: mode === key ? "var(--color-brand)" : "var(--color-muted)",
+              boxShadow: mode === key ? "var(--shadow-card)" : "none",
+            }}>
+              {label}
+            </button>
+          ))}
+        </div>
+
+        {mode === "text" ? (
+          <>
+            <div style={{ marginBottom: 20 }}>
+              <label style={LABEL}>Your products & services <span style={{ color: "var(--color-error)" }}>*</span></label>
+              <textarea className="ob-input" placeholder="Describe each product or service you want the AI to pitch — what it does, who it's for, and any variations you sell (by plan, tier, or segment)." value={freeText}
+                onChange={(e) => setFreeText(e.target.value)}
+                onFocus={() => setFocused("free-text")} onBlur={() => setFocused(null)}
+                rows={7}
+                style={{ ...focusStyle("free-text", focused), resize: "vertical" as const, lineHeight: 1.5 }} />
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <button onClick={submitText} disabled={!freeText.trim()} className="ob-primary-btn" style={{ ...PRIMARY_BTN, opacity: !freeText.trim() ? 0.5 : 1, cursor: !freeText.trim() ? "not-allowed" : "pointer" }}>
+                Continue
+              </button>
+              <button onClick={onBack} className="ob-ghost-btn" style={{ ...GHOST_BTN, color: "var(--color-subtle)" }}>Back</button>
+            </div>
+          </>
+        ) : (
+          <>
+            <p style={{ fontSize: 13.5, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 20px", textAlign: "center" as const }}>
+              How many offerings do you sell? Count each distinct product or service — and each way you sell one (by plan, tier, or segment). You&apos;ll describe them one at a time next.
+            </p>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 28, marginBottom: 28 }}>
+              <button type="button" onClick={() => setCount((c) => Math.max(1, c - 1))} style={{ width: 44, height: 44, borderRadius: "50%", border: "none", background: "var(--color-surface)", color: "var(--color-brand)", fontSize: 18, fontWeight: 700, fontFamily: "inherit", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                −
+              </button>
+              <span style={{ fontSize: 34, fontWeight: 800, color: "var(--color-heading)", minWidth: 40, textAlign: "center" as const }}>{count}</span>
+              <button type="button" onClick={() => setCount((c) => Math.min(20, c + 1))} style={{ width: 44, height: 44, borderRadius: "50%", border: "none", background: "var(--color-surface)", color: "var(--color-brand)", fontSize: 18, fontWeight: 700, fontFamily: "inherit", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                +
+              </button>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <button onClick={startList} className="ob-primary-btn" style={PRIMARY_BTN}>
+                Continue
+              </button>
+              <button onClick={onBack} className="ob-ghost-btn" style={{ ...GHOST_BTN, color: "var(--color-subtle)" }}>Back</button>
+            </div>
+          </>
+        )}
+      </div>
+    );
   }
 
   return (
     <div className="ob-card" style={{ ...CARD, maxWidth: 520 }}>
-      {(productAvatars.length > 0 || localProducts.length > 1) && (
-        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
-          {productAvatars.length > 0 && (
-            <div style={{ display: "flex" }}>
-              {productAvatars.map(({ i, name }, pos) => (
-                <div
-                  key={i}
-                  className="ob-avatar"
-                  style={{
-                    width: 30, height: 30, borderRadius: "50%", flexShrink: 0,
-                    background: "var(--color-brand-tint)", color: "var(--color-brand)",
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    fontSize: 11, fontWeight: 700, letterSpacing: "-0.01em",
-                    border: `2px solid ${i === index ? "var(--color-brand)" : "var(--color-page)"}`,
-                    boxShadow: "0 0 0 1px var(--color-border)",
-                    marginLeft: pos === 0 ? 0 : -8, zIndex: i === index ? 20 : pos + 1, cursor: "default",
-                  }}
-                >
-                  {getMonogram(name)}
-                  <span className="ob-avatar-tooltip">{name.trim() || "Untitled product"}</span>
-                </div>
-              ))}
-            </div>
-          )}
-          {localProducts.length > 1 && (
-            <span style={{ fontSize: 12, color: "var(--color-muted)", background: "var(--color-surface)", borderRadius: 999, padding: "4px 12px" }}>
-              {index + 1} / {localProducts.length}
-            </span>
-          )}
-        </div>
-      )}
       <span style={{ fontSize: 12, fontWeight: 700, color: "var(--color-brand)", letterSpacing: "0.05em", textTransform: "uppercase" as const }}>Products & Services</span>
       <h1 style={{ fontSize: 24, margin: "8px 0 8px" }}>
-        Tell us what you sell{localProducts.length > 1 ? ` — Product ${index + 1}` : ""}
+        Product / service {index + 1} of {localProducts.length}
       </h1>
       <p style={{ fontSize: 14, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 24px" }}>
         Name it and describe what it does. If it's a variation of another offering, note how it's sold
@@ -656,6 +716,57 @@ function StepProducts({ initialProducts, onNext, onBack }: {
 }
 
 /* ════════════════════════════════════════════════════════════════════
+   Research summary — quick review of what was captured before AI
+   research kicks off.
+══════════════════════════════════════════════════════════════════════ */
+function StepResearchSummary({ website, products, onNext, onBack }: {
+  website: string;
+  products: Product[];
+  onNext: () => void;
+  onBack: () => void;
+}) {
+  const domain = extractDomain(website) || website || "—";
+  const productNames = products.map((p) => p.name.trim()).filter(Boolean);
+  const fallbackDescription = products[0]?.description.trim() || "";
+  const productsValue = productNames.length
+    ? productNames.join(", ")
+    : fallbackDescription
+    ? (fallbackDescription.length > 60 ? `${fallbackDescription.slice(0, 60)}…` : fallbackDescription)
+    : "—";
+  const totalFiles = products.reduce((sum, p) => sum + p.files.length, 0);
+
+  const rows = [
+    { label: "Website", value: domain },
+    { label: "Products / services", value: productsValue },
+    { label: "Files shared", value: totalFiles > 0 ? `${totalFiles} file${totalFiles > 1 ? "s" : ""}` : "None" },
+  ];
+
+  return (
+    <div className="ob-card" style={{ ...CARD, maxWidth: 480 }}>
+      <span style={{ fontSize: 12, fontWeight: 700, color: "var(--color-brand)", letterSpacing: "0.05em", textTransform: "uppercase" as const }}>AI Agent Research</span>
+      <h1 style={{ fontSize: 24, margin: "8px 0 8px" }}>Your research, at a glance</h1>
+      <p style={{ fontSize: 14, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 24px" }}>
+        Here&apos;s what your agents will work from.
+      </p>
+      <div style={{ borderRadius: 14, border: "1px solid var(--color-border)", overflow: "hidden", marginBottom: 24 }}>
+        {rows.map(({ label, value }, i) => (
+          <div key={label} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, padding: "16px 18px", borderBottom: i < rows.length - 1 ? "1px solid var(--color-border)" : "none" }}>
+            <span style={{ fontSize: 13.5, color: "var(--color-muted)" }}>{label}</span>
+            <span style={{ fontSize: 14, fontWeight: 700, color: "var(--color-heading)", textAlign: "right" as const, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" as const, maxWidth: "60%" }}>{value}</span>
+          </div>
+        ))}
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        <button onClick={onNext} className="ob-primary-btn" style={PRIMARY_BTN}>
+          Looks good — continue
+        </button>
+        <button onClick={onBack} className="ob-ghost-btn" style={GHOST_BTN}>Back</button>
+      </div>
+    </div>
+  );
+}
+
+/* ════════════════════════════════════════════════════════════════════
    Transition — AI research kicks off in the background, then straight
    into Setup Infrastructure. Brief and auto-advancing, no user input.
 ══════════════════════════════════════════════════════════════════════ */
@@ -685,8 +796,8 @@ function StepStartingResearch({ onNext }: { onNext: () => void }) {
 /* ════════════════════════════════════════════════════════════════════
    STEP 3 — Primary domain
 ══════════════════════════════════════════════════════════════════════ */
-function StepPrimaryDomain({ onNext }: { onNext: (domain: string) => void }) {
-  const [domain, setDomain] = useState("");
+function StepPrimaryDomain({ website, onNext }: { website: string; onNext: (domain: string) => void }) {
+  const [domain, setDomain] = useState(() => extractDomain(website));
   const [focused, setFocused] = useState(false);
   const valid = isValidDomain(domain);
 
@@ -990,6 +1101,50 @@ function StepSplit({ senders, onNext, onBack }: {
         <button onClick={() => onNext(entries)} disabled={!isExact} className="ob-primary-btn" style={{ ...PRIMARY_BTN, opacity: !isExact ? 0.5 : 1, cursor: !isExact ? "not-allowed" : "pointer" }}>Continue</button>
         <button onClick={onBack} className="ob-ghost-btn" style={GHOST_BTN}>Back</button>
       </div>
+    </div>
+  );
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   Infrastructure summary — quick review of the sending setup before
+   moving on to Connections.
+══════════════════════════════════════════════════════════════════════ */
+function StepInfraSummary({ primaryDomain, selectedPackage, senders, onNext }: {
+  primaryDomain: string;
+  selectedPackage: PackageKey;
+  senders: Sender[];
+  onNext: () => void;
+}) {
+  const pkg = PACKAGES.find((p) => p.key === selectedPackage)!;
+  const senderNames = senders.map((s) => `${s.first} ${s.last}`.trim());
+  const sendersValue = senders.length > 1
+    ? `${senderNames[0]} +${senderNames.length - 1} more`
+    : senders[0] ? `${senderNames[0]} · ${senders[0].pct}%` : "—";
+
+  const rows = [
+    { label: "Sending domain", value: primaryDomain || "—" },
+    { label: "Volume", value: `${pkg.domains} domains · ${pkg.mailboxes} mailboxes` },
+    { label: "Senders", value: sendersValue },
+  ];
+
+  return (
+    <div className="ob-card" style={{ ...CARD, maxWidth: 480 }}>
+      <span style={{ fontSize: 12, fontWeight: 700, color: "var(--color-brand)", letterSpacing: "0.05em", textTransform: "uppercase" as const }}>Infrastructure</span>
+      <h1 style={{ fontSize: 24, margin: "8px 0 8px" }}>Your sending setup</h1>
+      <p style={{ fontSize: 14, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 24px" }}>
+        Everything&apos;s ready to send from.
+      </p>
+      <div style={{ borderRadius: 14, border: "1px solid var(--color-border)", overflow: "hidden", marginBottom: 24 }}>
+        {rows.map(({ label, value }, i) => (
+          <div key={label} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, padding: "16px 18px", borderBottom: i < rows.length - 1 ? "1px solid var(--color-border)" : "none" }}>
+            <span style={{ fontSize: 13.5, color: "var(--color-muted)" }}>{label}</span>
+            <span style={{ fontSize: 14, fontWeight: 700, color: "var(--color-heading)", textAlign: "right" as const, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" as const, maxWidth: "60%" }}>{value}</span>
+          </div>
+        ))}
+      </div>
+      <button onClick={onNext} className="ob-primary-btn" style={PRIMARY_BTN}>
+        Looks good — continue
+      </button>
     </div>
   );
 }
@@ -2553,21 +2708,21 @@ function StepTamIcp({ products, onNext }: { products: Product[]; onNext: () => v
 type StepName =
   | "splash"
   | "welcome"
-  | "website" | "products" | "starting_research"
+  | "website" | "products" | "research_summary" | "starting_research"
   | "infra_intro"
   | "primary_domain" | "forwarding_domain" | "volume"
-  | "senders" | "split" | "connections_intro" | "connect" | "connect_calendar" | "invite" | "review_intro" | "review_order" | "researching" | "company_research" | "products_services" | "tam_icp" | "personas" | "outreach_campaign" | "all_set" | "cleared_for_launch";
+  | "senders" | "split" | "infra_summary" | "connections_intro" | "connect" | "connect_calendar" | "invite" | "review_intro" | "review_order" | "researching" | "company_research" | "products_services" | "tam_icp" | "personas" | "outreach_campaign" | "all_set" | "cleared_for_launch";
 
 const STEP_ORDER: StepName[] = [
-  "website", "products",
+  "website", "products", "research_summary",
   "primary_domain", "forwarding_domain", "volume",
-  "senders", "split", "connect", "connect_calendar", "invite", "review_intro", "review_order", "researching", "company_research", "products_services", "tam_icp", "personas", "outreach_campaign",
+  "senders", "split", "infra_summary", "connect", "connect_calendar", "invite", "review_intro", "review_order", "researching", "company_research", "products_services", "tam_icp", "personas", "outreach_campaign",
 ];
 
 /* ─── Resume draft ──────────────────────────────────────────────── */
 const ALL_STEPS: StepName[] = [
-  "splash", "welcome", "website", "products", "starting_research",
-  "infra_intro", "primary_domain", "forwarding_domain", "volume", "senders", "split",
+  "splash", "welcome", "website", "products", "research_summary", "starting_research",
+  "infra_intro", "primary_domain", "forwarding_domain", "volume", "senders", "split", "infra_summary",
   "connections_intro", "connect", "connect_calendar", "invite",
   "review_intro", "review_order", "researching", "company_research",
   "products_services", "tam_icp", "personas", "outreach_campaign",
@@ -2772,7 +2927,10 @@ export function OnboardingShell() {
           <StepWebsite onNext={(w) => advance("products", { website: w })} />
         )}
         {step === "products" && (
-          <StepProducts initialProducts={products} onNext={(p) => advance("starting_research", { products: p })} onBack={goBack} />
+          <StepProducts initialProducts={products} onNext={(p) => advance("research_summary", { products: p })} onBack={goBack} />
+        )}
+        {step === "research_summary" && (
+          <StepResearchSummary website={website} products={products} onNext={() => advance("starting_research")} onBack={goBack} />
         )}
         {step === "starting_research" && (
           <StepStartingResearch onNext={() => advance("infra_intro")} />
@@ -2781,7 +2939,7 @@ export function OnboardingShell() {
           <StepInfraIntro onNext={() => advance("primary_domain")} />
         )}
         {step === "primary_domain" && (
-          <StepPrimaryDomain onNext={(d) => advance("forwarding_domain", { primaryDomain: d })} />
+          <StepPrimaryDomain website={website} onNext={(d) => advance("forwarding_domain", { primaryDomain: d })} />
         )}
         {step === "forwarding_domain" && (
           <StepForwardingDomain primaryDomain={primaryDomain} onNext={(d) => advance("volume", { forwardingDomain: d })} onBack={goBack} />
@@ -2793,7 +2951,10 @@ export function OnboardingShell() {
           <StepSenders onNext={(s) => advance("split", { senders: s })} onBack={goBack} />
         )}
         {step === "split" && (
-          <StepSplit senders={senders} onNext={(s) => advance("connections_intro", { senders: s })} onBack={goBack} />
+          <StepSplit senders={senders} onNext={(s) => advance("infra_summary", { senders: s })} onBack={goBack} />
+        )}
+        {step === "infra_summary" && (
+          <StepInfraSummary primaryDomain={primaryDomain} selectedPackage={selectedPackage} senders={senders} onNext={() => advance("connections_intro")} />
         )}
         {step === "connections_intro" && (
           <StepConnectionsIntro onNext={() => advance("connect")} />
