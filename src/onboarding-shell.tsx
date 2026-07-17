@@ -155,6 +155,11 @@ interface Sender {
   pct: number;
 }
 
+interface Invitee {
+  email: string;
+  role: string;
+}
+
 /* ─── Helpers ───────────────────────────────────────────────────── */
 function isValidUrl(val: string) {
   const trimmed = val.trim();
@@ -163,6 +168,7 @@ function isValidUrl(val: string) {
   try { url = new URL(/^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`); }
   catch { return false; }
   if (!/^https?:$/.test(url.protocol)) return false;
+  if (url.username || url.password) return false;
   const hostname = url.hostname.toLowerCase();
   return /^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)*\.[a-z]{2,}$/.test(hostname);
 }
@@ -273,7 +279,7 @@ function PageChrome() {
 const PHASES: { label: string; steps: StepName[] }[] = [
   { label: "AI Agent Research", steps: ["website", "products", "research_summary"] },
   { label: "Infrastructure", steps: ["primary_domain", "forwarding_domain", "volume", "senders", "split", "infra_summary"] },
-  { label: "Connections", steps: ["connect", "connect_calendar", "invite"] },
+  { label: "Connections", steps: ["connect", "connect_calendar", "invite", "connections_summary"] },
   { label: "Review & Approve", steps: ["review_order", "researching", "company_research", "products_services", "tam_icp", "personas", "outreach_campaign"] },
 ];
 
@@ -1187,8 +1193,12 @@ function StepConnectionsIntro({ onNext }: { onNext: () => void }) {
 /* ════════════════════════════════════════════════════════════════════
    STEP 8 — Connect accounts
 ══════════════════════════════════════════════════════════════════════ */
-function StepConnect({ onNext, onBack }: { onNext: () => void; onBack: () => void }) {
-  const [connected, setConnected] = useState<Set<string>>(new Set());
+function StepConnect({ initialConnected, onNext, onBack }: {
+  initialConnected: string[];
+  onNext: (connected: string[]) => void;
+  onBack: () => void;
+}) {
+  const [connected, setConnected] = useState<Set<string>>(() => new Set(initialConnected));
   const [connecting, setConnecting] = useState<string | null>(null);
 
   function handleConnect(id: string) {
@@ -1241,8 +1251,8 @@ function StepConnect({ onNext, onBack }: { onNext: () => void; onBack: () => voi
         })}
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-        {connected.size > 0 && <button onClick={onNext} className="ob-primary-btn" style={PRIMARY_BTN}>Continue</button>}
-        <button onClick={onNext} className="ob-ghost-btn" style={GHOST_BTN}>Skip for now</button>
+        {connected.size > 0 && <button onClick={() => onNext(Array.from(connected))} className="ob-primary-btn" style={PRIMARY_BTN}>Continue</button>}
+        <button onClick={() => onNext(Array.from(connected))} className="ob-ghost-btn" style={GHOST_BTN}>Skip for now</button>
         <button onClick={onBack} className="ob-ghost-btn" style={{ ...GHOST_BTN, color: "var(--color-subtle)" }}>Back</button>
       </div>
     </div>
@@ -1252,8 +1262,12 @@ function StepConnect({ onNext, onBack }: { onNext: () => void; onBack: () => voi
 /* ════════════════════════════════════════════════════════════════════
    STEP 8b — Connect calendar
 ══════════════════════════════════════════════════════════════════════ */
-function StepConnectCalendar({ onNext, onBack }: { onNext: () => void; onBack: () => void }) {
-  const [connected, setConnected] = useState<Set<string>>(new Set());
+function StepConnectCalendar({ initialConnected, onNext, onBack }: {
+  initialConnected: string[];
+  onNext: (connected: string[]) => void;
+  onBack: () => void;
+}) {
+  const [connected, setConnected] = useState<Set<string>>(() => new Set(initialConnected));
   const [connecting, setConnecting] = useState<string | null>(null);
 
   function handleConnect(id: string) {
@@ -1306,8 +1320,8 @@ function StepConnectCalendar({ onNext, onBack }: { onNext: () => void; onBack: (
         })}
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-        {connected.size > 0 && <button onClick={onNext} className="ob-primary-btn" style={PRIMARY_BTN}>Continue</button>}
-        <button onClick={onNext} className="ob-ghost-btn" style={GHOST_BTN}>Skip for now</button>
+        {connected.size > 0 && <button onClick={() => onNext(Array.from(connected))} className="ob-primary-btn" style={PRIMARY_BTN}>Continue</button>}
+        <button onClick={() => onNext(Array.from(connected))} className="ob-ghost-btn" style={GHOST_BTN}>Skip for now</button>
         <button onClick={onBack} className="ob-ghost-btn" style={{ ...GHOST_BTN, color: "var(--color-subtle)" }}>Back</button>
       </div>
     </div>
@@ -1323,8 +1337,12 @@ const INVITE_ROLES = [
   { value: "viewer", label: "Viewer — Read only" },
 ];
 
-function StepInvite({ onNext, onBack }: { onNext: () => void; onBack: () => void }) {
-  const [invitees, setInvitees] = useState<{ email: string; role: string }[]>([]);
+function StepInvite({ initialInvitees, onNext, onBack }: {
+  initialInvitees: Invitee[];
+  onNext: (invitees: Invitee[]) => void;
+  onBack: () => void;
+}) {
+  const [invitees, setInvitees] = useState<Invitee[]>(initialInvitees);
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("member");
   const [loading, setLoading] = useState(false);
@@ -1347,7 +1365,7 @@ function StepInvite({ onNext, onBack }: { onNext: () => void; onBack: () => void
 
   function send() {
     setLoading(true);
-    setTimeout(() => { setLoading(false); onNext(); }, 1000);
+    setTimeout(() => { setLoading(false); onNext(invitees); }, 1000);
   }
 
   return (
@@ -1411,9 +1429,52 @@ function StepInvite({ onNext, onBack }: { onNext: () => void; onBack: () => void
             {loading ? <><Spinner inverted />Sending…</> : "Send invites"}
           </button>
         )}
-        <button onClick={onNext} className="ob-ghost-btn" style={GHOST_BTN}>Skip for now</button>
+        <button onClick={() => onNext(invitees)} className="ob-ghost-btn" style={GHOST_BTN}>Skip for now</button>
         <button onClick={onBack} className="ob-ghost-btn" style={{ ...GHOST_BTN, color: "var(--color-subtle)" }}>Back</button>
       </div>
+    </div>
+  );
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   Connections summary — quick review of what's plugged in before
+   moving on to Review & Approve.
+══════════════════════════════════════════════════════════════════════ */
+function StepConnectionsSummary({ connectedAccounts, connectedCalendars, invitees, onNext }: {
+  connectedAccounts: string[];
+  connectedCalendars: string[];
+  invitees: Invitee[];
+  onNext: () => void;
+}) {
+  const mailboxCount = connectedAccounts.filter((id) => id === "google" || id === "microsoft").length;
+  const linkedinConnected = connectedAccounts.includes("linkedin");
+
+  const rows = [
+    { label: "Sending mailboxes", value: mailboxCount > 0 ? `${mailboxCount} connected` : "None yet" },
+    { label: "LinkedIn", value: linkedinConnected ? "1 connected" : "Not connected" },
+    { label: "CRM", value: "Not connected" },
+    { label: "Scheduling", value: connectedCalendars.length > 0 ? `${connectedCalendars.length} connected` : "Not connected" },
+    { label: "Team invites", value: invitees.length > 0 ? `${invitees.length} invited` : "None" },
+  ];
+
+  return (
+    <div className="ob-card" style={{ ...CARD, maxWidth: 480 }}>
+      <span style={{ fontSize: 12, fontWeight: 700, color: "var(--color-brand)", letterSpacing: "0.05em", textTransform: "uppercase" as const }}>Connections</span>
+      <h1 style={{ fontSize: 24, margin: "8px 0 8px" }}>Your connections</h1>
+      <p style={{ fontSize: 14, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 24px" }}>
+        What your agents are plugged into.
+      </p>
+      <div style={{ borderRadius: 14, border: "1px solid var(--color-border)", overflow: "hidden", marginBottom: 24 }}>
+        {rows.map(({ label, value }, i) => (
+          <div key={label} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, padding: "16px 18px", borderBottom: i < rows.length - 1 ? "1px solid var(--color-border)" : "none" }}>
+            <span style={{ fontSize: 13.5, color: "var(--color-muted)" }}>{label}</span>
+            <span style={{ fontSize: 14, fontWeight: 700, color: "var(--color-heading)", textAlign: "right" as const }}>{value}</span>
+          </div>
+        ))}
+      </div>
+      <button onClick={onNext} className="ob-primary-btn" style={PRIMARY_BTN}>
+        Looks good — continue
+      </button>
     </div>
   );
 }
@@ -2711,19 +2772,19 @@ type StepName =
   | "website" | "products" | "research_summary" | "starting_research"
   | "infra_intro"
   | "primary_domain" | "forwarding_domain" | "volume"
-  | "senders" | "split" | "infra_summary" | "connections_intro" | "connect" | "connect_calendar" | "invite" | "review_intro" | "review_order" | "researching" | "company_research" | "products_services" | "tam_icp" | "personas" | "outreach_campaign" | "all_set" | "cleared_for_launch";
+  | "senders" | "split" | "infra_summary" | "connections_intro" | "connect" | "connect_calendar" | "invite" | "connections_summary" | "review_intro" | "review_order" | "researching" | "company_research" | "products_services" | "tam_icp" | "personas" | "outreach_campaign" | "all_set" | "cleared_for_launch";
 
 const STEP_ORDER: StepName[] = [
   "website", "products", "research_summary",
   "primary_domain", "forwarding_domain", "volume",
-  "senders", "split", "infra_summary", "connect", "connect_calendar", "invite", "review_intro", "review_order", "researching", "company_research", "products_services", "tam_icp", "personas", "outreach_campaign",
+  "senders", "split", "infra_summary", "connect", "connect_calendar", "invite", "connections_summary", "review_intro", "review_order", "researching", "company_research", "products_services", "tam_icp", "personas", "outreach_campaign",
 ];
 
 /* ─── Resume draft ──────────────────────────────────────────────── */
 const ALL_STEPS: StepName[] = [
   "splash", "welcome", "website", "products", "research_summary", "starting_research",
   "infra_intro", "primary_domain", "forwarding_domain", "volume", "senders", "split", "infra_summary",
-  "connections_intro", "connect", "connect_calendar", "invite",
+  "connections_intro", "connect", "connect_calendar", "invite", "connections_summary",
   "review_intro", "review_order", "researching", "company_research",
   "products_services", "tam_icp", "personas", "outreach_campaign",
   "all_set", "cleared_for_launch",
@@ -2743,6 +2804,9 @@ interface OnboardingDraft {
   forwardingDomain: string;
   selectedPackage: PackageKey;
   senders: Sender[];
+  connectedAccounts: string[];
+  connectedCalendars: string[];
+  invitees: Invitee[];
   confirmedDomains: string[];
   confirmedMailboxes: string[];
 }
@@ -2820,6 +2884,9 @@ export function OnboardingShell() {
   const [forwardingDomain, setForwardingDomain] = useState("");
   const [selectedPackage, setSelectedPackage] = useState<PackageKey>("starter");
   const [senders, setSenders] = useState<Sender[]>([]);
+  const [connectedAccounts, setConnectedAccounts] = useState<string[]>([]);
+  const [connectedCalendars, setConnectedCalendars] = useState<string[]>([]);
+  const [invitees, setInvitees] = useState<Invitee[]>([]);
   const [confirmedDomains, setConfirmedDomains] = useState<string[]>([]);
   const [confirmedMailboxes, setConfirmedMailboxes] = useState<string[]>([]);
 
@@ -2835,6 +2902,9 @@ export function OnboardingShell() {
       setForwardingDomain(loaded.forwardingDomain);
       setSelectedPackage(loaded.selectedPackage);
       setSenders(loaded.senders);
+      setConnectedAccounts(loaded.connectedAccounts ?? []);
+      setConnectedCalendars(loaded.connectedCalendars ?? []);
+      setInvitees(loaded.invitees ?? []);
       setConfirmedDomains(loaded.confirmedDomains);
       setConfirmedMailboxes(loaded.confirmedMailboxes);
     }
@@ -2860,6 +2930,9 @@ export function OnboardingShell() {
     forwardingDomain: string;
     selectedPackage: PackageKey;
     senders: Sender[];
+    connectedAccounts: string[];
+    connectedCalendars: string[];
+    invitees: Invitee[];
     confirmedDomains: string[];
     confirmedMailboxes: string[];
   }>) {
@@ -2870,6 +2943,9 @@ export function OnboardingShell() {
       forwardingDomain: patch?.forwardingDomain ?? forwardingDomain,
       selectedPackage: patch?.selectedPackage ?? selectedPackage,
       senders: patch?.senders ?? senders,
+      connectedAccounts: patch?.connectedAccounts ?? connectedAccounts,
+      connectedCalendars: patch?.connectedCalendars ?? connectedCalendars,
+      invitees: patch?.invitees ?? invitees,
       confirmedDomains: patch?.confirmedDomains ?? confirmedDomains,
       confirmedMailboxes: patch?.confirmedMailboxes ?? confirmedMailboxes,
     };
@@ -2879,6 +2955,9 @@ export function OnboardingShell() {
     if (patch?.forwardingDomain !== undefined) setForwardingDomain(patch.forwardingDomain);
     if (patch?.selectedPackage !== undefined) setSelectedPackage(patch.selectedPackage);
     if (patch?.senders !== undefined) setSenders(patch.senders);
+    if (patch?.connectedAccounts !== undefined) setConnectedAccounts(patch.connectedAccounts);
+    if (patch?.connectedCalendars !== undefined) setConnectedCalendars(patch.connectedCalendars);
+    if (patch?.invitees !== undefined) setInvitees(patch.invitees);
     if (patch?.confirmedDomains !== undefined) setConfirmedDomains(patch.confirmedDomains);
     if (patch?.confirmedMailboxes !== undefined) setConfirmedMailboxes(patch.confirmedMailboxes);
     setStep(nextStep);
@@ -2960,13 +3039,16 @@ export function OnboardingShell() {
           <StepConnectionsIntro onNext={() => advance("connect")} />
         )}
         {step === "connect" && (
-          <StepConnect onNext={() => advance("connect_calendar")} onBack={goBack} />
+          <StepConnect initialConnected={connectedAccounts} onNext={(c) => advance("connect_calendar", { connectedAccounts: c })} onBack={goBack} />
         )}
         {step === "connect_calendar" && (
-          <StepConnectCalendar onNext={() => advance("invite")} onBack={goBack} />
+          <StepConnectCalendar initialConnected={connectedCalendars} onNext={(c) => advance("invite", { connectedCalendars: c })} onBack={goBack} />
         )}
         {step === "invite" && (
-          <StepInvite onNext={() => advance("review_intro")} onBack={goBack} />
+          <StepInvite initialInvitees={invitees} onNext={(inv) => advance("connections_summary", { invitees: inv })} onBack={goBack} />
+        )}
+        {step === "connections_summary" && (
+          <StepConnectionsSummary connectedAccounts={connectedAccounts} connectedCalendars={connectedCalendars} invitees={invitees} onNext={() => advance("review_intro")} />
         )}
         {step === "review_intro" && (
           <StepReviewIntro onNext={() => advance("review_order")} onBack={goBack} />
