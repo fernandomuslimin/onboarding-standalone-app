@@ -279,7 +279,7 @@ function PageChrome() {
 const PHASES: { label: string; steps: StepName[] }[] = [
   { label: "AI Agent Research", steps: ["website", "products", "research_summary"] },
   { label: "Infrastructure", steps: ["primary_domain", "forwarding_domain", "volume", "senders", "split", "infra_summary"] },
-  { label: "Connections", steps: ["connect", "connect_calendar", "invite", "connections_summary"] },
+  { label: "Connections", steps: ["connect", "connect_linkedin", "connect_calendar", "invite", "connections_summary"] },
   { label: "Review & Approve", steps: ["review_order", "researching", "company_research", "products_services", "tam_icp", "personas", "outreach_campaign"] },
 ];
 
@@ -1216,16 +1216,12 @@ function StepConnect({ initialConnected, onNext, onBack }: {
       id: "microsoft", label: "Microsoft", email: "you@outlook.com",
       icon: <svg width="20" height="20" viewBox="0 0 24 24"><rect x="1" y="1" width="10" height="10" fill="#F25022" /><rect x="13" y="1" width="10" height="10" fill="#7FBA00" /><rect x="1" y="13" width="10" height="10" fill="#00A4EF" /><rect x="13" y="13" width="10" height="10" fill="#FFB900" /></svg>,
     },
-    {
-      id: "linkedin", label: "LinkedIn", email: "you@linkedin.com",
-      icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--color-brand)"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" /><rect x="2" y="9" width="4" height="12" /><circle cx="4" cy="4" r="2" /></svg>,
-    },
   ];
 
   return (
     <div className="ob-card" style={{ ...CARD, maxWidth: 520 }}>
       <span style={{ fontSize: 12, fontWeight: 700, color: "var(--color-brand)", letterSpacing: "0.05em", textTransform: "uppercase" as const }}>Connect</span>
-      <h1 style={{ fontSize: 24, margin: "8px 0 8px" }}>Connect your accounts</h1>
+      <h1 style={{ fontSize: 24, margin: "8px 0 8px" }}>Connect your primary mailbox</h1>
       <p style={{ fontSize: 14, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 24px" }}>
         Connect at least one channel to start sending outreach. You can add more later.
       </p>
@@ -1252,6 +1248,57 @@ function StepConnect({ initialConnected, onNext, onBack }: {
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
         {connected.size > 0 && <button onClick={() => onNext(Array.from(connected))} className="ob-primary-btn" style={PRIMARY_BTN}>Continue</button>}
+        <button onClick={() => onNext(Array.from(connected))} className="ob-ghost-btn" style={GHOST_BTN}>Skip for now</button>
+        <button onClick={onBack} className="ob-ghost-btn" style={{ ...GHOST_BTN, color: "var(--color-subtle)" }}>Back</button>
+      </div>
+    </div>
+  );
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   STEP 8a — Connect LinkedIn
+══════════════════════════════════════════════════════════════════════ */
+function StepConnectLinkedIn({ initialConnected, onNext, onBack }: {
+  initialConnected: string[];
+  onNext: (connected: string[]) => void;
+  onBack: () => void;
+}) {
+  const [connected, setConnected] = useState<Set<string>>(() => new Set(initialConnected));
+  const [connecting, setConnecting] = useState<string | null>(null);
+
+  function handleConnect(id: string) {
+    if (connected.has(id)) return;
+    setConnecting(id);
+    setTimeout(() => { setConnected((prev) => new Set([...prev, id])); setConnecting(null); }, 1200);
+  }
+
+  const isDone = connected.has("linkedin");
+  const isLoading = connecting === "linkedin";
+
+  return (
+    <div className="ob-card" style={{ ...CARD, maxWidth: 520 }}>
+      <span style={{ fontSize: 12, fontWeight: 700, color: "var(--color-brand)", letterSpacing: "0.05em", textTransform: "uppercase" as const }}>Connect</span>
+      <h1 style={{ fontSize: 24, margin: "8px 0 8px" }}>Connect your LinkedIn</h1>
+      <p style={{ fontSize: 14, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 24px" }}>
+        Connect LinkedIn to send connection requests and DMs alongside your email outreach.
+      </p>
+      <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 24 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 14, padding: "14px 16px", borderRadius: 12, background: "var(--color-surface)", border: "1px solid transparent", transition: "all 250ms" }}>
+          <div style={{ width: 38, height: 38, flexShrink: 0, background: "var(--color-page)", border: "1px solid var(--color-border)", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--color-brand)"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" /><rect x="2" y="9" width="4" height="12" /><circle cx="4" cy="4" r="2" /></svg>
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 14, fontWeight: 600, color: "var(--color-heading)" }}>LinkedIn</div>
+            {isDone && <div style={{ fontSize: 12, color: "var(--color-muted)", marginTop: 2 }}>you@linkedin.com</div>}
+          </div>
+          <button type="button" onClick={() => handleConnect("linkedin")} disabled={isDone || isLoading}
+            style={{ flexShrink: 0, height: 30, padding: "0 12px", borderRadius: 8, fontSize: 12, fontWeight: 600, fontFamily: "inherit", cursor: isDone ? "default" : "pointer", display: "flex", alignItems: "center", gap: 5, transition: "all 200ms", border: "none", ...(isDone ? { background: "rgba(7,188,12,0.12)", color: "var(--color-success)" } : { background: "var(--color-brand-tint)", color: "var(--color-brand)" }) }}>
+            {isDone ? <><span>✓</span> Connected</> : isLoading ? <><Spinner />Connecting…</> : "Connect →"}
+          </button>
+        </div>
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        {isDone && <button onClick={() => onNext(Array.from(connected))} className="ob-primary-btn" style={PRIMARY_BTN}>Continue</button>}
         <button onClick={() => onNext(Array.from(connected))} className="ob-ghost-btn" style={GHOST_BTN}>Skip for now</button>
         <button onClick={onBack} className="ob-ghost-btn" style={{ ...GHOST_BTN, color: "var(--color-subtle)" }}>Back</button>
       </div>
@@ -2772,19 +2819,19 @@ type StepName =
   | "website" | "products" | "research_summary" | "starting_research"
   | "infra_intro"
   | "primary_domain" | "forwarding_domain" | "volume"
-  | "senders" | "split" | "infra_summary" | "connections_intro" | "connect" | "connect_calendar" | "invite" | "connections_summary" | "review_intro" | "review_order" | "researching" | "company_research" | "products_services" | "tam_icp" | "personas" | "outreach_campaign" | "all_set" | "cleared_for_launch";
+  | "senders" | "split" | "infra_summary" | "connections_intro" | "connect" | "connect_linkedin" | "connect_calendar" | "invite" | "connections_summary" | "review_intro" | "review_order" | "researching" | "company_research" | "products_services" | "tam_icp" | "personas" | "outreach_campaign" | "all_set" | "cleared_for_launch";
 
 const STEP_ORDER: StepName[] = [
   "website", "products", "research_summary",
   "primary_domain", "forwarding_domain", "volume",
-  "senders", "split", "infra_summary", "connect", "connect_calendar", "invite", "connections_summary", "review_intro", "review_order", "researching", "company_research", "products_services", "tam_icp", "personas", "outreach_campaign",
+  "senders", "split", "infra_summary", "connect", "connect_linkedin", "connect_calendar", "invite", "connections_summary", "review_intro", "review_order", "researching", "company_research", "products_services", "tam_icp", "personas", "outreach_campaign",
 ];
 
 /* ─── Resume draft ──────────────────────────────────────────────── */
 const ALL_STEPS: StepName[] = [
   "splash", "welcome", "website", "products", "research_summary", "starting_research",
   "infra_intro", "primary_domain", "forwarding_domain", "volume", "senders", "split", "infra_summary",
-  "connections_intro", "connect", "connect_calendar", "invite", "connections_summary",
+  "connections_intro", "connect", "connect_linkedin", "connect_calendar", "invite", "connections_summary",
   "review_intro", "review_order", "researching", "company_research",
   "products_services", "tam_icp", "personas", "outreach_campaign",
   "all_set", "cleared_for_launch",
@@ -3039,7 +3086,10 @@ export function OnboardingShell() {
           <StepConnectionsIntro onNext={() => advance("connect")} />
         )}
         {step === "connect" && (
-          <StepConnect initialConnected={connectedAccounts} onNext={(c) => advance("connect_calendar", { connectedAccounts: c })} onBack={goBack} />
+          <StepConnect initialConnected={connectedAccounts} onNext={(c) => advance("connect_linkedin", { connectedAccounts: c })} onBack={goBack} />
+        )}
+        {step === "connect_linkedin" && (
+          <StepConnectLinkedIn initialConnected={connectedAccounts} onNext={(c) => advance("connect_calendar", { connectedAccounts: c })} onBack={goBack} />
         )}
         {step === "connect_calendar" && (
           <StepConnectCalendar initialConnected={connectedCalendars} onNext={(c) => advance("invite", { connectedCalendars: c })} onBack={goBack} />
