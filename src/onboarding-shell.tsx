@@ -1772,6 +1772,7 @@ function EditableText({ value, onChange, multiline = false, placeholder, style, 
   const [aiInstruction, setAiInstruction] = useState("");
   const [aiBusy, setAiBusy] = useState(false);
   const [undoValue, setUndoValue] = useState<string | null>(null);
+  const containerRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => { if (!editing) setDraft(value); }, [value, editing]);
 
@@ -1810,8 +1811,16 @@ function EditableText({ value, onChange, multiline = false, placeholder, style, 
   if (editing) {
     return (
       <span
+        ref={containerRef}
         style={{ position: "relative", display: "block" }}
-        onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node)) commit(); }}
+        onBlur={() => {
+          // relatedTarget is unreliable across browsers for this (often null on
+          // Safari), so defer and check where focus actually landed instead of
+          // trusting the blur event's own metadata.
+          requestAnimationFrame(() => {
+            if (containerRef.current && !containerRef.current.contains(document.activeElement)) commit();
+          });
+        }}
       >
         <span style={{ position: "relative", display: "block" }}>
           {multiline ? (
