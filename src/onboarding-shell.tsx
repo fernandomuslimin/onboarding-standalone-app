@@ -1776,13 +1776,16 @@ function EditableText({ value, onChange, multiline = false, placeholder, style, 
 
   useEffect(() => { if (!editing) setDraft(value); }, [value, editing]);
 
-  function commit() {
+  function forceCommit() {
     setEditing(false);
     setAiOpen(false);
     const trimmed = draft.trim();
     if (trimmed && trimmed !== value) onChange(trimmed);
     else setDraft(value);
   }
+  // The main field blurs when the AI prompt's own input steals focus (it
+  // autofocuses on open) — that's expected, not a request to close, so skip.
+  function commit() { if (!aiOpen) forceCommit(); }
   function cancel() { setDraft(value); setEditing(false); setAiOpen(false); }
 
   function applyAI() {
@@ -1810,23 +1813,13 @@ function EditableText({ value, onChange, multiline = false, placeholder, style, 
 
   if (editing) {
     return (
-      <span
-        ref={containerRef}
-        style={{ position: "relative", display: "block" }}
-        onBlur={() => {
-          // relatedTarget is unreliable across browsers for this (often null on
-          // Safari), so defer and check where focus actually landed instead of
-          // trusting the blur event's own metadata.
-          requestAnimationFrame(() => {
-            if (containerRef.current && !containerRef.current.contains(document.activeElement)) commit();
-          });
-        }}
-      >
+      <span ref={containerRef} style={{ position: "relative", display: "block" }}>
         <span style={{ position: "relative", display: "block" }}>
           {multiline ? (
             <textarea
               autoFocus rows={rows} value={draft}
               onChange={(e) => setDraft(e.target.value)}
+              onBlur={commit}
               onKeyDown={(e) => { if (e.key === "Escape") { e.preventDefault(); cancel(); } }}
               style={{ ...fieldStyle, resize: "vertical" as const }}
             />
@@ -1834,6 +1827,7 @@ function EditableText({ value, onChange, multiline = false, placeholder, style, 
             <input
               autoFocus value={draft}
               onChange={(e) => setDraft(e.target.value)}
+              onBlur={commit}
               onKeyDown={(e) => {
                 if (e.key === "Enter") { e.preventDefault(); commit(); }
                 if (e.key === "Escape") { e.preventDefault(); cancel(); }
@@ -1843,7 +1837,10 @@ function EditableText({ value, onChange, multiline = false, placeholder, style, 
           )}
           {revise && (
             <button
-              type="button" onClick={() => setAiOpen((o) => !o)} title="Ask AI to revise this"
+              type="button"
+              onMouseDown={(e) => e.preventDefault()} // keep focus on the field; only React state (aiOpen) decides the popup, not a focus/blur race
+              onClick={() => setAiOpen((o) => !o)}
+              title="Ask AI to revise this"
               style={{
                 position: "absolute", top: 0, right: 4, bottom: 0, margin: "auto 0", width: 22, height: 22, display: "flex", alignItems: "center", justifyContent: "center",
                 borderRadius: "50%", border: "none", cursor: "pointer", padding: 0, boxShadow: "0 1px 2px rgba(0,0,0,0.15)",
@@ -1859,11 +1856,18 @@ function EditableText({ value, onChange, multiline = false, placeholder, style, 
           <div style={{ display: "flex", gap: 6, marginTop: 6 }}>
             <input
               autoFocus value={aiInstruction} onChange={(e) => setAiInstruction(e.target.value)}
+              onBlur={() => {
+                // Popup's own blur: if focus left the whole field+popup group
+                // entirely (not just moved between its own pieces), close for real.
+                requestAnimationFrame(() => {
+                  if (containerRef.current && !containerRef.current.contains(document.activeElement)) forceCommit();
+                });
+              }}
               onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); applyAI(); } if (e.key === "Escape") { e.preventDefault(); setAiOpen(false); setAiInstruction(""); } }}
               placeholder="Tell AI what to change…" disabled={aiBusy}
               style={{ flex: 1, minWidth: 0, fontSize: 11.5, border: "1px solid var(--color-border)", borderRadius: 7, padding: "5px 7px", outline: "none", fontFamily: "inherit", background: "var(--color-surface)", color: "var(--color-heading)" }}
             />
-            <button type="button" onClick={applyAI} disabled={aiBusy || !aiInstruction.trim()}
+            <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={applyAI} disabled={aiBusy || !aiInstruction.trim()}
               style={{ flexShrink: 0, fontSize: 11, fontWeight: 600, borderRadius: 7, border: "none", padding: "0 10px", background: "var(--color-brand)", color: "#fff", cursor: aiBusy || !aiInstruction.trim() ? "default" : "pointer", opacity: aiBusy || !aiInstruction.trim() ? 0.6 : 1, display: "flex", alignItems: "center", fontFamily: "inherit" }}>
               {aiBusy ? <Spinner inverted /> : "Go"}
             </button>
