@@ -39,6 +39,7 @@ const STYLES = `
 .ob-primary-btn:active:not(:disabled) { transform: scale(0.98); }
 .ob-ghost-btn:hover:not(:disabled) { background: var(--color-surface); color: var(--color-heading); }
 .ob-link-btn:hover { color: var(--color-brand-hover); }
+.ob-editable:hover { background: var(--color-surface); }
 
 @media (max-width: 640px) {
   .ob-shell { align-items: flex-start !important; }
@@ -1499,7 +1500,6 @@ function StepConnectionsSummary({ connectedAccounts, connectedCalendars, invitee
   const rows = [
     { label: "Sending mailboxes", value: mailboxCount > 0 ? `${mailboxCount} connected` : "None yet" },
     { label: "LinkedIn", value: linkedinConnected ? "1 connected" : "Not connected" },
-    { label: "CRM", value: "Not connected" },
     { label: "Scheduling", value: connectedCalendars.length > 0 ? `${connectedCalendars.length} connected` : "Not connected" },
     { label: "Team invites", value: invitees.length > 0 ? `${invitees.length} invited` : "None" },
   ];
@@ -1720,7 +1720,17 @@ function StepResearch({ onFinish }: { onFinish: () => void }) {
 const RESEARCH_SECTION_LABEL: React.CSSProperties = {
   fontSize: 11, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.05em",
   textTransform: "uppercase" as const, paddingBottom: 6, marginBottom: 10, borderBottom: "1px solid var(--color-border)",
+  display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8,
 };
+
+function SectionLabel({ children, ai }: { children: React.ReactNode; ai?: React.ReactNode }) {
+  return (
+    <div style={RESEARCH_SECTION_LABEL}>
+      <span>{children}</span>
+      {ai}
+    </div>
+  );
+}
 
 type RiskLevel = "HIGH" | "MEDIUM" | "LOW";
 const RISK_BADGE: Record<RiskLevel, React.CSSProperties> = {
@@ -1749,116 +1759,514 @@ function BulletList({ items, tone = "body" }: { items: string[]; tone?: "body" |
   );
 }
 
-function StepCompanyResearch({ products, onNext }: { products: Product[]; onNext: () => void }) {
-  const product = products[0];
-  const productName = product?.name?.trim() || "Your core product";
-  const productDescription = product?.description?.trim() || "AI summarised your website to understand what you sell and who it's for.";
-  const productBullets = [
-    "Positioned around fast setup and low time-to-first-send",
-    "AI-assisted personalization built into the core workflow",
-    "Designed to scale across multiple senders and domains",
-  ];
+/* ─── Inline click-to-edit primitives ──────────────────────────────
+   Shared by any "AI-drafted, human-reviewable" step. A click turns
+   text into an input/textarea; Enter/blur commits, Escape cancels. */
+function EditableText({ value, onChange, multiline = false, placeholder, style, rows = 3, revise }: {
+  value: string; onChange: (v: string) => void; multiline?: boolean; placeholder?: string; style?: React.CSSProperties; rows?: number;
+  revise?: (current: string, instruction: string) => string;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(value);
+  const [aiOpen, setAiOpen] = useState(false);
+  const [aiInstruction, setAiInstruction] = useState("");
+  const [aiBusy, setAiBusy] = useState(false);
+  const [undoValue, setUndoValue] = useState<string | null>(null);
 
-  const overview = [
-    { label: "Business model", value: "B2B SaaS — subscription pricing" },
-    { label: "Company size", value: "Growing team" },
-    { label: "Stage", value: "Early stage" },
-  ];
-  const competitive = {
-    category: "Sales & Marketing Outreach Software",
-    competitors: ["Outreach", "Apollo", "Instantly", "Smartlead"],
-    differentiators: [
-      "Positions itself as an outreach platform built for speed to first send",
-      "Messaging leans on personalization and AI-assisted workflows",
-      "Low setup friction compared to legacy sales tooling",
+  useEffect(() => { if (!editing) setDraft(value); }, [value, editing]);
+
+  function commit() {
+    setEditing(false);
+    setAiOpen(false);
+    const trimmed = draft.trim();
+    if (trimmed && trimmed !== value) onChange(trimmed);
+    else setDraft(value);
+  }
+  function cancel() { setDraft(value); setEditing(false); setAiOpen(false); }
+
+  function applyAI() {
+    if (!revise) return;
+    const instruction = aiInstruction.trim();
+    if (!instruction || aiBusy) return;
+    setAiBusy(true);
+    setTimeout(() => {
+      const revised = revise(draft, instruction);
+      setUndoValue(draft);
+      setDraft(revised);
+      onChange(revised);
+      setAiBusy(false);
+      setAiOpen(false);
+      setAiInstruction("");
+      setEditing(false);
+    }, 800);
+  }
+
+  const fieldStyle: React.CSSProperties = {
+    display: "block", width: "100%", background: "var(--color-page)", border: "1px solid var(--color-brand)",
+    borderRadius: 7, padding: revise ? "5px 32px 5px 7px" : "5px 7px", fontFamily: "inherit", outline: "none", boxSizing: "border-box" as const,
+    color: "var(--color-heading)", lineHeight: 1.5, ...style,
+  };
+
+  if (editing) {
+    return (
+      <span
+        style={{ position: "relative", display: "block" }}
+        onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node)) commit(); }}
+      >
+        <span style={{ position: "relative", display: "block" }}>
+          {multiline ? (
+            <textarea
+              autoFocus rows={rows} value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Escape") { e.preventDefault(); cancel(); } }}
+              style={{ ...fieldStyle, resize: "vertical" as const }}
+            />
+          ) : (
+            <input
+              autoFocus value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") { e.preventDefault(); commit(); }
+                if (e.key === "Escape") { e.preventDefault(); cancel(); }
+              }}
+              style={fieldStyle}
+            />
+          )}
+          {revise && (
+            <button
+              type="button" onClick={() => setAiOpen((o) => !o)} title="Ask AI to revise this"
+              style={{
+                position: "absolute", top: 0, right: 4, bottom: 0, margin: "auto 0", width: 22, height: 22, display: "flex", alignItems: "center", justifyContent: "center",
+                borderRadius: "50%", border: "none", cursor: "pointer", padding: 0, boxShadow: "0 1px 2px rgba(0,0,0,0.15)",
+                background: aiOpen ? "var(--color-brand)" : "var(--color-brand-tint)",
+                ...(multiline ? { top: 4, bottom: "auto", margin: 0 } : {}),
+              }}
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill={aiOpen ? "#fff" : "var(--color-brand)"}><path d="M12 5l1.8 5.4L19 12l-5.2 1.6L12 19l-1.8-5.4L5 12l5.2-1.6L12 5z" /></svg>
+            </button>
+          )}
+        </span>
+        {aiOpen && (
+          <div style={{ display: "flex", gap: 6, marginTop: 6 }}>
+            <input
+              autoFocus value={aiInstruction} onChange={(e) => setAiInstruction(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); applyAI(); } if (e.key === "Escape") { e.preventDefault(); setAiOpen(false); setAiInstruction(""); } }}
+              placeholder="Tell AI what to change…" disabled={aiBusy}
+              style={{ flex: 1, minWidth: 0, fontSize: 11.5, border: "1px solid var(--color-border)", borderRadius: 7, padding: "5px 7px", outline: "none", fontFamily: "inherit", background: "var(--color-surface)", color: "var(--color-heading)" }}
+            />
+            <button type="button" onClick={applyAI} disabled={aiBusy || !aiInstruction.trim()}
+              style={{ flexShrink: 0, fontSize: 11, fontWeight: 600, borderRadius: 7, border: "none", padding: "0 10px", background: "var(--color-brand)", color: "#fff", cursor: aiBusy || !aiInstruction.trim() ? "default" : "pointer", opacity: aiBusy || !aiInstruction.trim() ? 0.6 : 1, display: "flex", alignItems: "center", fontFamily: "inherit" }}>
+              {aiBusy ? <Spinner inverted /> : "Go"}
+            </button>
+          </div>
+        )}
+      </span>
+    );
+  }
+  return (
+    <>
+      <span
+        onClick={() => setEditing(true)}
+        title="Click to edit"
+        className="ob-editable"
+        style={{ cursor: "text", borderRadius: 5, padding: "1px 4px", margin: "-1px -4px", ...style }}
+      >
+        {value || <span style={{ color: "var(--color-subtle)", fontStyle: "italic" as const }}>{placeholder ?? "Click to add"}</span>}
+      </span>
+      {undoValue !== null && (
+        <button type="button" onClick={() => { onChange(undoValue); setUndoValue(null); }}
+          style={{ marginLeft: 6, fontSize: 10, fontWeight: 600, color: "var(--color-brand)", background: "none", border: "none", cursor: "pointer", textDecoration: "underline", padding: 0, fontFamily: "inherit" }}>
+          Undo
+        </button>
+      )}
+    </>
+  );
+}
+
+function EditableBulletList({ items, onChange, tone = "body" }: {
+  items: string[]; onChange: (items: string[]) => void; tone?: "body" | "brand";
+}) {
+  const textColor = tone === "brand" ? "var(--color-brand)" : "var(--color-body)";
+  const dotColor = tone === "brand" ? "var(--color-brand)" : "var(--color-subtle)";
+  const updateAt = (i: number, v: string) => onChange(items.map((it, idx) => (idx === i ? v : it)));
+  const removeAt = (i: number) => onChange(items.filter((_, idx) => idx !== i));
+  const add = () => onChange([...items, "New point"]);
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+      {items.map((item, i) => (
+        <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+          <span style={{ width: 4, height: 4, borderRadius: "50%", background: dotColor, marginTop: 7, flexShrink: 0 }} />
+          <span style={{ flex: 1, minWidth: 0 }}>
+            <EditableText value={item} onChange={(v) => updateAt(i, v)} multiline rows={2} style={{ fontSize: 12.5, color: textColor }} revise={reviseText} />
+          </span>
+          <button type="button" onClick={() => removeAt(i)} title="Remove"
+            style={{ flexShrink: 0, background: "none", border: "none", color: "var(--color-subtle)", cursor: "pointer", fontSize: 14, padding: 0, lineHeight: 1.5, fontFamily: "inherit" }}>×</button>
+        </div>
+      ))}
+      <button type="button" onClick={add}
+        style={{ alignSelf: "flex-start", background: "none", border: "none", color: "var(--color-brand)", cursor: "pointer", fontSize: 11.5, fontWeight: 600, padding: "2px 0", fontFamily: "inherit" }}>
+        + Add point
+      </button>
+    </div>
+  );
+}
+
+function EditableChips({ items, onChange }: { items: string[]; onChange: (items: string[]) => void }) {
+  const [draft, setDraft] = useState("");
+  function add() {
+    const v = draft.trim();
+    if (v && !items.some((c) => c.toLowerCase() === v.toLowerCase())) onChange([...items, v]);
+    setDraft("");
+  }
+  const removeAt = (i: number) => onChange(items.filter((_, idx) => idx !== i));
+
+  return (
+    <div style={{ display: "flex", flexWrap: "wrap" as const, gap: 6, alignItems: "center" }}>
+      {items.map((c, i) => (
+        <span key={c + i} style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 11, padding: "3px 6px 3px 10px", borderRadius: 999, border: "1px solid var(--color-border)", background: "var(--color-surface)", color: "var(--color-muted)" }}>
+          {c}
+          <button type="button" onClick={() => removeAt(i)} title="Remove"
+            style={{ background: "none", border: "none", color: "var(--color-subtle)", cursor: "pointer", fontSize: 12, padding: 0, lineHeight: 1, fontFamily: "inherit" }}>×</button>
+        </span>
+      ))}
+      <input
+        value={draft} onChange={(e) => setDraft(e.target.value)}
+        onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); add(); } }}
+        onBlur={add}
+        placeholder="+ Add competitor"
+        style={{ fontSize: 11, border: "1px dashed var(--color-border-strong)", borderRadius: 999, padding: "3px 10px", background: "transparent", color: "var(--color-heading)", outline: "none", fontFamily: "inherit", width: 130 }}
+      />
+    </div>
+  );
+}
+
+/* ─── Inline "Ask AI" trigger — sits next to a field or a section
+   header. No live model call in this demo (mirrors the rest of the
+   app's mocked delays); `revise` is a pure heuristic transform scoped
+   to whatever value this instance was bound to. */
+function AIRevise<T>({ value, onChange, revise, scale = "field" }: {
+  value: T; onChange: (next: T) => void; revise: (current: T, instruction: string) => T; scale?: "field" | "section";
+}) {
+  const [open, setOpen] = useState(false);
+  const [instruction, setInstruction] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [undoValue, setUndoValue] = useState<T | null>(null);
+  const iconSize = scale === "section" ? 13 : 11;
+
+  function apply() {
+    const text = instruction.trim();
+    if (!text || busy) return;
+    setBusy(true);
+    setTimeout(() => {
+      setUndoValue(value);
+      onChange(revise(value, text));
+      setBusy(false);
+      setOpen(false);
+      setInstruction("");
+    }, scale === "section" ? 1200 : 800);
+  }
+  function cancel() { setOpen(false); setInstruction(""); }
+
+  return (
+    <span style={{ position: "relative", display: "inline-flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+      <button type="button" onClick={() => setOpen((o) => !o)} title="Ask AI to revise this"
+        style={{ background: "none", border: "none", cursor: "pointer", padding: 2, lineHeight: 0, opacity: open ? 1 : 0.55, fontFamily: "inherit" }}>
+        <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="var(--color-brand)"><path d="M12 5l1.8 5.4L19 12l-5.2 1.6L12 19l-1.8-5.4L5 12l5.2-1.6L12 5z" /></svg>
+      </button>
+      {undoValue !== null && !open && (
+        <button type="button" onClick={() => { onChange(undoValue); setUndoValue(null); }}
+          style={{ fontSize: 10, fontWeight: 600, color: "var(--color-brand)", background: "none", border: "none", cursor: "pointer", textDecoration: "underline", padding: 0, fontFamily: "inherit" }}>
+          Undo
+        </button>
+      )}
+      {open && (
+        <div style={{ position: "absolute", top: "calc(100% + 6px)", right: 0, zIndex: 5, display: "flex", gap: 6, background: "var(--color-page)", border: "1px solid var(--color-border)", borderRadius: 10, padding: 6, boxShadow: "var(--shadow-elevated)", width: 240 }}>
+          <input
+            autoFocus value={instruction} onChange={(e) => setInstruction(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); apply(); } if (e.key === "Escape") { e.preventDefault(); cancel(); } }}
+            placeholder="Tell AI what to change…" disabled={busy}
+            style={{ flex: 1, minWidth: 0, fontSize: 11.5, border: "1px solid var(--color-border)", borderRadius: 7, padding: "5px 7px", outline: "none", fontFamily: "inherit", background: "var(--color-surface)", color: "var(--color-heading)" }}
+          />
+          <button type="button" onClick={apply} disabled={busy || !instruction.trim()}
+            style={{ flexShrink: 0, fontSize: 11, fontWeight: 600, borderRadius: 7, border: "none", padding: "0 10px", background: "var(--color-brand)", color: "#fff", cursor: busy || !instruction.trim() ? "default" : "pointer", opacity: busy || !instruction.trim() ? 0.6 : 1, display: "flex", alignItems: "center", fontFamily: "inherit" }}>
+            {busy ? <Spinner inverted /> : "Go"}
+          </button>
+        </div>
+      )}
+    </span>
+  );
+}
+
+function firstSentence(s: string): string {
+  const m = s.match(/^.*?[.!?](?=\s|$)/);
+  return m ? m[0] : s;
+}
+
+// Field-scoped mock rewrite — operates on exactly one string, so it
+// doesn't need to guess which section the instruction was about.
+function reviseText(text: string, instruction: string): string {
+  const lower = instruction.toLowerCase();
+  if (/shorter|concise|tighten|trim/.test(lower)) return firstSentence(text);
+  if (/more formal|formal tone/.test(lower)) return text.replace(/—/g, ",");
+  if (/casual|friendlier|informal/.test(lower)) return text.replace(/\.(\s|$)/g, "!$1");
+  const setTo = instruction.match(/(?:set|change|update|rewrite)(?:\s+this)?\s+to\s+(.+)/i);
+  if (setTo) return setTo[1].trim();
+  return `${text.replace(/[.\s]+$/, "")} — ${instruction}`;
+}
+
+const RISK_ORDER: RiskLevel[] = ["HIGH", "MEDIUM", "LOW"];
+function nextRisk(r: RiskLevel): RiskLevel { return RISK_ORDER[(RISK_ORDER.indexOf(r) + 1) % RISK_ORDER.length]; }
+const CHANNEL_ORDER: Channel[] = ["Email", "LinkedIn"];
+function nextChannel(c: Channel): Channel { return CHANNEL_ORDER[(CHANNEL_ORDER.indexOf(c) + 1) % CHANNEL_ORDER.length]; }
+
+function titleCase(s: string): string { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+// Section-scoped revisers — same "no live model" heuristic approach as
+// reviseText, but each understands the shape of its own section so a
+// section-level prompt (e.g. "add X as a competitor") can act on the
+// whole list/object instead of a single field.
+type CompanyResearchOverview = CompanyResearchData["overview"];
+function reviseOverview(rows: CompanyResearchOverview, instruction: string): CompanyResearchOverview {
+  const m = instruction.match(/(?:set|update|change)\s+(.+?)\s+to\s+(.+)/i);
+  if (!m) return rows;
+  const label = m[1].trim().toLowerCase();
+  const value = m[2].trim();
+  return rows.map((r) => (r.label.toLowerCase().includes(label) ? { ...r, value } : r));
+}
+
+type ProductBundle = Pick<CompanyResearchData, "productName" | "productDescription" | "productBullets">;
+function reviseProductBundle(bundle: ProductBundle, instruction: string): ProductBundle {
+  const lower = instruction.toLowerCase();
+  if (/shorter|concise|tighten|trim/.test(lower)) {
+    return { ...bundle, productDescription: firstSentence(bundle.productDescription) };
+  }
+  return { ...bundle, productBullets: [...bundle.productBullets, titleCase(instruction)] };
+}
+
+type Competitive = CompanyResearchData["competitive"];
+function reviseCompetitive(c: Competitive, instruction: string): Competitive {
+  const lower = instruction.toLowerCase();
+  const addCompetitor = instruction.match(/add\s+([a-z0-9][\w.& -]{1,30}?)\s+as\s+a\s+competitor/i)
+    ?? instruction.match(/add\s+competitor\s+([a-z0-9][\w.& -]{1,30})/i);
+  if (addCompetitor) {
+    const name = addCompetitor[1].trim();
+    if (name && !c.competitors.some((x) => x.toLowerCase() === name.toLowerCase())) {
+      return { ...c, competitors: [...c.competitors, name] };
+    }
+    return c;
+  }
+  const removeCompetitor = instruction.match(/remove\s+([a-z0-9][\w.& -]{1,30}?)\s+(?:as\s+a\s+competitor|from\s+competitors)/i);
+  if (removeCompetitor) {
+    const name = removeCompetitor[1].trim().toLowerCase();
+    return { ...c, competitors: c.competitors.filter((x) => x.toLowerCase() !== name) };
+  }
+  if (/shorter|concise|tighten|trim/.test(lower)) {
+    return { ...c, differentiators: c.differentiators.map(firstSentence) };
+  }
+  return { ...c, differentiators: [...c.differentiators, titleCase(instruction)] };
+}
+
+type ValueProps = CompanyResearchData["valueProps"];
+function reviseValueProps(vps: ValueProps, instruction: string): ValueProps {
+  const lower = instruction.toLowerCase();
+  if (/shorter|concise|tighten|trim/.test(lower)) {
+    return vps.map((vp) => ({ ...vp, body: firstSentence(vp.body) }));
+  }
+  const title = instruction.length > 60 ? `${instruction.slice(0, 57)}…` : titleCase(instruction);
+  return [...vps, { title, body: titleCase(instruction), quantified: false }];
+}
+
+type IcpHypotheses = CompanyResearchData["icpHypotheses"];
+function reviseIcpHypotheses(icps: IcpHypotheses, instruction: string): IcpHypotheses {
+  const riskBump = instruction.match(/(?:raise|bump|increase)\s+(?:the\s+)?risk\s+(?:for|on)\s+(.+)/i);
+  if (riskBump) {
+    const needle = riskBump[1].trim().toLowerCase();
+    return icps.map((icp) => (icp.title.toLowerCase().includes(needle) ? { ...icp, risk: nextRisk(icp.risk) } : icp));
+  }
+  if (icps.length === 0) return icps;
+  return icps.map((icp, i) => (i === 0 ? { ...icp, bullets: [...icp.bullets, titleCase(instruction)] } : icp));
+}
+
+type OutboundAngles = CompanyResearchData["outboundAngles"];
+function reviseOutboundAngles(angles: OutboundAngles, instruction: string): OutboundAngles {
+  if (/more formal|formal tone/i.test(instruction)) {
+    return angles.map((a) => ({ ...a, quote: a.quote.replace(/—/g, ",") }));
+  }
+  return [...angles, { title: "New angle", channel: "Email", quote: instruction }];
+}
+
+function reviseCallPrepNotes(notes: string[], instruction: string): string[] {
+  if (/shorter|concise|tighten|trim/i.test(instruction)) return notes.map(firstSentence);
+  return [...notes, titleCase(instruction)];
+}
+
+interface CompanyResearchData {
+  overview: { label: string; value: string }[];
+  productName: string;
+  productDescription: string;
+  productBullets: string[];
+  competitive: { category: string; competitors: string[]; differentiators: string[] };
+  valueProps: { title: string; body: string; quantified: boolean }[];
+  icpHypotheses: { title: string; risk: RiskLevel; body: string; bullets: string[] }[];
+  outboundAngles: { title: string; channel: Channel; quote: string }[];
+  callPrepNotes: string[];
+}
+
+function buildInitialCompanyResearch(products: Product[]): CompanyResearchData {
+  const product = products[0];
+  return {
+    overview: [
+      { label: "Business model", value: "B2B SaaS — subscription pricing" },
+      { label: "Company size", value: "Growing team" },
+      { label: "Stage", value: "Early stage" },
+    ],
+    productName: product?.name?.trim() || "Your core product",
+    productDescription: product?.description?.trim() || "AI summarised your website to understand what you sell and who it's for.",
+    productBullets: [
+      "Positioned around fast setup and low time-to-first-send",
+      "AI-assisted personalization built into the core workflow",
+      "Designed to scale across multiple senders and domains",
+    ],
+    competitive: {
+      category: "Sales & Marketing Outreach Software",
+      competitors: ["Outreach", "Apollo", "Instantly", "Smartlead"],
+      differentiators: [
+        "Positions itself as an outreach platform built for speed to first send",
+        "Messaging leans on personalization and AI-assisted workflows",
+        "Low setup friction compared to legacy sales tooling",
+      ],
+    },
+    valueProps: [
+      { title: "Cuts time spent on manual prospecting", body: "AI drafts and personalizes outreach at scale, freeing reps to focus on conversations.", quantified: true },
+      { title: "Faster time to first send", body: "No lengthy setup — connect a domain and start sending within the same day.", quantified: false },
+      { title: "Consistent brand voice across sequences", body: "Messaging stays on-brand even as volume scales across senders and domains.", quantified: false },
+    ],
+    icpHypotheses: [
+      {
+        title: "VP Sales / Head of RevOps at 50–500 Mid-Market B2B",
+        risk: "HIGH",
+        body: "Closest match to the core use case — teams running multi-sender outbound who need faster time-to-send without adding headcount.",
+        bullets: ["Owns outbound quota and rep productivity", "Actively evaluating tools to replace manual prospecting", "Budget authority for sales tooling"],
+      },
+      {
+        title: "Founder-led Sales at Early-Stage Startups",
+        risk: "MEDIUM",
+        body: "Small teams wearing multiple hats who need to move fast on outbound without a dedicated SDR function.",
+        bullets: ["Values low setup friction over deep customization", "Price-sensitive, favors usage-based plans"],
+      },
+      {
+        title: "Agency or Fractional SDR Teams Managing Multiple Clients",
+        risk: "LOW",
+        body: "Could adopt per-client, but requires multi-workspace support that may not be a priority yet.",
+        bullets: ["Needs to manage several domains and senders per client", "Longer sales cycle due to procurement across client accounts"],
+      },
+    ],
+    outboundAngles: [
+      { title: "Time-to-First-Send", channel: "LinkedIn", quote: "Most outreach tools take weeks to set up. We get teams sending personalized sequences the same day — want to see it on your own domain?" },
+      { title: "Personalization at Scale", channel: "Email", quote: "Your reps are copy-pasting the same three templates. AI-personalized sequences convert better without adding manual work — worth a 15-minute look?" },
+      { title: "Consolidate Your Stack", channel: "Email", quote: "If you're juggling separate tools for sending, personalization, and deliverability, this replaces all three — happy to show how teams like yours consolidated." },
+    ],
+    callPrepNotes: [
+      "Confirm current team size and who owns outbound today — the ICP hypotheses assume a dedicated sales function, which may not match smaller teams.",
+      "Validate which tools are currently used for sending, personalization, and deliverability so the consolidation angle lands correctly.",
+      "Ask about typical sequence volume and sender count — this shapes which package and domain split makes sense.",
+      "Confirm whether outbound is run in-house or through an agency, since this changes the buyer and the pitch.",
     ],
   };
-  const valueProps = [
-    { title: "Cuts time spent on manual prospecting", body: "AI drafts and personalizes outreach at scale, freeing reps to focus on conversations.", quantified: true },
-    { title: "Faster time to first send", body: "No lengthy setup — connect a domain and start sending within the same day.", quantified: false },
-    { title: "Consistent brand voice across sequences", body: "Messaging stays on-brand even as volume scales across senders and domains.", quantified: false },
-  ];
-  const icpHypotheses: { title: string; risk: RiskLevel; body: string; bullets: string[] }[] = [
-    {
-      title: "VP Sales / Head of RevOps at 50–500 Mid-Market B2B",
-      risk: "HIGH",
-      body: "Closest match to the core use case — teams running multi-sender outbound who need faster time-to-send without adding headcount.",
-      bullets: ["Owns outbound quota and rep productivity", "Actively evaluating tools to replace manual prospecting", "Budget authority for sales tooling"],
-    },
-    {
-      title: "Founder-led Sales at Early-Stage Startups",
-      risk: "MEDIUM",
-      body: "Small teams wearing multiple hats who need to move fast on outbound without a dedicated SDR function.",
-      bullets: ["Values low setup friction over deep customization", "Price-sensitive, favors usage-based plans"],
-    },
-    {
-      title: "Agency or Fractional SDR Teams Managing Multiple Clients",
-      risk: "LOW",
-      body: "Could adopt per-client, but requires multi-workspace support that may not be a priority yet.",
-      bullets: ["Needs to manage several domains and senders per client", "Longer sales cycle due to procurement across client accounts"],
-    },
-  ];
-  const outboundAngles: { title: string; channel: Channel; quote: string }[] = [
-    { title: "Time-to-First-Send", channel: "LinkedIn", quote: "Most outreach tools take weeks to set up. We get teams sending personalized sequences the same day — want to see it on your own domain?" },
-    { title: "Personalization at Scale", channel: "Email", quote: "Your reps are copy-pasting the same three templates. AI-personalized sequences convert better without adding manual work — worth a 15-minute look?" },
-    { title: "Consolidate Your Stack", channel: "Email", quote: "If you're juggling separate tools for sending, personalization, and deliverability, this replaces all three — happy to show how teams like yours consolidated." },
-  ];
-  const callPrepNotes = [
-    "Confirm current team size and who owns outbound today — the ICP hypotheses assume a dedicated sales function, which may not match smaller teams.",
-    "Validate which tools are currently used for sending, personalization, and deliverability so the consolidation angle lands correctly.",
-    "Ask about typical sequence volume and sender count — this shapes which package and domain split makes sense.",
-    "Confirm whether outbound is run in-house or through an agency, since this changes the buyer and the pitch.",
-  ];
+}
+
+function StepCompanyResearch({ products, onNext }: { products: Product[]; onNext: () => void }) {
+  const [data, setData] = useState<CompanyResearchData>(() => buildInitialCompanyResearch(products));
+
+  function patch(fields: Partial<CompanyResearchData>) {
+    setData((current) => ({ ...current, ...fields }));
+  }
+  function patchCompetitive(fields: Partial<CompanyResearchData["competitive"]>) {
+    setData((current) => ({ ...current, competitive: { ...current.competitive, ...fields } }));
+  }
+  function updateOverview(i: number, value: string) {
+    setData((current) => ({ ...current, overview: current.overview.map((row, idx) => (idx === i ? { ...row, value } : row)) }));
+  }
+  function updateValueProp(i: number, fields: Partial<CompanyResearchData["valueProps"][number]>) {
+    setData((current) => ({ ...current, valueProps: current.valueProps.map((vp, idx) => (idx === i ? { ...vp, ...fields } : vp)) }));
+  }
+  function updateIcp(i: number, fields: Partial<CompanyResearchData["icpHypotheses"][number]>) {
+    setData((current) => ({ ...current, icpHypotheses: current.icpHypotheses.map((icp, idx) => (idx === i ? { ...icp, ...fields } : icp)) }));
+  }
+  function updateAngle(i: number, fields: Partial<CompanyResearchData["outboundAngles"][number]>) {
+    setData((current) => ({ ...current, outboundAngles: current.outboundAngles.map((a, idx) => (idx === i ? { ...a, ...fields } : a)) }));
+  }
+
+  const { overview, productName, productDescription, productBullets, competitive, valueProps, icpHypotheses, outboundAngles, callPrepNotes } = data;
 
   return (
     <div className="ob-card" style={{ ...CARD, maxWidth: 560 }}>
       <span style={{ fontSize: 12, fontWeight: 700, color: "var(--color-brand)", letterSpacing: "0.05em", textTransform: "uppercase" as const }}>Company Research</span>
       <h1 style={{ fontSize: 24, margin: "8px 0 8px" }}>Here&apos;s what we found</h1>
       <p style={{ fontSize: 14, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 24px" }}>
-        AI-researched from your website. Review the brief, then we&apos;ll map your products and services.
+        AI-researched from your website. Click any field to edit it, or hit <span style={{ color: "var(--color-brand)" }}>✨</span> to ask AI to revise it.
       </p>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 22, marginBottom: 24 }}>
         <div>
-          <div style={RESEARCH_SECTION_LABEL}>Company Overview</div>
+          <SectionLabel ai={<AIRevise value={overview} onChange={(v) => patch({ overview: v })} revise={reviseOverview} scale="section" />}>
+            Company Overview
+          </SectionLabel>
           <div style={{ borderRadius: 12, border: "1px solid var(--color-border)", overflow: "hidden" }}>
             {overview.map((row, i) => (
               <div key={row.label} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "8px 12px", background: "var(--color-surface)", borderBottom: i < overview.length - 1 ? "1px solid var(--color-border)" : "none" }}>
-                <span style={{ fontSize: 12, color: "var(--color-muted)" }}>{row.label}</span>
-                <span style={{ fontSize: 12, color: "var(--color-heading)", textAlign: "right" as const }}>{row.value}</span>
+                <span style={{ fontSize: 12, color: "var(--color-muted)", flexShrink: 0 }}>{row.label}</span>
+                <span style={{ minWidth: 0, maxWidth: "70%" }}>
+                  <EditableText value={row.value} onChange={(v) => updateOverview(i, v)} style={{ fontSize: 12, color: "var(--color-heading)" }} revise={reviseText} />
+                </span>
               </div>
             ))}
           </div>
         </div>
 
         <div>
-          <div style={RESEARCH_SECTION_LABEL}>Products / Services</div>
-          <div style={{ fontSize: 14, fontWeight: 600, color: "var(--color-heading)", marginBottom: 4 }}>{productName}</div>
-          <p style={{ fontSize: 13, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 10px" }}>{productDescription}</p>
-          <BulletList items={productBullets} tone="brand" />
+          <SectionLabel ai={<AIRevise value={{ productName, productDescription, productBullets }} onChange={(v) => patch(v)} revise={reviseProductBundle} scale="section" />}>
+            Products / Services
+          </SectionLabel>
+          <div style={{ fontSize: 14, fontWeight: 600, color: "var(--color-heading)", marginBottom: 4 }}>
+            <EditableText value={productName} onChange={(v) => patch({ productName: v })} style={{ fontSize: 14, fontWeight: 600 }} revise={reviseText} />
+          </div>
+          <div style={{ fontSize: 13, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 10px" }}>
+            <EditableText value={productDescription} onChange={(v) => patch({ productDescription: v })} multiline rows={2} style={{ fontSize: 13 }} revise={reviseText} />
+          </div>
+          <EditableBulletList items={productBullets} onChange={(v) => patch({ productBullets: v })} tone="brand" />
         </div>
 
         <div>
-          <div style={RESEARCH_SECTION_LABEL}>Competitive Position</div>
+          <SectionLabel ai={<AIRevise value={competitive} onChange={(v) => patch({ competitive: v })} revise={reviseCompetitive} scale="section" />}>
+            Competitive Position
+          </SectionLabel>
           <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 4 }}>Category</div>
-          <p style={{ fontSize: 12.5, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 12px" }}>{competitive.category}</p>
+          <div style={{ fontSize: 12.5, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 12px" }}>
+            <EditableText value={competitive.category} onChange={(v) => patchCompetitive({ category: v })} style={{ fontSize: 12.5 }} revise={reviseText} />
+          </div>
           <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>Competitors</div>
-          <div style={{ display: "flex", flexWrap: "wrap" as const, gap: 6, marginBottom: 12 }}>
-            {competitive.competitors.map((c) => (
-              <span key={c} style={{ fontSize: 11, padding: "3px 10px", borderRadius: 999, border: "1px solid var(--color-border)", background: "var(--color-surface)", color: "var(--color-muted)" }}>{c}</span>
-            ))}
+          <div style={{ marginBottom: 12 }}>
+            <EditableChips items={competitive.competitors} onChange={(v) => patchCompetitive({ competitors: v })} />
           </div>
           <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>Key Differentiators</div>
-          <BulletList items={competitive.differentiators} />
+          <EditableBulletList items={competitive.differentiators} onChange={(v) => patchCompetitive({ differentiators: v })} />
         </div>
 
         <div>
-          <div style={RESEARCH_SECTION_LABEL}>Value Propositions</div>
+          <SectionLabel ai={<AIRevise value={valueProps} onChange={(v) => patch({ valueProps: v })} revise={reviseValueProps} scale="section" />}>
+            Value Propositions
+          </SectionLabel>
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {valueProps.map((vp, i) => (
               <div key={i} style={{ padding: "10px 12px", borderRadius: 10, background: "var(--color-surface)" }}>
-                <div style={{ fontSize: 12.5, fontWeight: 600, color: "var(--color-heading)", marginBottom: 2 }}>{vp.title}</div>
-                <div style={{ fontSize: 12, color: "var(--color-muted)", lineHeight: 1.5 }}>{vp.body}</div>
+                <div style={{ fontSize: 12.5, fontWeight: 600, color: "var(--color-heading)", marginBottom: 2 }}>
+                  <EditableText value={vp.title} onChange={(v) => updateValueProp(i, { title: v })} style={{ fontSize: 12.5, fontWeight: 600 }} revise={reviseText} />
+                </div>
+                <div style={{ fontSize: 12, color: "var(--color-muted)", lineHeight: 1.5 }}>
+                  <EditableText value={vp.body} onChange={(v) => updateValueProp(i, { body: v })} multiline rows={2} style={{ fontSize: 12, color: "var(--color-muted)" }} revise={reviseText} />
+                </div>
                 {vp.quantified && (
                   <span style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 10.5, fontWeight: 600, color: "var(--color-success)", background: "rgba(7,188,12,0.1)", border: "1px solid rgba(7,188,12,0.3)", borderRadius: 999, padding: "2px 8px", marginTop: 6 }}>
                     <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5" /></svg>
@@ -1871,48 +2279,61 @@ function StepCompanyResearch({ products, onNext }: { products: Product[]; onNext
         </div>
 
         <div>
-          <div style={RESEARCH_SECTION_LABEL}>ICP Hypotheses</div>
+          <SectionLabel ai={<AIRevise value={icpHypotheses} onChange={(v) => patch({ icpHypotheses: v })} revise={reviseIcpHypotheses} scale="section" />}>
+            ICP Hypotheses
+          </SectionLabel>
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {icpHypotheses.map((icp, i) => (
               <div key={i} style={{ padding: "10px 12px", borderRadius: 10, border: "1px solid var(--color-border)" }}>
                 <div style={{ display: "flex", alignItems: "flex-start", gap: 8, marginBottom: 4 }}>
-                  <span style={{ fontSize: 12.5, fontWeight: 600, color: "var(--color-heading)", flex: 1, lineHeight: 1.4 }}>{icp.title}</span>
-                  <span style={{ flexShrink: 0, fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 6, ...RISK_BADGE[icp.risk] }}>{icp.risk}</span>
+                  <span style={{ flex: 1, fontSize: 12.5, fontWeight: 600, color: "var(--color-heading)", lineHeight: 1.4 }}>
+                    <EditableText value={icp.title} onChange={(v) => updateIcp(i, { title: v })} style={{ fontSize: 12.5, fontWeight: 600 }} revise={reviseText} />
+                  </span>
+                  <button type="button" onClick={() => updateIcp(i, { risk: nextRisk(icp.risk) })} title="Click to change risk level"
+                    style={{ flexShrink: 0, fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 6, cursor: "pointer", fontFamily: "inherit", ...RISK_BADGE[icp.risk] }}>
+                    {icp.risk}
+                  </button>
                 </div>
-                <p style={{ fontSize: 12, color: "var(--color-muted)", lineHeight: 1.5, margin: "0 0 8px" }}>{icp.body}</p>
-                <BulletList items={icp.bullets} />
+                <div style={{ fontSize: 12, color: "var(--color-muted)", lineHeight: 1.5, margin: "0 0 8px" }}>
+                  <EditableText value={icp.body} onChange={(v) => updateIcp(i, { body: v })} multiline rows={2} style={{ fontSize: 12, color: "var(--color-muted)" }} revise={reviseText} />
+                </div>
+                <EditableBulletList items={icp.bullets} onChange={(v) => updateIcp(i, { bullets: v })} />
               </div>
             ))}
           </div>
         </div>
 
         <div>
-          <div style={RESEARCH_SECTION_LABEL}>Recommended Outbound Angles</div>
+          <SectionLabel ai={<AIRevise value={outboundAngles} onChange={(v) => patch({ outboundAngles: v })} revise={reviseOutboundAngles} scale="section" />}>
+            Recommended Outbound Angles
+          </SectionLabel>
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {outboundAngles.map((angle, i) => (
               <div key={i} style={{ padding: "10px 12px", borderRadius: 10, background: "var(--color-surface)" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                  <span style={{ fontSize: 12.5, fontWeight: 600, color: "var(--color-heading)", flex: 1 }}>{angle.title}</span>
-                  <span style={{ flexShrink: 0, fontSize: 10, fontWeight: 600, padding: "2px 8px", borderRadius: 6, ...CHANNEL_BADGE[angle.channel] }}>{angle.channel}</span>
+                  <span style={{ flex: 1, fontSize: 12.5, fontWeight: 600, color: "var(--color-heading)" }}>
+                    <EditableText value={angle.title} onChange={(v) => updateAngle(i, { title: v })} style={{ fontSize: 12.5, fontWeight: 600 }} revise={reviseText} />
+                  </span>
+                  <button type="button" onClick={() => updateAngle(i, { channel: nextChannel(angle.channel) })} title="Click to change channel"
+                    style={{ flexShrink: 0, fontSize: 10, fontWeight: 600, padding: "2px 8px", borderRadius: 6, cursor: "pointer", fontFamily: "inherit", ...CHANNEL_BADGE[angle.channel] }}>
+                    {angle.channel}
+                  </button>
                 </div>
-                <p style={{ fontSize: 12, color: "var(--color-muted)", lineHeight: 1.5, fontStyle: "italic" as const, margin: 0 }}>&ldquo;{angle.quote}&rdquo;</p>
+                <div style={{ fontSize: 12, color: "var(--color-muted)", lineHeight: 1.5, fontStyle: "italic" as const }}>
+                  &ldquo;<EditableText value={angle.quote} onChange={(v) => updateAngle(i, { quote: v })} multiline rows={2} style={{ fontSize: 12, color: "var(--color-muted)", fontStyle: "italic" as const }} revise={reviseText} />&rdquo;
+                </div>
               </div>
             ))}
           </div>
         </div>
 
         <div>
-          <div style={RESEARCH_SECTION_LABEL}>Call Prep Notes</div>
+          <SectionLabel ai={<AIRevise value={callPrepNotes} onChange={(v) => patch({ callPrepNotes: v })} revise={reviseCallPrepNotes} scale="section" />}>
+            Call Prep Notes
+          </SectionLabel>
           <div style={{ borderRadius: 10, border: "1px solid var(--color-border)", padding: "12px 14px" }}>
-            <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 12 }}>
-              {callPrepNotes.map((note, i) => (
-                <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--color-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: 3 }}>
-                    <path d="M9 12l2 2 4-4" /><rect x="3" y="3" width="18" height="18" rx="2" />
-                  </svg>
-                  <span style={{ fontSize: 12, color: "var(--color-body)", lineHeight: 1.5 }}>{note}</span>
-                </div>
-              ))}
+            <div style={{ marginBottom: 12 }}>
+              <EditableBulletList items={callPrepNotes} onChange={(v) => patch({ callPrepNotes: v })} />
             </div>
             <p style={{ fontSize: 11, color: "var(--color-subtle)", fontStyle: "italic" as const, margin: 0, paddingTop: 10, borderTop: "1px solid var(--color-border)" }}>
               Based on your website and the details you provided. Verify anything you&apos;re unsure about before it goes into outreach.
