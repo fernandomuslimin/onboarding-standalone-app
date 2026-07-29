@@ -1,0 +1,65 @@
+name: Deploy branch preview to GitHub Pages
+
+on:
+  push:
+    branches: ["editable-fields"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Shares the "pages" concurrency group with deploy.yml so a master deploy
+# and a branch-preview deploy never race and clobber each other's upload.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build-and-preview:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build this branch under its own preview subpath
+        run: npx vite build --base=/onboarding-standalone-app/preview/${{ github.ref_name }}/ --outDir dist-preview
+
+      - name: Mirror the currently-live site
+        # Master's own workflow (deploy.yml) fully replaces the Pages
+        # artifact on every run, so the only way to add a branch preview
+        # without touching master's build/output is to start from
+        # whatever is already live and layer this branch's build on top.
+        run: |
+          mkdir -p site
+          wget --mirror --no-parent --no-host-directories --cut-dirs=1 \
+            -erobots=off --domains=fernandomuslimin.github.io \
+            -P site https://fernandomuslimin.github.io/onboarding-standalone-app/
+
+      - name: Merge this branch's build into the mirrored site
+        run: |
+          rm -rf "site/preview/${{ github.ref_name }}"
+          mkdir -p "site/preview/${{ github.ref_name }}"
+          cp -r dist-preview/* "site/preview/${{ github.ref_name }}/"
+
+      - name: Upload combined site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

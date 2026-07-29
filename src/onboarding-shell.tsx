@@ -39,6 +39,7 @@ const STYLES = `
 .ob-primary-btn:active:not(:disabled) { transform: scale(0.98); }
 .ob-ghost-btn:hover:not(:disabled) { background: var(--color-surface); color: var(--color-heading); }
 .ob-link-btn:hover { color: var(--color-brand-hover); }
+.ob-editable:hover { background: var(--color-surface); }
 
 @media (max-width: 640px) {
   .ob-shell { align-items: flex-start !important; }
@@ -1499,7 +1500,6 @@ function StepConnectionsSummary({ connectedAccounts, connectedCalendars, invitee
   const rows = [
     { label: "Sending mailboxes", value: mailboxCount > 0 ? `${mailboxCount} connected` : "None yet" },
     { label: "LinkedIn", value: linkedinConnected ? "1 connected" : "Not connected" },
-    { label: "CRM", value: "Not connected" },
     { label: "Scheduling", value: connectedCalendars.length > 0 ? `${connectedCalendars.length} connected` : "Not connected" },
     { label: "Team invites", value: invitees.length > 0 ? `${invitees.length} invited` : "None" },
   ];
@@ -1720,7 +1720,17 @@ function StepResearch({ onFinish }: { onFinish: () => void }) {
 const RESEARCH_SECTION_LABEL: React.CSSProperties = {
   fontSize: 11, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.05em",
   textTransform: "uppercase" as const, paddingBottom: 6, marginBottom: 10, borderBottom: "1px solid var(--color-border)",
+  display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8,
 };
+
+function SectionLabel({ children, ai }: { children: React.ReactNode; ai?: React.ReactNode }) {
+  return (
+    <div style={RESEARCH_SECTION_LABEL}>
+      <span>{children}</span>
+      {ai}
+    </div>
+  );
+}
 
 type RiskLevel = "HIGH" | "MEDIUM" | "LOW";
 const RISK_BADGE: Record<RiskLevel, React.CSSProperties> = {
@@ -1749,116 +1759,527 @@ function BulletList({ items, tone = "body" }: { items: string[]; tone?: "body" |
   );
 }
 
-function StepCompanyResearch({ products, onNext }: { products: Product[]; onNext: () => void }) {
-  const product = products[0];
-  const productName = product?.name?.trim() || "Your core product";
-  const productDescription = product?.description?.trim() || "AI summarised your website to understand what you sell and who it's for.";
-  const productBullets = [
-    "Positioned around fast setup and low time-to-first-send",
-    "AI-assisted personalization built into the core workflow",
-    "Designed to scale across multiple senders and domains",
-  ];
+/* ─── Inline click-to-edit primitives ──────────────────────────────
+   Shared by any "AI-drafted, human-reviewable" step. A click turns
+   text into an input/textarea; Enter/blur commits, Escape cancels. */
+function EditableText({ value, onChange, multiline = false, placeholder, style, rows = 3, revise }: {
+  value: string; onChange: (v: string) => void; multiline?: boolean; placeholder?: string; style?: React.CSSProperties; rows?: number;
+  revise?: (current: string, instruction: string) => string;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(value);
+  const [aiOpen, setAiOpen] = useState(false);
+  const [aiInstruction, setAiInstruction] = useState("");
+  const [aiBusy, setAiBusy] = useState(false);
+  const [undoValue, setUndoValue] = useState<string | null>(null);
+  const containerRef = useRef<HTMLSpanElement>(null);
 
-  const overview = [
-    { label: "Business model", value: "B2B SaaS — subscription pricing" },
-    { label: "Company size", value: "Growing team" },
-    { label: "Stage", value: "Early stage" },
-  ];
-  const competitive = {
-    category: "Sales & Marketing Outreach Software",
-    competitors: ["Outreach", "Apollo", "Instantly", "Smartlead"],
-    differentiators: [
-      "Positions itself as an outreach platform built for speed to first send",
-      "Messaging leans on personalization and AI-assisted workflows",
-      "Low setup friction compared to legacy sales tooling",
+  useEffect(() => { if (!editing) setDraft(value); }, [value, editing]);
+
+  function forceCommit() {
+    setEditing(false);
+    setAiOpen(false);
+    const trimmed = draft.trim();
+    if (trimmed && trimmed !== value) onChange(trimmed);
+    else setDraft(value);
+  }
+  // The main field blurs when the AI prompt's own input steals focus (it
+  // autofocuses on open) — that's expected, not a request to close, so skip.
+  function commit() { if (!aiOpen) forceCommit(); }
+  function cancel() { setDraft(value); setEditing(false); setAiOpen(false); }
+
+  function applyAI() {
+    if (!revise) return;
+    const instruction = aiInstruction.trim();
+    if (!instruction || aiBusy) return;
+    setAiBusy(true);
+    setTimeout(() => {
+      const revised = revise(draft, instruction);
+      setUndoValue(draft);
+      setDraft(revised);
+      onChange(revised);
+      setAiBusy(false);
+      setAiOpen(false);
+      setAiInstruction("");
+      setEditing(false);
+    }, 800);
+  }
+
+  const fieldStyle: React.CSSProperties = {
+    display: "block", width: "100%", background: "var(--color-page)", border: "1px solid var(--color-brand)",
+    borderRadius: 7, padding: revise ? "5px 32px 5px 7px" : "5px 7px", fontFamily: "inherit", outline: "none", boxSizing: "border-box" as const,
+    color: "var(--color-heading)", lineHeight: 1.5, ...style,
+  };
+
+  if (editing) {
+    return (
+      <span ref={containerRef} style={{ position: "relative", display: "block" }}>
+        <span style={{ position: "relative", display: "block" }}>
+          {multiline ? (
+            <textarea
+              autoFocus rows={rows} value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              onBlur={commit}
+              onKeyDown={(e) => { if (e.key === "Escape") { e.preventDefault(); cancel(); } }}
+              style={{ ...fieldStyle, resize: "vertical" as const }}
+            />
+          ) : (
+            <input
+              autoFocus value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              onBlur={commit}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") { e.preventDefault(); commit(); }
+                if (e.key === "Escape") { e.preventDefault(); cancel(); }
+              }}
+              style={fieldStyle}
+            />
+          )}
+          {revise && (
+            <button
+              type="button"
+              onMouseDown={(e) => e.preventDefault()} // keep focus on the field; only React state (aiOpen) decides the popup, not a focus/blur race
+              onClick={() => setAiOpen((o) => !o)}
+              title="Ask AI to revise this"
+              style={{
+                position: "absolute", top: 0, right: 4, bottom: 0, margin: "auto 0", width: 22, height: 22, display: "flex", alignItems: "center", justifyContent: "center",
+                borderRadius: "50%", border: "none", cursor: "pointer", padding: 0, boxShadow: "0 1px 2px rgba(0,0,0,0.15)",
+                background: aiOpen ? "var(--color-brand)" : "var(--color-brand-tint)",
+                ...(multiline ? { top: 4, bottom: "auto", margin: 0 } : {}),
+              }}
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill={aiOpen ? "#fff" : "var(--color-brand)"}><path d="M12 5l1.8 5.4L19 12l-5.2 1.6L12 19l-1.8-5.4L5 12l5.2-1.6L12 5z" /></svg>
+            </button>
+          )}
+        </span>
+        {aiOpen && (
+          <div style={{ display: "flex", gap: 6, marginTop: 6 }}>
+            <input
+              autoFocus value={aiInstruction} onChange={(e) => setAiInstruction(e.target.value)}
+              onBlur={() => {
+                // Popup's own blur: if focus left the whole field+popup group
+                // entirely (not just moved between its own pieces), close for real.
+                requestAnimationFrame(() => {
+                  if (containerRef.current && !containerRef.current.contains(document.activeElement)) forceCommit();
+                });
+              }}
+              onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); applyAI(); } if (e.key === "Escape") { e.preventDefault(); setAiOpen(false); setAiInstruction(""); } }}
+              placeholder="Tell AI what to change…" disabled={aiBusy}
+              style={{ flex: 1, minWidth: 0, fontSize: 11.5, border: "1px solid var(--color-border)", borderRadius: 7, padding: "5px 7px", outline: "none", fontFamily: "inherit", background: "var(--color-surface)", color: "var(--color-heading)" }}
+            />
+            <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={applyAI} disabled={aiBusy || !aiInstruction.trim()}
+              style={{ flexShrink: 0, fontSize: 11, fontWeight: 600, borderRadius: 7, border: "none", padding: "0 10px", background: "var(--color-brand)", color: "#fff", cursor: aiBusy || !aiInstruction.trim() ? "default" : "pointer", opacity: aiBusy || !aiInstruction.trim() ? 0.6 : 1, display: "flex", alignItems: "center", fontFamily: "inherit" }}>
+              {aiBusy ? <Spinner inverted /> : "Go"}
+            </button>
+          </div>
+        )}
+      </span>
+    );
+  }
+  return (
+    <>
+      <span
+        onClick={() => setEditing(true)}
+        title="Click to edit"
+        className="ob-editable"
+        style={{ cursor: "text", borderRadius: 5, padding: "1px 4px", margin: "-1px -4px", ...style }}
+      >
+        {value || <span style={{ color: "var(--color-subtle)", fontStyle: "italic" as const }}>{placeholder ?? "Click to add"}</span>}
+      </span>
+      {undoValue !== null && (
+        <button type="button" onClick={() => { onChange(undoValue); setUndoValue(null); }}
+          style={{ marginLeft: 6, fontSize: 10, fontWeight: 600, color: "var(--color-brand)", background: "none", border: "none", cursor: "pointer", textDecoration: "underline", padding: 0, fontFamily: "inherit" }}>
+          Undo
+        </button>
+      )}
+    </>
+  );
+}
+
+function EditableBulletList({ items, onChange, tone = "body" }: {
+  items: string[]; onChange: (items: string[]) => void; tone?: "body" | "brand";
+}) {
+  const textColor = tone === "brand" ? "var(--color-brand)" : "var(--color-body)";
+  const dotColor = tone === "brand" ? "var(--color-brand)" : "var(--color-subtle)";
+  const updateAt = (i: number, v: string) => onChange(items.map((it, idx) => (idx === i ? v : it)));
+  const removeAt = (i: number) => onChange(items.filter((_, idx) => idx !== i));
+  const add = () => onChange([...items, "New point"]);
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+      {items.map((item, i) => (
+        <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+          <span style={{ width: 4, height: 4, borderRadius: "50%", background: dotColor, marginTop: 7, flexShrink: 0 }} />
+          <span style={{ flex: 1, minWidth: 0 }}>
+            <EditableText value={item} onChange={(v) => updateAt(i, v)} multiline rows={2} style={{ fontSize: 12.5, color: textColor }} revise={reviseText} />
+          </span>
+          <button type="button" onClick={() => removeAt(i)} title="Remove"
+            style={{ flexShrink: 0, background: "none", border: "none", color: "var(--color-subtle)", cursor: "pointer", fontSize: 14, padding: 0, lineHeight: 1.5, fontFamily: "inherit" }}>×</button>
+        </div>
+      ))}
+      <button type="button" onClick={add}
+        style={{ alignSelf: "flex-start", background: "none", border: "none", color: "var(--color-brand)", cursor: "pointer", fontSize: 11.5, fontWeight: 600, padding: "2px 0", fontFamily: "inherit" }}>
+        + Add point
+      </button>
+    </div>
+  );
+}
+
+function EditableChips({ items, onChange }: { items: string[]; onChange: (items: string[]) => void }) {
+  const [draft, setDraft] = useState("");
+  function add() {
+    const v = draft.trim();
+    if (v && !items.some((c) => c.toLowerCase() === v.toLowerCase())) onChange([...items, v]);
+    setDraft("");
+  }
+  const removeAt = (i: number) => onChange(items.filter((_, idx) => idx !== i));
+
+  return (
+    <div style={{ display: "flex", flexWrap: "wrap" as const, gap: 6, alignItems: "center" }}>
+      {items.map((c, i) => (
+        <span key={c + i} style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 11, padding: "3px 6px 3px 10px", borderRadius: 999, border: "1px solid var(--color-border)", background: "var(--color-surface)", color: "var(--color-muted)" }}>
+          {c}
+          <button type="button" onClick={() => removeAt(i)} title="Remove"
+            style={{ background: "none", border: "none", color: "var(--color-subtle)", cursor: "pointer", fontSize: 12, padding: 0, lineHeight: 1, fontFamily: "inherit" }}>×</button>
+        </span>
+      ))}
+      <input
+        value={draft} onChange={(e) => setDraft(e.target.value)}
+        onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); add(); } }}
+        onBlur={add}
+        placeholder="+ Add competitor"
+        style={{ fontSize: 11, border: "1px dashed var(--color-border-strong)", borderRadius: 999, padding: "3px 10px", background: "transparent", color: "var(--color-heading)", outline: "none", fontFamily: "inherit", width: 130 }}
+      />
+    </div>
+  );
+}
+
+/* ─── Inline "Ask AI" trigger — sits next to a field or a section
+   header. No live model call in this demo (mirrors the rest of the
+   app's mocked delays); `revise` is a pure heuristic transform scoped
+   to whatever value this instance was bound to. */
+function AIRevise<T>({ value, onChange, revise, scale = "field" }: {
+  value: T; onChange: (next: T) => void; revise: (current: T, instruction: string) => T; scale?: "field" | "section";
+}) {
+  const [open, setOpen] = useState(false);
+  const [instruction, setInstruction] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [undoValue, setUndoValue] = useState<T | null>(null);
+  const iconSize = scale === "section" ? 13 : 11;
+
+  function apply() {
+    const text = instruction.trim();
+    if (!text || busy) return;
+    setBusy(true);
+    setTimeout(() => {
+      setUndoValue(value);
+      onChange(revise(value, text));
+      setBusy(false);
+      setOpen(false);
+      setInstruction("");
+    }, scale === "section" ? 1200 : 800);
+  }
+  function cancel() { setOpen(false); setInstruction(""); }
+
+  return (
+    <span style={{ position: "relative", display: "inline-flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+      <button type="button" onClick={() => setOpen((o) => !o)} title="Ask AI to revise this"
+        style={{ background: "none", border: "none", cursor: "pointer", padding: 2, lineHeight: 0, opacity: open ? 1 : 0.55, fontFamily: "inherit" }}>
+        <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="var(--color-brand)"><path d="M12 5l1.8 5.4L19 12l-5.2 1.6L12 19l-1.8-5.4L5 12l5.2-1.6L12 5z" /></svg>
+      </button>
+      {undoValue !== null && !open && (
+        <button type="button" onClick={() => { onChange(undoValue); setUndoValue(null); }}
+          style={{ fontSize: 10, fontWeight: 600, color: "var(--color-brand)", background: "none", border: "none", cursor: "pointer", textDecoration: "underline", padding: 0, fontFamily: "inherit" }}>
+          Undo
+        </button>
+      )}
+      {open && (
+        <div style={{ position: "absolute", top: "calc(100% + 6px)", right: 0, zIndex: 5, display: "flex", gap: 6, background: "var(--color-page)", border: "1px solid var(--color-border)", borderRadius: 10, padding: 6, boxShadow: "var(--shadow-elevated)", width: 240 }}>
+          <input
+            autoFocus value={instruction} onChange={(e) => setInstruction(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); apply(); } if (e.key === "Escape") { e.preventDefault(); cancel(); } }}
+            placeholder="Tell AI what to change…" disabled={busy}
+            style={{ flex: 1, minWidth: 0, fontSize: 11.5, border: "1px solid var(--color-border)", borderRadius: 7, padding: "5px 7px", outline: "none", fontFamily: "inherit", background: "var(--color-surface)", color: "var(--color-heading)" }}
+          />
+          <button type="button" onClick={apply} disabled={busy || !instruction.trim()}
+            style={{ flexShrink: 0, fontSize: 11, fontWeight: 600, borderRadius: 7, border: "none", padding: "0 10px", background: "var(--color-brand)", color: "#fff", cursor: busy || !instruction.trim() ? "default" : "pointer", opacity: busy || !instruction.trim() ? 0.6 : 1, display: "flex", alignItems: "center", fontFamily: "inherit" }}>
+            {busy ? <Spinner inverted /> : "Go"}
+          </button>
+        </div>
+      )}
+    </span>
+  );
+}
+
+function firstSentence(s: string): string {
+  const m = s.match(/^.*?[.!?](?=\s|$)/);
+  return m ? m[0] : s;
+}
+
+// Field-scoped mock rewrite — operates on exactly one string, so it
+// doesn't need to guess which section the instruction was about.
+function reviseText(text: string, instruction: string): string {
+  const lower = instruction.toLowerCase();
+  if (/shorter|concise|tighten|trim/.test(lower)) return firstSentence(text);
+  if (/more formal|formal tone/.test(lower)) return text.replace(/—/g, ",");
+  if (/casual|friendlier|informal/.test(lower)) return text.replace(/\.(\s|$)/g, "!$1");
+  const setTo = instruction.match(/(?:set|change|update|rewrite)(?:\s+this)?\s+to\s+(.+)/i);
+  if (setTo) return setTo[1].trim();
+  return `${text.replace(/[.\s]+$/, "")} — ${instruction}`;
+}
+
+const RISK_ORDER: RiskLevel[] = ["HIGH", "MEDIUM", "LOW"];
+function nextRisk(r: RiskLevel): RiskLevel { return RISK_ORDER[(RISK_ORDER.indexOf(r) + 1) % RISK_ORDER.length]; }
+const CHANNEL_ORDER: Channel[] = ["Email", "LinkedIn"];
+function nextChannel(c: Channel): Channel { return CHANNEL_ORDER[(CHANNEL_ORDER.indexOf(c) + 1) % CHANNEL_ORDER.length]; }
+
+function titleCase(s: string): string { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+// Section-scoped revisers — same "no live model" heuristic approach as
+// reviseText, but each understands the shape of its own section so a
+// section-level prompt (e.g. "add X as a competitor") can act on the
+// whole list/object instead of a single field.
+type CompanyResearchOverview = CompanyResearchData["overview"];
+function reviseOverview(rows: CompanyResearchOverview, instruction: string): CompanyResearchOverview {
+  const m = instruction.match(/(?:set|update|change)\s+(.+?)\s+to\s+(.+)/i);
+  if (!m) return rows;
+  const label = m[1].trim().toLowerCase();
+  const value = m[2].trim();
+  return rows.map((r) => (r.label.toLowerCase().includes(label) ? { ...r, value } : r));
+}
+
+type ProductBundle = Pick<CompanyResearchData, "productName" | "productDescription" | "productBullets">;
+function reviseProductBundle(bundle: ProductBundle, instruction: string): ProductBundle {
+  const lower = instruction.toLowerCase();
+  if (/shorter|concise|tighten|trim/.test(lower)) {
+    return { ...bundle, productDescription: firstSentence(bundle.productDescription) };
+  }
+  return { ...bundle, productBullets: [...bundle.productBullets, titleCase(instruction)] };
+}
+
+type Competitive = CompanyResearchData["competitive"];
+function reviseCompetitive(c: Competitive, instruction: string): Competitive {
+  const lower = instruction.toLowerCase();
+  const addCompetitor = instruction.match(/add\s+([a-z0-9][\w.& -]{1,30}?)\s+as\s+a\s+competitor/i)
+    ?? instruction.match(/add\s+competitor\s+([a-z0-9][\w.& -]{1,30})/i);
+  if (addCompetitor) {
+    const name = addCompetitor[1].trim();
+    if (name && !c.competitors.some((x) => x.toLowerCase() === name.toLowerCase())) {
+      return { ...c, competitors: [...c.competitors, name] };
+    }
+    return c;
+  }
+  const removeCompetitor = instruction.match(/remove\s+([a-z0-9][\w.& -]{1,30}?)\s+(?:as\s+a\s+competitor|from\s+competitors)/i);
+  if (removeCompetitor) {
+    const name = removeCompetitor[1].trim().toLowerCase();
+    return { ...c, competitors: c.competitors.filter((x) => x.toLowerCase() !== name) };
+  }
+  if (/shorter|concise|tighten|trim/.test(lower)) {
+    return { ...c, differentiators: c.differentiators.map(firstSentence) };
+  }
+  return { ...c, differentiators: [...c.differentiators, titleCase(instruction)] };
+}
+
+type ValueProps = CompanyResearchData["valueProps"];
+function reviseValueProps(vps: ValueProps, instruction: string): ValueProps {
+  const lower = instruction.toLowerCase();
+  if (/shorter|concise|tighten|trim/.test(lower)) {
+    return vps.map((vp) => ({ ...vp, body: firstSentence(vp.body) }));
+  }
+  const title = instruction.length > 60 ? `${instruction.slice(0, 57)}…` : titleCase(instruction);
+  return [...vps, { title, body: titleCase(instruction), quantified: false }];
+}
+
+type IcpHypotheses = CompanyResearchData["icpHypotheses"];
+function reviseIcpHypotheses(icps: IcpHypotheses, instruction: string): IcpHypotheses {
+  const riskBump = instruction.match(/(?:raise|bump|increase)\s+(?:the\s+)?risk\s+(?:for|on)\s+(.+)/i);
+  if (riskBump) {
+    const needle = riskBump[1].trim().toLowerCase();
+    return icps.map((icp) => (icp.title.toLowerCase().includes(needle) ? { ...icp, risk: nextRisk(icp.risk) } : icp));
+  }
+  if (icps.length === 0) return icps;
+  return icps.map((icp, i) => (i === 0 ? { ...icp, bullets: [...icp.bullets, titleCase(instruction)] } : icp));
+}
+
+type OutboundAngles = CompanyResearchData["outboundAngles"];
+function reviseOutboundAngles(angles: OutboundAngles, instruction: string): OutboundAngles {
+  if (/more formal|formal tone/i.test(instruction)) {
+    return angles.map((a) => ({ ...a, quote: a.quote.replace(/—/g, ",") }));
+  }
+  return [...angles, { title: "New angle", channel: "Email", quote: instruction }];
+}
+
+function reviseCallPrepNotes(notes: string[], instruction: string): string[] {
+  if (/shorter|concise|tighten|trim/i.test(instruction)) return notes.map(firstSentence);
+  return [...notes, titleCase(instruction)];
+}
+
+interface CompanyResearchData {
+  overview: { label: string; value: string }[];
+  productName: string;
+  productDescription: string;
+  productBullets: string[];
+  competitive: { category: string; competitors: string[]; differentiators: string[] };
+  valueProps: { title: string; body: string; quantified: boolean }[];
+  icpHypotheses: { title: string; risk: RiskLevel; body: string; bullets: string[] }[];
+  outboundAngles: { title: string; channel: Channel; quote: string }[];
+  callPrepNotes: string[];
+}
+
+function buildInitialCompanyResearch(products: Product[]): CompanyResearchData {
+  const product = products[0];
+  return {
+    overview: [
+      { label: "Business model", value: "B2B SaaS — subscription pricing" },
+      { label: "Company size", value: "Growing team" },
+      { label: "Stage", value: "Early stage" },
+    ],
+    productName: product?.name?.trim() || "Your core product",
+    productDescription: product?.description?.trim() || "AI summarised your website to understand what you sell and who it's for.",
+    productBullets: [
+      "Positioned around fast setup and low time-to-first-send",
+      "AI-assisted personalization built into the core workflow",
+      "Designed to scale across multiple senders and domains",
+    ],
+    competitive: {
+      category: "Sales & Marketing Outreach Software",
+      competitors: ["Outreach", "Apollo", "Instantly", "Smartlead"],
+      differentiators: [
+        "Positions itself as an outreach platform built for speed to first send",
+        "Messaging leans on personalization and AI-assisted workflows",
+        "Low setup friction compared to legacy sales tooling",
+      ],
+    },
+    valueProps: [
+      { title: "Cuts time spent on manual prospecting", body: "AI drafts and personalizes outreach at scale, freeing reps to focus on conversations.", quantified: true },
+      { title: "Faster time to first send", body: "No lengthy setup — connect a domain and start sending within the same day.", quantified: false },
+      { title: "Consistent brand voice across sequences", body: "Messaging stays on-brand even as volume scales across senders and domains.", quantified: false },
+    ],
+    icpHypotheses: [
+      {
+        title: "VP Sales / Head of RevOps at 50–500 Mid-Market B2B",
+        risk: "HIGH",
+        body: "Closest match to the core use case — teams running multi-sender outbound who need faster time-to-send without adding headcount.",
+        bullets: ["Owns outbound quota and rep productivity", "Actively evaluating tools to replace manual prospecting", "Budget authority for sales tooling"],
+      },
+      {
+        title: "Founder-led Sales at Early-Stage Startups",
+        risk: "MEDIUM",
+        body: "Small teams wearing multiple hats who need to move fast on outbound without a dedicated SDR function.",
+        bullets: ["Values low setup friction over deep customization", "Price-sensitive, favors usage-based plans"],
+      },
+      {
+        title: "Agency or Fractional SDR Teams Managing Multiple Clients",
+        risk: "LOW",
+        body: "Could adopt per-client, but requires multi-workspace support that may not be a priority yet.",
+        bullets: ["Needs to manage several domains and senders per client", "Longer sales cycle due to procurement across client accounts"],
+      },
+    ],
+    outboundAngles: [
+      { title: "Time-to-First-Send", channel: "LinkedIn", quote: "Most outreach tools take weeks to set up. We get teams sending personalized sequences the same day — want to see it on your own domain?" },
+      { title: "Personalization at Scale", channel: "Email", quote: "Your reps are copy-pasting the same three templates. AI-personalized sequences convert better without adding manual work — worth a 15-minute look?" },
+      { title: "Consolidate Your Stack", channel: "Email", quote: "If you're juggling separate tools for sending, personalization, and deliverability, this replaces all three — happy to show how teams like yours consolidated." },
+    ],
+    callPrepNotes: [
+      "Confirm current team size and who owns outbound today — the ICP hypotheses assume a dedicated sales function, which may not match smaller teams.",
+      "Validate which tools are currently used for sending, personalization, and deliverability so the consolidation angle lands correctly.",
+      "Ask about typical sequence volume and sender count — this shapes which package and domain split makes sense.",
+      "Confirm whether outbound is run in-house or through an agency, since this changes the buyer and the pitch.",
     ],
   };
-  const valueProps = [
-    { title: "Cuts time spent on manual prospecting", body: "AI drafts and personalizes outreach at scale, freeing reps to focus on conversations.", quantified: true },
-    { title: "Faster time to first send", body: "No lengthy setup — connect a domain and start sending within the same day.", quantified: false },
-    { title: "Consistent brand voice across sequences", body: "Messaging stays on-brand even as volume scales across senders and domains.", quantified: false },
-  ];
-  const icpHypotheses: { title: string; risk: RiskLevel; body: string; bullets: string[] }[] = [
-    {
-      title: "VP Sales / Head of RevOps at 50–500 Mid-Market B2B",
-      risk: "HIGH",
-      body: "Closest match to the core use case — teams running multi-sender outbound who need faster time-to-send without adding headcount.",
-      bullets: ["Owns outbound quota and rep productivity", "Actively evaluating tools to replace manual prospecting", "Budget authority for sales tooling"],
-    },
-    {
-      title: "Founder-led Sales at Early-Stage Startups",
-      risk: "MEDIUM",
-      body: "Small teams wearing multiple hats who need to move fast on outbound without a dedicated SDR function.",
-      bullets: ["Values low setup friction over deep customization", "Price-sensitive, favors usage-based plans"],
-    },
-    {
-      title: "Agency or Fractional SDR Teams Managing Multiple Clients",
-      risk: "LOW",
-      body: "Could adopt per-client, but requires multi-workspace support that may not be a priority yet.",
-      bullets: ["Needs to manage several domains and senders per client", "Longer sales cycle due to procurement across client accounts"],
-    },
-  ];
-  const outboundAngles: { title: string; channel: Channel; quote: string }[] = [
-    { title: "Time-to-First-Send", channel: "LinkedIn", quote: "Most outreach tools take weeks to set up. We get teams sending personalized sequences the same day — want to see it on your own domain?" },
-    { title: "Personalization at Scale", channel: "Email", quote: "Your reps are copy-pasting the same three templates. AI-personalized sequences convert better without adding manual work — worth a 15-minute look?" },
-    { title: "Consolidate Your Stack", channel: "Email", quote: "If you're juggling separate tools for sending, personalization, and deliverability, this replaces all three — happy to show how teams like yours consolidated." },
-  ];
-  const callPrepNotes = [
-    "Confirm current team size and who owns outbound today — the ICP hypotheses assume a dedicated sales function, which may not match smaller teams.",
-    "Validate which tools are currently used for sending, personalization, and deliverability so the consolidation angle lands correctly.",
-    "Ask about typical sequence volume and sender count — this shapes which package and domain split makes sense.",
-    "Confirm whether outbound is run in-house or through an agency, since this changes the buyer and the pitch.",
-  ];
+}
+
+function StepCompanyResearch({ products, onNext }: { products: Product[]; onNext: () => void }) {
+  const [data, setData] = useState<CompanyResearchData>(() => buildInitialCompanyResearch(products));
+
+  function patch(fields: Partial<CompanyResearchData>) {
+    setData((current) => ({ ...current, ...fields }));
+  }
+  function patchCompetitive(fields: Partial<CompanyResearchData["competitive"]>) {
+    setData((current) => ({ ...current, competitive: { ...current.competitive, ...fields } }));
+  }
+  function updateOverview(i: number, value: string) {
+    setData((current) => ({ ...current, overview: current.overview.map((row, idx) => (idx === i ? { ...row, value } : row)) }));
+  }
+  function updateValueProp(i: number, fields: Partial<CompanyResearchData["valueProps"][number]>) {
+    setData((current) => ({ ...current, valueProps: current.valueProps.map((vp, idx) => (idx === i ? { ...vp, ...fields } : vp)) }));
+  }
+  function updateIcp(i: number, fields: Partial<CompanyResearchData["icpHypotheses"][number]>) {
+    setData((current) => ({ ...current, icpHypotheses: current.icpHypotheses.map((icp, idx) => (idx === i ? { ...icp, ...fields } : icp)) }));
+  }
+  function updateAngle(i: number, fields: Partial<CompanyResearchData["outboundAngles"][number]>) {
+    setData((current) => ({ ...current, outboundAngles: current.outboundAngles.map((a, idx) => (idx === i ? { ...a, ...fields } : a)) }));
+  }
+
+  const { overview, productName, productDescription, productBullets, competitive, valueProps, icpHypotheses, outboundAngles, callPrepNotes } = data;
 
   return (
     <div className="ob-card" style={{ ...CARD, maxWidth: 560 }}>
       <span style={{ fontSize: 12, fontWeight: 700, color: "var(--color-brand)", letterSpacing: "0.05em", textTransform: "uppercase" as const }}>Company Research</span>
       <h1 style={{ fontSize: 24, margin: "8px 0 8px" }}>Here&apos;s what we found</h1>
       <p style={{ fontSize: 14, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 24px" }}>
-        AI-researched from your website. Review the brief, then we&apos;ll map your products and services.
+        AI-researched from your website. Click any field to edit it, or hit <span style={{ color: "var(--color-brand)" }}>✨</span> to ask AI to revise it.
       </p>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 22, marginBottom: 24 }}>
         <div>
-          <div style={RESEARCH_SECTION_LABEL}>Company Overview</div>
+          <SectionLabel ai={<AIRevise value={overview} onChange={(v) => patch({ overview: v })} revise={reviseOverview} scale="section" />}>
+            Company Overview
+          </SectionLabel>
           <div style={{ borderRadius: 12, border: "1px solid var(--color-border)", overflow: "hidden" }}>
             {overview.map((row, i) => (
               <div key={row.label} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "8px 12px", background: "var(--color-surface)", borderBottom: i < overview.length - 1 ? "1px solid var(--color-border)" : "none" }}>
-                <span style={{ fontSize: 12, color: "var(--color-muted)" }}>{row.label}</span>
-                <span style={{ fontSize: 12, color: "var(--color-heading)", textAlign: "right" as const }}>{row.value}</span>
+                <span style={{ fontSize: 12, color: "var(--color-muted)", flexShrink: 0 }}>{row.label}</span>
+                <span style={{ minWidth: 0, maxWidth: "70%" }}>
+                  <EditableText value={row.value} onChange={(v) => updateOverview(i, v)} style={{ fontSize: 12, color: "var(--color-heading)" }} revise={reviseText} />
+                </span>
               </div>
             ))}
           </div>
         </div>
 
         <div>
-          <div style={RESEARCH_SECTION_LABEL}>Products / Services</div>
-          <div style={{ fontSize: 14, fontWeight: 600, color: "var(--color-heading)", marginBottom: 4 }}>{productName}</div>
-          <p style={{ fontSize: 13, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 10px" }}>{productDescription}</p>
-          <BulletList items={productBullets} tone="brand" />
+          <SectionLabel ai={<AIRevise value={{ productName, productDescription, productBullets }} onChange={(v) => patch(v)} revise={reviseProductBundle} scale="section" />}>
+            Products / Services
+          </SectionLabel>
+          <div style={{ fontSize: 14, fontWeight: 600, color: "var(--color-heading)", marginBottom: 4 }}>
+            <EditableText value={productName} onChange={(v) => patch({ productName: v })} style={{ fontSize: 14, fontWeight: 600 }} revise={reviseText} />
+          </div>
+          <div style={{ fontSize: 13, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 10px" }}>
+            <EditableText value={productDescription} onChange={(v) => patch({ productDescription: v })} multiline rows={2} style={{ fontSize: 13 }} revise={reviseText} />
+          </div>
+          <EditableBulletList items={productBullets} onChange={(v) => patch({ productBullets: v })} tone="brand" />
         </div>
 
         <div>
-          <div style={RESEARCH_SECTION_LABEL}>Competitive Position</div>
+          <SectionLabel ai={<AIRevise value={competitive} onChange={(v) => patch({ competitive: v })} revise={reviseCompetitive} scale="section" />}>
+            Competitive Position
+          </SectionLabel>
           <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 4 }}>Category</div>
-          <p style={{ fontSize: 12.5, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 12px" }}>{competitive.category}</p>
+          <div style={{ fontSize: 12.5, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 12px" }}>
+            <EditableText value={competitive.category} onChange={(v) => patchCompetitive({ category: v })} style={{ fontSize: 12.5 }} revise={reviseText} />
+          </div>
           <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>Competitors</div>
-          <div style={{ display: "flex", flexWrap: "wrap" as const, gap: 6, marginBottom: 12 }}>
-            {competitive.competitors.map((c) => (
-              <span key={c} style={{ fontSize: 11, padding: "3px 10px", borderRadius: 999, border: "1px solid var(--color-border)", background: "var(--color-surface)", color: "var(--color-muted)" }}>{c}</span>
-            ))}
+          <div style={{ marginBottom: 12 }}>
+            <EditableChips items={competitive.competitors} onChange={(v) => patchCompetitive({ competitors: v })} />
           </div>
           <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>Key Differentiators</div>
-          <BulletList items={competitive.differentiators} />
+          <EditableBulletList items={competitive.differentiators} onChange={(v) => patchCompetitive({ differentiators: v })} />
         </div>
 
         <div>
-          <div style={RESEARCH_SECTION_LABEL}>Value Propositions</div>
+          <SectionLabel ai={<AIRevise value={valueProps} onChange={(v) => patch({ valueProps: v })} revise={reviseValueProps} scale="section" />}>
+            Value Propositions
+          </SectionLabel>
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {valueProps.map((vp, i) => (
               <div key={i} style={{ padding: "10px 12px", borderRadius: 10, background: "var(--color-surface)" }}>
-                <div style={{ fontSize: 12.5, fontWeight: 600, color: "var(--color-heading)", marginBottom: 2 }}>{vp.title}</div>
-                <div style={{ fontSize: 12, color: "var(--color-muted)", lineHeight: 1.5 }}>{vp.body}</div>
+                <div style={{ fontSize: 12.5, fontWeight: 600, color: "var(--color-heading)", marginBottom: 2 }}>
+                  <EditableText value={vp.title} onChange={(v) => updateValueProp(i, { title: v })} style={{ fontSize: 12.5, fontWeight: 600 }} revise={reviseText} />
+                </div>
+                <div style={{ fontSize: 12, color: "var(--color-muted)", lineHeight: 1.5 }}>
+                  <EditableText value={vp.body} onChange={(v) => updateValueProp(i, { body: v })} multiline rows={2} style={{ fontSize: 12, color: "var(--color-muted)" }} revise={reviseText} />
+                </div>
                 {vp.quantified && (
                   <span style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 10.5, fontWeight: 600, color: "var(--color-success)", background: "rgba(7,188,12,0.1)", border: "1px solid rgba(7,188,12,0.3)", borderRadius: 999, padding: "2px 8px", marginTop: 6 }}>
                     <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5" /></svg>
@@ -1871,48 +2292,61 @@ function StepCompanyResearch({ products, onNext }: { products: Product[]; onNext
         </div>
 
         <div>
-          <div style={RESEARCH_SECTION_LABEL}>ICP Hypotheses</div>
+          <SectionLabel ai={<AIRevise value={icpHypotheses} onChange={(v) => patch({ icpHypotheses: v })} revise={reviseIcpHypotheses} scale="section" />}>
+            ICP Hypotheses
+          </SectionLabel>
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {icpHypotheses.map((icp, i) => (
               <div key={i} style={{ padding: "10px 12px", borderRadius: 10, border: "1px solid var(--color-border)" }}>
                 <div style={{ display: "flex", alignItems: "flex-start", gap: 8, marginBottom: 4 }}>
-                  <span style={{ fontSize: 12.5, fontWeight: 600, color: "var(--color-heading)", flex: 1, lineHeight: 1.4 }}>{icp.title}</span>
-                  <span style={{ flexShrink: 0, fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 6, ...RISK_BADGE[icp.risk] }}>{icp.risk}</span>
+                  <span style={{ flex: 1, fontSize: 12.5, fontWeight: 600, color: "var(--color-heading)", lineHeight: 1.4 }}>
+                    <EditableText value={icp.title} onChange={(v) => updateIcp(i, { title: v })} style={{ fontSize: 12.5, fontWeight: 600 }} revise={reviseText} />
+                  </span>
+                  <button type="button" onClick={() => updateIcp(i, { risk: nextRisk(icp.risk) })} title="Click to change risk level"
+                    style={{ flexShrink: 0, fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 6, cursor: "pointer", fontFamily: "inherit", ...RISK_BADGE[icp.risk] }}>
+                    {icp.risk}
+                  </button>
                 </div>
-                <p style={{ fontSize: 12, color: "var(--color-muted)", lineHeight: 1.5, margin: "0 0 8px" }}>{icp.body}</p>
-                <BulletList items={icp.bullets} />
+                <div style={{ fontSize: 12, color: "var(--color-muted)", lineHeight: 1.5, margin: "0 0 8px" }}>
+                  <EditableText value={icp.body} onChange={(v) => updateIcp(i, { body: v })} multiline rows={2} style={{ fontSize: 12, color: "var(--color-muted)" }} revise={reviseText} />
+                </div>
+                <EditableBulletList items={icp.bullets} onChange={(v) => updateIcp(i, { bullets: v })} />
               </div>
             ))}
           </div>
         </div>
 
         <div>
-          <div style={RESEARCH_SECTION_LABEL}>Recommended Outbound Angles</div>
+          <SectionLabel ai={<AIRevise value={outboundAngles} onChange={(v) => patch({ outboundAngles: v })} revise={reviseOutboundAngles} scale="section" />}>
+            Recommended Outbound Angles
+          </SectionLabel>
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {outboundAngles.map((angle, i) => (
               <div key={i} style={{ padding: "10px 12px", borderRadius: 10, background: "var(--color-surface)" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                  <span style={{ fontSize: 12.5, fontWeight: 600, color: "var(--color-heading)", flex: 1 }}>{angle.title}</span>
-                  <span style={{ flexShrink: 0, fontSize: 10, fontWeight: 600, padding: "2px 8px", borderRadius: 6, ...CHANNEL_BADGE[angle.channel] }}>{angle.channel}</span>
+                  <span style={{ flex: 1, fontSize: 12.5, fontWeight: 600, color: "var(--color-heading)" }}>
+                    <EditableText value={angle.title} onChange={(v) => updateAngle(i, { title: v })} style={{ fontSize: 12.5, fontWeight: 600 }} revise={reviseText} />
+                  </span>
+                  <button type="button" onClick={() => updateAngle(i, { channel: nextChannel(angle.channel) })} title="Click to change channel"
+                    style={{ flexShrink: 0, fontSize: 10, fontWeight: 600, padding: "2px 8px", borderRadius: 6, cursor: "pointer", fontFamily: "inherit", ...CHANNEL_BADGE[angle.channel] }}>
+                    {angle.channel}
+                  </button>
                 </div>
-                <p style={{ fontSize: 12, color: "var(--color-muted)", lineHeight: 1.5, fontStyle: "italic" as const, margin: 0 }}>&ldquo;{angle.quote}&rdquo;</p>
+                <div style={{ fontSize: 12, color: "var(--color-muted)", lineHeight: 1.5, fontStyle: "italic" as const }}>
+                  &ldquo;<EditableText value={angle.quote} onChange={(v) => updateAngle(i, { quote: v })} multiline rows={2} style={{ fontSize: 12, color: "var(--color-muted)", fontStyle: "italic" as const }} revise={reviseText} />&rdquo;
+                </div>
               </div>
             ))}
           </div>
         </div>
 
         <div>
-          <div style={RESEARCH_SECTION_LABEL}>Call Prep Notes</div>
+          <SectionLabel ai={<AIRevise value={callPrepNotes} onChange={(v) => patch({ callPrepNotes: v })} revise={reviseCallPrepNotes} scale="section" />}>
+            Call Prep Notes
+          </SectionLabel>
           <div style={{ borderRadius: 10, border: "1px solid var(--color-border)", padding: "12px 14px" }}>
-            <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 12 }}>
-              {callPrepNotes.map((note, i) => (
-                <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--color-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: 3 }}>
-                    <path d="M9 12l2 2 4-4" /><rect x="3" y="3" width="18" height="18" rx="2" />
-                  </svg>
-                  <span style={{ fontSize: 12, color: "var(--color-body)", lineHeight: 1.5 }}>{note}</span>
-                </div>
-              ))}
+            <div style={{ marginBottom: 12 }}>
+              <EditableBulletList items={callPrepNotes} onChange={(v) => patch({ callPrepNotes: v })} />
             </div>
             <p style={{ fontSize: 11, color: "var(--color-subtle)", fontStyle: "italic" as const, margin: 0, paddingTop: 10, borderTop: "1px solid var(--color-border)" }}>
               Based on your website and the details you provided. Verify anything you&apos;re unsure about before it goes into outreach.
@@ -1934,26 +2368,36 @@ function StepCompanyResearch({ products, onNext }: { products: Product[]; onNext
 type PSContent = string | string[];
 interface PSSection { label: string; content: PSContent }
 
-function PSField({ section }: { section: PSSection }) {
+function PSField({ section, onChange }: { section: PSSection; onChange?: (content: PSContent) => void }) {
   const isList = Array.isArray(section.content);
   return (
     <div>
       <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>{section.label}</div>
-      {isList
-        ? <BulletList items={section.content as string[]} />
-        : <p style={{ fontSize: 12.5, color: "var(--color-body)", lineHeight: 1.6, margin: 0 }}>{section.content as string}</p>}
+      {onChange ? (
+        isList ? (
+          <EditableBulletList items={section.content as string[]} onChange={(items) => onChange(items)} />
+        ) : (
+          <div style={{ fontSize: 12.5, color: "var(--color-body)", lineHeight: 1.6 }}>
+            <EditableText value={section.content as string} onChange={onChange} multiline rows={2} style={{ fontSize: 12.5 }} revise={reviseText} />
+          </div>
+        )
+      ) : isList ? (
+        <BulletList items={section.content as string[]} />
+      ) : (
+        <p style={{ fontSize: 12.5, color: "var(--color-body)", lineHeight: 1.6, margin: 0 }}>{section.content as string}</p>
+      )}
     </div>
   );
 }
 
-function StepProductsServices({ products, onNext }: { products: Product[]; onNext: () => void }) {
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const product = products[selectedIndex];
-  const productName = product?.name?.trim() || "Your core product";
-  const productBadge = product?.variant?.trim() || "Core product";
+interface PSProductState { name: string; badge: string; tabs: Record<string, PSSection[]> }
+
+function buildInitialPSProduct(product?: Product): PSProductState {
+  const name = product?.name?.trim() || "Your core product";
+  const badge = product?.variant?.trim() || "Core product";
   const description = product?.description?.trim() || "AI summarised your website to understand what you sell and who it's for.";
 
-  const PS_TABS: Record<string, PSSection[]> = {
+  const tabs: Record<string, PSSection[]> = {
     "Core Details": [
       { label: "Description", content: description },
       { label: "Use Cases", content: ["Outbound prospecting for sales teams without a dedicated SDR function", "Scaling personalized sequences across multiple senders and domains", "Replacing manual, template-based cold email workflows"] },
@@ -1981,14 +2425,29 @@ function StepProductsServices({ products, onNext }: { products: Product[]; onNex
       { label: "Objection Rebuttals", content: ["\"AI messaging sounds generic\" — sequences are drafted from real product and company research, not generic templates", "\"We're worried about deliverability\" — sending is split across multiple domains and senders by design"] },
     ],
     "Positioning & Messaging": [
-      { label: "Elevator Pitch", content: `${productName} turns AI-researched company and product context into personalized outbound sequences — sent across multiple domains and senders, live the same day.` },
-      { label: "Positioning Statement", content: `For sales teams that need to scale outbound without scaling headcount, ${productName} is the outreach platform that drafts personalized sequences from real research and sends them through infrastructure built for deliverability.` },
+      { label: "Elevator Pitch", content: `${name} turns AI-researched company and product context into personalized outbound sequences — sent across multiple domains and senders, live the same day.` },
+      { label: "Positioning Statement", content: `For sales teams that need to scale outbound without scaling headcount, ${name} is the outreach platform that drafts personalized sequences from real research and sends them through infrastructure built for deliverability.` },
       { label: "Messaging Do's", content: ["Lead with speed to first send and low setup friction", "Anchor on personalization quality, not just volume"] },
       { label: "Messaging Don'ts", content: ["Don't position as a generic \"AI email\" tool — the research-backed personalization is the differentiator", "Don't oversell volume without mentioning deliverability safeguards"] },
     ],
   };
-  const tabNames = Object.keys(PS_TABS);
+
+  return { name, badge, tabs };
+}
+
+function StepProductsServices({ products, onNext }: { products: Product[]; onNext: () => void }) {
+  const [productStates, setProductStates] = useState<PSProductState[]>(() => products.map((p) => buildInitialPSProduct(p)));
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const current = productStates[selectedIndex];
+  const tabNames = Object.keys(current.tabs);
   const [activeTab, setActiveTab] = useState(tabNames[0]);
+
+  function patchCurrent(fields: Partial<Pick<PSProductState, "name" | "badge">>) {
+    setProductStates((cur) => cur.map((p, i) => (i === selectedIndex ? { ...p, ...fields } : p)));
+  }
+  function updateSection(tab: string, i: number, content: PSContent) {
+    setProductStates((cur) => cur.map((p, idx) => (idx === selectedIndex ? { ...p, tabs: { ...p.tabs, [tab]: p.tabs[tab].map((s, si) => (si === i ? { ...s, content } : s)) } } : p)));
+  }
 
   return (
     <div className="ob-card" style={{ ...CARD, maxWidth: 580 }}>
@@ -1997,7 +2456,8 @@ function StepProductsServices({ products, onNext }: { products: Product[]; onNex
       <p style={{ fontSize: 14, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 24px" }}>
         {products.length > 1
           ? `AI-mapped ${products.length} products from your details. Review each, then we'll build your ICP.`
-          : "AI-mapped from your product details. Review, then we'll build your ICP."}
+          : "AI-mapped from your product details. Review, then we'll build your ICP."}{" "}
+        Click any field to edit it, or hit <span style={{ color: "var(--color-brand)" }}>✨</span> to ask AI to revise it.
       </p>
 
       <div style={{ borderRadius: 12, border: "1px solid var(--color-border)", overflow: "hidden", marginBottom: 24 }}>
@@ -2014,8 +2474,12 @@ function StepProductsServices({ products, onNext }: { products: Product[]; onNex
           ) : (
             <div style={{ width: 24, height: 24, borderRadius: "50%", background: "var(--color-brand)", color: "#fff", fontSize: 11, fontWeight: 700, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>1</div>
           )}
-          <span style={{ fontSize: 14, fontWeight: 600, color: "var(--color-heading)" }}>{productName}</span>
-          <span style={{ fontSize: 11, fontWeight: 500, color: "var(--color-brand)", border: "1px solid var(--color-border)", background: "var(--color-brand-tint)", borderRadius: 999, padding: "2px 10px" }}>{productBadge}</span>
+          <span style={{ fontSize: 14, fontWeight: 600, color: "var(--color-heading)", minWidth: 0 }}>
+            <EditableText key={`name-${selectedIndex}`} value={current.name} onChange={(v) => patchCurrent({ name: v })} style={{ fontSize: 14, fontWeight: 600 }} revise={reviseText} />
+          </span>
+          <span style={{ fontSize: 11, fontWeight: 500, color: "var(--color-brand)", border: "1px solid var(--color-border)", background: "var(--color-brand-tint)", borderRadius: 999, padding: "2px 10px", flexShrink: 0 }}>
+            <EditableText key={`badge-${selectedIndex}`} value={current.badge} onChange={(v) => patchCurrent({ badge: v })} style={{ fontSize: 11, fontWeight: 500, color: "var(--color-brand)" }} revise={reviseText} />
+          </span>
           {products.length > 1 && (
             <span style={{ fontSize: 11, color: "var(--color-muted)", marginLeft: "auto", flexShrink: 0 }}>{selectedIndex + 1} / {products.length}</span>
           )}
@@ -2031,8 +2495,8 @@ function StepProductsServices({ products, onNext }: { products: Product[]; onNex
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 16, padding: "16px" }}>
-          {PS_TABS[activeTab].map((section, i) => (
-            <PSField key={i} section={section} />
+          {current.tabs[activeTab].map((section, i) => (
+            <PSField key={`${selectedIndex}-${activeTab}-${section.label}`} section={section} onChange={(content) => updateSection(activeTab, i, content)} />
           ))}
         </div>
       </div>
@@ -2054,7 +2518,7 @@ interface PersonaData {
   tabs: Record<string, PSSection[]>;
 }
 
-const PERSONAS: PersonaData[] = [
+const PERSONAS_DEFAULT: PersonaData[] = [
   {
     title: "VP Sales / Head of RevOps",
     roleTag: "Mid-Market B2B",
@@ -2168,28 +2632,37 @@ const PERSONAS: PersonaData[] = [
   },
 ];
 
-const PERSONA_TAB_NAMES = Object.keys(PERSONAS[0].tabs);
+const PERSONA_TAB_NAMES = Object.keys(PERSONAS_DEFAULT[0].tabs);
 
 function StepPersonas({ onNext }: { onNext: () => void }) {
+  const [personaStates, setPersonaStates] = useState<PersonaData[]>(() => PERSONAS_DEFAULT.map((p) => ({ ...p, tabs: { ...p.tabs } })));
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [activeTab, setActiveTab] = useState(PERSONA_TAB_NAMES[0]);
-  const persona = PERSONAS[selectedIndex];
+  const persona = personaStates[selectedIndex];
+
+  function patchCurrent(fields: Partial<Pick<PersonaData, "title" | "roleTag" | "subtitle">>) {
+    setPersonaStates((cur) => cur.map((p, i) => (i === selectedIndex ? { ...p, ...fields } : p)));
+  }
+  function updateSection(tab: string, i: number, content: PSContent) {
+    setPersonaStates((cur) => cur.map((p, idx) => (idx === selectedIndex ? { ...p, tabs: { ...p.tabs, [tab]: p.tabs[tab].map((s, si) => (si === i ? { ...s, content } : s)) } } : p)));
+  }
 
   return (
     <div className="ob-card" style={{ ...CARD, maxWidth: 580 }}>
       <span style={{ fontSize: 12, fontWeight: 700, color: "var(--color-brand)", letterSpacing: "0.05em", textTransform: "uppercase" as const }}>Personas</span>
       <h1 style={{ fontSize: 24, margin: "8px 0 8px" }}>Here&apos;s who you&apos;re selling to</h1>
       <p style={{ fontSize: 14, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 24px" }}>
-        {PERSONAS.length > 1
-          ? `AI built ${PERSONAS.length} buyer personas from your ICP. Review each, then we'll draft your outreach campaigns.`
-          : "AI built a buyer persona from your ICP. Review it, then we'll draft your outreach campaigns."}
+        {personaStates.length > 1
+          ? `AI built ${personaStates.length} buyer personas from your ICP. Review each, then we'll draft your outreach campaigns.`
+          : "AI built a buyer persona from your ICP. Review it, then we'll draft your outreach campaigns."}{" "}
+        Click any field to edit it, or hit <span style={{ color: "var(--color-brand)" }}>✨</span> to ask AI to revise it.
       </p>
 
       <div style={{ borderRadius: 12, border: "1px solid var(--color-border)", overflow: "hidden", marginBottom: 24 }}>
         <div style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "14px 16px", borderBottom: "1px solid var(--color-border)" }}>
-          {PERSONAS.length > 1 ? (
+          {personaStates.length > 1 ? (
             <div style={{ display: "flex", gap: 6, flexShrink: 0, marginTop: 1 }}>
-              {PERSONAS.map((p, i) => (
+              {personaStates.map((p, i) => (
                 <button key={i} type="button" onClick={() => setSelectedIndex(i)} title={p.title}
                   style={{ width: 24, height: 24, borderRadius: "50%", fontSize: 11, fontWeight: 700, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", border: "none", cursor: "pointer", fontFamily: "inherit", transition: "all 150ms", background: i === selectedIndex ? "var(--color-brand)" : "var(--color-surface)", color: i === selectedIndex ? "#fff" : "var(--color-muted)" }}>
                   {i + 1}
@@ -2201,13 +2674,19 @@ function StepPersonas({ onNext }: { onNext: () => void }) {
           )}
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" as const }}>
-              <span style={{ fontSize: 14, fontWeight: 600, color: "var(--color-heading)" }}>{persona.title}</span>
-              <span style={{ fontSize: 11, fontWeight: 500, color: "var(--color-brand)", border: "1px solid var(--color-border)", background: "var(--color-brand-tint)", borderRadius: 999, padding: "2px 10px" }}>{persona.roleTag}</span>
+              <span style={{ fontSize: 14, fontWeight: 600, color: "var(--color-heading)" }}>
+                <EditableText key={`title-${selectedIndex}`} value={persona.title} onChange={(v) => patchCurrent({ title: v })} style={{ fontSize: 14, fontWeight: 600 }} revise={reviseText} />
+              </span>
+              <span style={{ fontSize: 11, fontWeight: 500, color: "var(--color-brand)", border: "1px solid var(--color-border)", background: "var(--color-brand-tint)", borderRadius: 999, padding: "2px 10px" }}>
+                <EditableText key={`roleTag-${selectedIndex}`} value={persona.roleTag} onChange={(v) => patchCurrent({ roleTag: v })} style={{ fontSize: 11, fontWeight: 500, color: "var(--color-brand)" }} revise={reviseText} />
+              </span>
             </div>
-            <p style={{ fontSize: 12, color: "var(--color-muted)", lineHeight: 1.5, margin: "4px 0 0" }}>{persona.subtitle}</p>
+            <p style={{ fontSize: 12, color: "var(--color-muted)", lineHeight: 1.5, margin: "4px 0 0" }}>
+              <EditableText key={`subtitle-${selectedIndex}`} value={persona.subtitle} onChange={(v) => patchCurrent({ subtitle: v })} multiline rows={2} style={{ fontSize: 12, color: "var(--color-muted)" }} revise={reviseText} />
+            </p>
           </div>
-          {PERSONAS.length > 1 && (
-            <span style={{ fontSize: 11, color: "var(--color-muted)", flexShrink: 0, marginTop: 1 }}>{selectedIndex + 1} / {PERSONAS.length}</span>
+          {personaStates.length > 1 && (
+            <span style={{ fontSize: 11, color: "var(--color-muted)", flexShrink: 0, marginTop: 1 }}>{selectedIndex + 1} / {personaStates.length}</span>
           )}
         </div>
 
@@ -2222,7 +2701,7 @@ function StepPersonas({ onNext }: { onNext: () => void }) {
 
         <div style={{ display: "flex", flexDirection: "column", gap: 16, padding: "16px" }}>
           {persona.tabs[activeTab].map((section, i) => (
-            <PSField key={i} section={section} />
+            <PSField key={`${selectedIndex}-${activeTab}-${section.label}`} section={section} onChange={(content) => updateSection(activeTab, i, content)} />
           ))}
         </div>
       </div>
@@ -2595,6 +3074,8 @@ const RECOMMENDATION_BADGE: Record<Recommendation, React.CSSProperties> = {
   "Test Small": { color: "var(--color-warning)", background: "rgba(241,196,15,0.15)", border: "1px solid rgba(241,196,15,0.35)" },
   Defer: { color: "var(--color-muted)", background: "var(--color-surface)", border: "1px solid var(--color-border)" },
 };
+const RECOMMENDATION_ORDER: Recommendation[] = ["Launch First", "Test Small", "Defer"];
+function nextRecommendation(r: Recommendation): Recommendation { return RECOMMENDATION_ORDER[(RECOMMENDATION_ORDER.indexOf(r) + 1) % RECOMMENDATION_ORDER.length]; }
 
 const MONO_FONT = "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace";
 
@@ -2620,16 +3101,16 @@ interface IcpScore {
   recommendation: Recommendation;
 }
 
-const TAM_DESCRIPTION =
+const TAM_DESCRIPTION_DEFAULT =
   "The total addressable market centres on B2B companies running outbound sales motions who still personalize outreach manually or through generic templates. The core pain — reps hand-crafting sequences that convert at a fraction of what personalized, AI-assisted outreach could — is universal across any company running structured outbound. The serviceable market is bounded by company stage (teams big enough to run outbound at volume but not yet locked into enterprise sales-engagement contracts), function (dedicated outbound ownership, whether in-house or agency-run), and appetite for AI-assisted messaging. Rough combined TAM across the three segments is 175,000–230,000 companies and agencies actively running B2B outbound today.";
 
-const MARKET_SEGMENTS: MarketSegment[] = [
+const MARKET_SEGMENTS_DEFAULT: MarketSegment[] = [
   { name: "Mid-Market B2B SaaS, Fintech & Professional Services (50–500 employees)", size: "~90,000–120,000 companies" },
   { name: "Early-Stage Startups running founder-led sales", size: "~70,000–90,000 companies" },
   { name: "Outbound Agencies & Fractional SDR Teams", size: "~15,000–20,000 practices managing 5–20 client accounts" },
 ];
 
-const ICP_SCORES: IcpScore[] = [
+const ICP_SCORES_DEFAULT: IcpScore[] = [
   {
     name: "VP Sales / Head of RevOps — Mid-Market B2B",
     scores: { "Market Size": 8, "Product Fit": 10, "Pain Urgency": 9, Reachability: 8, Competition: 6 },
@@ -2693,17 +3174,48 @@ const MATRIX_HEADER_CELL: React.CSSProperties = {
   fontFamily: MONO_FONT, whiteSpace: "nowrap" as const, overflow: "hidden", textOverflow: "ellipsis",
 };
 
-function MatrixScoreCell({ value }: { value: number }) {
+function EditableScoreCell({ value, onChange }: { value: number; onChange: (v: number) => void }) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(String(value));
+  useEffect(() => { if (!editing) setDraft(String(value)); }, [value, editing]);
+
+  function commit() {
+    setEditing(false);
+    const n = Math.round(Number(draft));
+    if (!Number.isNaN(n)) onChange(Math.max(0, Math.min(10, n)));
+    else setDraft(String(value));
+  }
+
+  if (editing) {
+    return (
+      <input
+        autoFocus type="number" min={0} max={10} value={draft}
+        onChange={(e) => setDraft(e.target.value)}
+        onBlur={commit}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") { e.preventDefault(); commit(); }
+          if (e.key === "Escape") { e.preventDefault(); setDraft(String(value)); setEditing(false); }
+        }}
+        style={{ width: 42, fontFamily: MONO_FONT, fontSize: 13, border: "1px solid var(--color-brand)", borderRadius: 6, padding: "2px 4px", outline: "none", background: "var(--color-page)", color: "var(--color-heading)" }}
+      />
+    );
+  }
   const tone = scoreTone(value);
   return (
-    <span style={{ fontFamily: MONO_FONT, fontSize: 13, whiteSpace: "nowrap" as const }}>
+    <span onClick={() => setEditing(true)} title="Click to edit" className="ob-editable"
+      style={{ fontFamily: MONO_FONT, fontSize: 13, whiteSpace: "nowrap" as const, cursor: "text", borderRadius: 5, padding: "1px 4px", margin: "-1px -4px" }}>
       <span style={{ fontWeight: 700, color: tone }}>{value}</span>
       <span style={{ color: "var(--color-subtle)" }}>/10</span>
     </span>
   );
 }
 
-function IcpMatrix({ icps }: { icps: IcpScore[] }) {
+function IcpMatrix({ icps, onUpdateName, onUpdateScore, onCycleRecommendation }: {
+  icps: IcpScore[];
+  onUpdateName: (i: number, name: string) => void;
+  onUpdateScore: (i: number, dim: ScoreDimension, value: number) => void;
+  onCycleRecommendation: (i: number) => void;
+}) {
   return (
     <div style={{ overflowX: "auto" as const }}>
       <div style={{ minWidth: 760, borderRadius: 14, border: "1px solid var(--color-border)", overflow: "hidden" }}>
@@ -2715,15 +3227,20 @@ function IcpMatrix({ icps }: { icps: IcpScore[] }) {
           <span style={MATRIX_HEADER_CELL}>Action</span>
         </div>
         {icps.map((icp, i) => (
-          <div key={icp.name} style={{ display: "grid", gridTemplateColumns: MATRIX_GRID_COLUMNS, gap: 10, alignItems: "center", padding: "18px 14px", borderBottom: i < icps.length - 1 ? "1px solid var(--color-border)" : "none" }}>
+          <div key={i} style={{ display: "grid", gridTemplateColumns: MATRIX_GRID_COLUMNS, gap: 10, alignItems: "center", padding: "18px 14px", borderBottom: i < icps.length - 1 ? "1px solid var(--color-border)" : "none" }}>
             <span style={{ fontSize: i === 0 ? 15 : 12.5, fontWeight: 700, color: i === 0 ? "var(--color-warning)" : "var(--color-muted)" }}>
               {i === 0 ? "★" : i + 1}
             </span>
             <div>
-              <div style={{ fontSize: 13.5, fontWeight: 700, color: "var(--color-heading)", lineHeight: 1.4, marginBottom: 8, paddingRight: 8 }}>{icp.name}</div>
-              <span style={{ display: "inline-block", fontFamily: MONO_FONT, fontSize: 10.5, fontWeight: 700, padding: "3px 9px", borderRadius: 6, whiteSpace: "nowrap" as const, ...RECOMMENDATION_BADGE[icp.recommendation] }}>{icp.recommendation}</span>
+              <div style={{ fontSize: 13.5, fontWeight: 700, color: "var(--color-heading)", lineHeight: 1.4, marginBottom: 8, paddingRight: 8 }}>
+                <EditableText value={icp.name} onChange={(v) => onUpdateName(i, v)} style={{ fontSize: 13.5, fontWeight: 700 }} revise={reviseText} />
+              </div>
+              <button type="button" onClick={() => onCycleRecommendation(i)} title="Click to change recommendation"
+                style={{ display: "inline-block", fontFamily: MONO_FONT, fontSize: 10.5, fontWeight: 700, padding: "3px 9px", borderRadius: 6, whiteSpace: "nowrap" as const, cursor: "pointer", ...RECOMMENDATION_BADGE[icp.recommendation] }}>
+                {icp.recommendation}
+              </button>
             </div>
-            {SCORE_DIMENSIONS.map((d) => <MatrixScoreCell key={d} value={icp.scores[d]} />)}
+            {SCORE_DIMENSIONS.map((d) => <EditableScoreCell key={d} value={icp.scores[d]} onChange={(v) => onUpdateScore(i, d, v)} />)}
             <span style={{ fontFamily: MONO_FONT, fontSize: 17, fontWeight: 800, color: scoreTone(overallScore(icp)) }}>
               {overallScore(icp).toFixed(1)}
             </span>
@@ -2737,9 +3254,47 @@ function IcpMatrix({ icps }: { icps: IcpScore[] }) {
   );
 }
 
+function reviseMarketSegments(segments: MarketSegment[], instruction: string): MarketSegment[] {
+  const lower = instruction.toLowerCase();
+  const addSeg = instruction.match(/add\s+([a-z0-9][\w.& -]{1,60}?)\s+as\s+a\s+(?:market\s+)?segment/i);
+  if (addSeg) {
+    const name = addSeg[1].trim();
+    if (name && !segments.some((s) => s.name.toLowerCase() === name.toLowerCase())) {
+      return [...segments, { name, size: "TBD" }];
+    }
+    return segments;
+  }
+  if (/shorter|concise|tighten|trim/.test(lower)) {
+    return segments.map((s) => ({ ...s, name: firstSentence(s.name) }));
+  }
+  return segments;
+}
+
 function StepTamIcp({ products, onNext }: { products: Product[]; onNext: () => void }) {
   const [view, setView] = useState<"Graph" | "Matrix">("Graph");
+  const [tamDescription, setTamDescription] = useState(TAM_DESCRIPTION_DEFAULT);
+  const [segments, setSegments] = useState<MarketSegment[]>(MARKET_SEGMENTS_DEFAULT);
+  const [icps, setIcps] = useState<IcpScore[]>(ICP_SCORES_DEFAULT);
   const productName = products[0]?.name?.trim() || "Your product";
+
+  function updateSegment(i: number, fields: Partial<MarketSegment>) {
+    setSegments((cur) => cur.map((s, idx) => (idx === i ? { ...s, ...fields } : s)));
+  }
+  function removeSegment(i: number) {
+    setSegments((cur) => cur.filter((_, idx) => idx !== i));
+  }
+  function addSegment() {
+    setSegments((cur) => [...cur, { name: "New segment", size: "TBD" }]);
+  }
+  function updateIcpName(i: number, name: string) {
+    setIcps((cur) => cur.map((icp, idx) => (idx === i ? { ...icp, name } : icp)));
+  }
+  function updateIcpScore(i: number, dim: ScoreDimension, value: number) {
+    setIcps((cur) => cur.map((icp, idx) => (idx === i ? { ...icp, scores: { ...icp.scores, [dim]: value } } : icp)));
+  }
+  function cycleRecommendation(i: number) {
+    setIcps((cur) => cur.map((icp, idx) => (idx === i ? { ...icp, recommendation: nextRecommendation(icp.recommendation) } : icp)));
+  }
 
   return (
     <div className="ob-card" style={{ ...CARD, maxWidth: 760 }}>
@@ -2764,21 +3319,36 @@ function StepTamIcp({ products, onNext }: { products: Product[]; onNext: () => v
       </div>
 
       <p style={{ fontSize: 14, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 20px" }}>
-        AI scores each ICP on 5 dimensions to identify which to launch first, test small, or defer.
+        AI scores each ICP on 5 dimensions to identify which to launch first, test small, or defer. Click any field to edit it, or hit <span style={{ color: "var(--color-brand)" }}>✨</span> to ask AI to revise it.
       </p>
 
       <div style={{ borderRadius: 14, border: "1px solid var(--color-border)", padding: "20px 22px", marginBottom: 20 }}>
-        <p style={{ fontSize: 13.5, color: "var(--color-body)", lineHeight: 1.7, margin: "0 0 16px" }}>{TAM_DESCRIPTION}</p>
-        <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.05em", textTransform: "uppercase" as const, marginBottom: 10 }}>
+        <p style={{ fontSize: 13.5, color: "var(--color-body)", lineHeight: 1.7, margin: "0 0 16px" }}>
+          <EditableText value={tamDescription} onChange={setTamDescription} multiline rows={4} style={{ fontSize: 13.5, lineHeight: 1.7 }} revise={reviseText} />
+        </p>
+        <SectionLabel ai={<AIRevise value={segments} onChange={setSegments} revise={reviseMarketSegments} scale="section" />}>
           Market Segments <span style={{ fontWeight: 400, textTransform: "none" as const, letterSpacing: "normal" }}>· sizes are rough estimates</span>
-        </div>
+        </SectionLabel>
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          {MARKET_SEGMENTS.map((seg) => (
-            <div key={seg.name} style={{ padding: "10px 14px", borderRadius: 10, background: "var(--color-surface)", fontSize: 12.5, lineHeight: 1.5 }}>
-              <span style={{ fontWeight: 600, color: "var(--color-heading)" }}>{seg.name}</span>
-              <span style={{ color: "var(--color-muted)" }}> · {seg.size}</span>
+          {segments.map((seg, i) => (
+            <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8, padding: "10px 14px", borderRadius: 10, background: "var(--color-surface)", fontSize: 12.5, lineHeight: 1.5 }}>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <span style={{ fontWeight: 600, color: "var(--color-heading)" }}>
+                  <EditableText value={seg.name} onChange={(v) => updateSegment(i, { name: v })} style={{ fontSize: 12.5, fontWeight: 600 }} revise={reviseText} />
+                </span>
+                <span style={{ color: "var(--color-muted)" }}>
+                  {" · "}
+                  <EditableText value={seg.size} onChange={(v) => updateSegment(i, { size: v })} style={{ fontSize: 12.5, color: "var(--color-muted)" }} revise={reviseText} />
+                </span>
+              </div>
+              <button type="button" onClick={() => removeSegment(i)} title="Remove"
+                style={{ flexShrink: 0, background: "none", border: "none", color: "var(--color-subtle)", cursor: "pointer", fontSize: 14, padding: 0, lineHeight: 1.5, fontFamily: "inherit" }}>×</button>
             </div>
           ))}
+          <button type="button" onClick={addSegment}
+            style={{ alignSelf: "flex-start", background: "none", border: "none", color: "var(--color-brand)", cursor: "pointer", fontSize: 11.5, fontWeight: 600, padding: "2px 0", fontFamily: "inherit" }}>
+            + Add segment
+          </button>
         </div>
       </div>
 
@@ -2797,10 +3367,10 @@ function StepTamIcp({ products, onNext }: { products: Product[]; onNext: () => v
               Fit
             </button>
           </div>
-          <IcpGraph productName={productName} icps={ICP_SCORES} />
+          <IcpGraph productName={productName} icps={icps} />
         </div>
       ) : (
-        <IcpMatrix icps={ICP_SCORES} />
+        <IcpMatrix icps={icps} onUpdateName={updateIcpName} onUpdateScore={updateIcpScore} onCycleRecommendation={cycleRecommendation} />
       )}
 
       <button onClick={onNext} className="ob-primary-btn" style={{ ...PRIMARY_BTN, marginTop: 24 }}>
