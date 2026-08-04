@@ -3,16 +3,18 @@ import { ICPS, IcpDetail, PERSONAS, PRODUCTS, PersonaDetail, ProductDetail, Tree
 import { EmptyState, Icon, IconName } from "./ui";
 import { KnowledgeTree, TreeSelection } from "./Tree";
 import { KnowledgeDiagram } from "./Diagram";
+import { KnowledgeBrowse } from "./Browse";
 import { KnowledgeDashboard } from "./Dashboard";
 import { ProductDetailPane, emptyProduct } from "./ProductDetailPane";
 import { IcpDetailPane, emptyIcp } from "./IcpDetailPane";
 import { PersonaDetailPane, emptyPersona } from "./PersonaDetailPane";
 
-type ExplorerView = "diagram" | "tree" | "performance";
+type ExplorerView = "diagram" | "tree" | "browse" | "performance";
 
 const VIEWS: { key: ExplorerView; label: string; icon: IconName }[] = [
   { key: "diagram", label: "Diagram", icon: "route" },
   { key: "tree", label: "Tree", icon: "list" },
+  { key: "browse", label: "Browse", icon: "grid" },
   { key: "performance", label: "Performance", icon: "chart" },
 ];
 
@@ -162,6 +164,7 @@ export function Explorer({ reviewedKeys, onToggleReviewed, onNodeTypeChange }: {
         <KnowledgeDashboard
           products={products} icps={icps} personas={personas}
           selection={selection} onSelect={setSelection}
+          reviewedKeys={reviewedKeys}
         />
         {detailPane && <div ref={paneRef} style={{ maxWidth: 980 }}>{detailPane}</div>}
       </div>
@@ -179,6 +182,24 @@ export function Explorer({ reviewedKeys, onToggleReviewed, onNodeTypeChange }: {
           onAddProduct={addProduct} onAddIcp={addIcp} onAddPersona={addPersona}
         />
         {detailPane && <div ref={paneRef} style={{ maxWidth: 980 }}>{detailPane}</div>}
+      </div>
+    );
+  }
+
+  // Browse's product/ICP tabs are pure navigation — selecting one shouldn't
+  // pop that item's full edit form under the card grid. Only a persona click
+  // (the thing this view is actually for) opens the detail pane here.
+  if (view === "browse") {
+    return (
+      <div onClick={handleBackgroundClick} style={{ display: "flex", flexDirection: "column", gap: 20, minHeight: "70vh" }}>
+        {viewToggle}
+        <KnowledgeBrowse
+          products={products} icps={icps} personas={personas}
+          selection={selection} onSelect={setSelection}
+          reviewedKeys={reviewedKeys}
+          onAddProduct={addProduct} onAddIcp={addIcp} onAddPersona={addPersona}
+        />
+        {selectedPersona && detailPane && <div ref={paneRef} style={{ maxWidth: 980 }}>{detailPane}</div>}
       </div>
     );
   }

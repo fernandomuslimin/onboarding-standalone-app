@@ -66,11 +66,13 @@ function Avatar({ name }: { name: string }) {
   );
 }
 
-function AddGhost({ label, onClick }: { label: string; onClick: () => void }) {
+export function AddGhost({ label, onClick, width = 168, minHeight = 56 }: {
+  label: string; onClick: () => void; width?: number | string; minHeight?: number;
+}) {
   return (
     <button type="button" onClick={onClick} className="kc-chart-box"
       style={{
-        width: 168, minHeight: 56, display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+        width, minHeight, boxSizing: "border-box", display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
         border: "1.5px dashed var(--color-border-strong)", borderRadius: 10, background: "transparent",
         color: "var(--color-muted)", fontFamily: "inherit", fontSize: 12, fontWeight: 600, cursor: "pointer",
       }}>
@@ -121,10 +123,16 @@ const CARD_TINTS = [
   { bg: "#fffbeb", border: "#fde68a" },
 ];
 
-function PersonaCard({ persona, icp, active, reviewed, onSelect, tintIndex }: {
+export function PersonaCard({ persona, icp, active, reviewed, onSelect, tintIndex, variant = "tinted", width = 240 }: {
   persona: PersonaDetail; icp: IcpDetail; active: boolean; reviewed: boolean; onSelect: () => void; tintIndex: number;
+  variant?: "tinted" | "plain"; width?: number | string;
 }) {
-  const tint = CARD_TINTS[tintIndex % CARD_TINTS.length];
+  // "tinted" rotates a pastel palette so neighboring boxes in the org-chart
+  // read as distinct branches. Outside that chart context (e.g. a plain card
+  // grid) the same rotation has nothing to contrast against and just looks
+  // like random color, so "plain" renders every card the same neutral white.
+  const tint = variant === "tinted" ? CARD_TINTS[tintIndex % CARD_TINTS.length] : { bg: "var(--color-page)", border: "var(--color-border)" };
+  const dividerColor = variant === "tinted" ? "rgba(0,0,0,0.08)" : "var(--color-border)";
   const { products, opportunities, pipelineValue } = personaPerformance(persona.id);
   const bullets = [persona.department, icp.industryTag, icp.geographies[0], icp.companySizes[0]].filter(Boolean) as string[];
   const stats = [
@@ -136,7 +144,7 @@ function PersonaCard({ persona, icp, active, reviewed, onSelect, tintIndex }: {
   return (
     <button type="button" onClick={onSelect} className="kc-chart-box" data-level="persona"
       style={{
-        width: 240, minHeight: ROW_HEIGHT.persona, boxSizing: "border-box",
+        width, minHeight: ROW_HEIGHT.persona, boxSizing: "border-box",
         display: "flex", flexDirection: "column",
         textAlign: "left", fontFamily: "inherit", cursor: "pointer", overflow: "hidden",
         background: tint.bg, border: `1px solid ${tint.border}`,
@@ -146,7 +154,7 @@ function PersonaCard({ persona, icp, active, reviewed, onSelect, tintIndex }: {
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
           <Avatar name={persona.name} />
           <div style={{ minWidth: 0, display: "flex", alignItems: "center", gap: 5 }}>
-            <span style={{ fontSize: 13, fontWeight: 700, color: "var(--color-heading)", textDecoration: "underline", lineHeight: 1.3 }}>{persona.name}</span>
+            <span style={{ fontSize: 13, fontWeight: 700, color: "var(--color-heading)", textDecoration: variant === "tinted" ? "underline" : "none", lineHeight: 1.3 }}>{persona.name}</span>
             {reviewed && <Icon name="check" size={12} color="var(--color-success)" />}
           </div>
         </div>
@@ -159,9 +167,9 @@ function PersonaCard({ persona, icp, active, reviewed, onSelect, tintIndex }: {
           ))}
         </div>
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", borderTop: "1px solid rgba(0,0,0,0.08)" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", borderTop: `1px solid ${dividerColor}` }}>
         {stats.map((s, i) => (
-          <div key={s.label} style={{ padding: "8px 4px", textAlign: "center", borderRight: i < stats.length - 1 ? "1px solid rgba(0,0,0,0.08)" : "none" }}>
+          <div key={s.label} style={{ padding: "8px 4px", textAlign: "center", borderRight: i < stats.length - 1 ? `1px solid ${dividerColor}` : "none" }}>
             <div style={{ fontSize: 9, fontWeight: 700, color: "var(--color-muted)", textTransform: "uppercase", letterSpacing: "0.03em" }}>{s.label}</div>
             <div style={{ fontSize: 13, fontWeight: 800, color: "var(--color-heading)" }}>{s.value}</div>
           </div>

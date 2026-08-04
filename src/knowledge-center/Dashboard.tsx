@@ -1,6 +1,7 @@
-import { IcpDetail, PersonaDetail, ProductDetail, personaPerformance } from "./data";
-import { EmptyState, Icon, ProgressBar, StatTile, formatCurrencyShort } from "./ui";
+import { IcpDetail, PersonaDetail, ProductDetail, personaPerformance, treeKey } from "./data";
+import { EmptyState, Icon, StatTile, formatCurrencyShort } from "./ui";
 import { TreeSelection } from "./Tree";
+import { PersonaCard } from "./Diagram";
 
 /* ════════════════════════════════════════════════════════════════════
    Performance dashboard — personas ranked by pipeline and bucketed into
@@ -39,21 +40,10 @@ interface PerformanceRow {
   persona: PersonaDetail;
   icp?: IcpDetail;
   product?: ProductDetail;
-  products: number;
   opportunities: number;
   pipelineValue: number;
   campaigns: number;
 }
-
-const GRID_COLS = "minmax(200px, 2fr) minmax(120px, 1.4fr) 92px 74px 74px 84px";
-const HEADER_CELL: React.CSSProperties = {
-  fontSize: 10, fontWeight: 700, color: "var(--color-muted)",
-  letterSpacing: "0.05em", textTransform: "uppercase", whiteSpace: "nowrap",
-};
-const NUM_CELL: React.CSSProperties = {
-  fontSize: 13, fontWeight: 700, color: "var(--color-heading)",
-  textAlign: "right", fontVariantNumeric: "tabular-nums",
-};
 
 function TierChip({ tier, count }: { tier: Tier; count: number }) {
   const meta = TIER_META[tier];
@@ -71,44 +61,33 @@ function TierChip({ tier, count }: { tier: Tier; count: number }) {
   );
 }
 
-function Row({ row, leader, active, onSelect }: {
-  row: PerformanceRow; leader: number; active: boolean; onSelect: () => void;
+function PerformanceCard({ row, active, reviewed, onSelect }: {
+  row: PerformanceRow; active: boolean; reviewed: boolean; onSelect: () => void;
 }) {
-  const pct = leader > 0 ? (row.pipelineValue / leader) * 100 : 0;
   const context = [row.icp?.name, row.product?.name].filter(Boolean).join(" · ");
 
+  // The card itself is icp-scoped (it needs one to render bullets/stats), so
+  // this only renders once we actually found the persona's icp — true for
+  // every persona in practice, since orphans are deleted alongside their icp.
+  if (!row.icp) return null;
+
   return (
-    <button
-      type="button"
-      onClick={onSelect}
-      className="kc-list-row"
-      title={`${row.persona.name} — ${formatCurrencyShort(row.pipelineValue)} pipeline, ${row.opportunities} opportunities across ${row.campaigns} campaign${row.campaigns === 1 ? "" : "s"}`}
-      style={{
-        display: "grid", gridTemplateColumns: GRID_COLS, gap: 14, alignItems: "center",
-        width: "100%", textAlign: "left", fontFamily: "inherit", cursor: "pointer",
-        padding: "12px 16px", border: "none", borderTop: "1px solid var(--color-border)",
-        background: active ? "var(--color-brand-tint)" : "transparent",
-      }}>
-      <div style={{ minWidth: 0 }}>
-        <div style={{ fontSize: 13, fontWeight: 700, color: active ? "var(--color-brand)" : "var(--color-heading)", lineHeight: 1.3 }}>
-          {row.persona.name}
-        </div>
-        <div style={{ fontSize: 11.5, color: "var(--color-muted)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-          {context || "Unassigned"}
-        </div>
+    <div style={{ display: "flex", flexDirection: "column", gap: 6, width: 240 }}>
+      <div style={{ fontSize: 11, color: "var(--color-muted)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+        {context || "Unassigned"}
       </div>
-      <div><ProgressBar pct={pct} /></div>
-      <span style={NUM_CELL}>{formatCurrencyShort(row.pipelineValue)}</span>
-      <span style={NUM_CELL}>{row.opportunities}</span>
-      <span style={NUM_CELL}>{row.products}</span>
-      <span style={NUM_CELL}>{row.campaigns}</span>
-    </button>
+      <PersonaCard
+        persona={row.persona} icp={row.icp} tintIndex={0} variant="plain"
+        active={active} reviewed={reviewed} onSelect={onSelect}
+      />
+    </div>
   );
 }
 
-export function KnowledgeDashboard({ products, icps, personas, selection, onSelect }: {
+export function KnowledgeDashboard({ products, icps, personas, selection, onSelect, reviewedKeys }: {
   products: ProductDetail[]; icps: IcpDetail[]; personas: PersonaDetail[];
   selection: TreeSelection | null; onSelect: (sel: TreeSelection) => void;
+  reviewedKeys: Set<string>;
 }) {
   const rows: PerformanceRow[] = personas.map((persona) => {
     const perf = personaPerformance(persona.id);
@@ -116,7 +95,6 @@ export function KnowledgeDashboard({ products, icps, personas, selection, onSele
     const product = icp ? products.find((p) => p.id === icp.productId) : undefined;
     return {
       persona, icp, product,
-      products: perf.products,
       opportunities: perf.opportunities,
       pipelineValue: perf.pipelineValue,
       campaigns: perf.combos.length,
@@ -152,31 +130,23 @@ export function KnowledgeDashboard({ products, icps, personas, selection, onSele
             <div style={{ marginBottom: 10 }}>
               <TierChip tier={tier} count={tierRows.length} />
             </div>
-            <div style={{ background: "var(--color-page)", border: "1px solid var(--color-border)", borderRadius: 14, boxShadow: "var(--shadow-card)", overflow: "hidden" }}>
-              <div style={{ display: "grid", gridTemplateColumns: GRID_COLS, gap: 14, padding: "10px 16px", background: "var(--color-surface)" }}>
-                <span style={HEADER_CELL}>Persona</span>
-                <span style={HEADER_CELL}>Pipeline share</span>
-                <span style={{ ...HEADER_CELL, textAlign: "right" }}>Pipeline</span>
-                <span style={{ ...HEADER_CELL, textAlign: "right" }}>Opps</span>
-                <span style={{ ...HEADER_CELL, textAlign: "right" }}>Products</span>
-                <span style={{ ...HEADER_CELL, textAlign: "right" }}>Campaigns</span>
+            {tierRows.length === 0 ? (
+              <div style={{ padding: "16px", fontSize: 12.5, color: "var(--color-subtle)", fontStyle: "italic", background: "var(--color-page)", border: "1px solid var(--color-border)", borderRadius: 14 }}>
+                No personas in this tier.
               </div>
-              {tierRows.length === 0 ? (
-                <div style={{ padding: "16px", fontSize: 12.5, color: "var(--color-subtle)", fontStyle: "italic" }}>
-                  No personas in this tier.
-                </div>
-              ) : (
-                tierRows.map((row) => (
-                  <Row
+            ) : (
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 16 }}>
+                {tierRows.map((row) => (
+                  <PerformanceCard
                     key={row.persona.id}
                     row={row}
-                    leader={leader}
                     active={selection?.type === "persona" && selection.id === row.persona.id}
+                    reviewed={reviewedKeys.has(treeKey("persona", row.persona.id))}
                     onSelect={() => onSelect({ type: "persona", id: row.persona.id })}
                   />
-                ))
-              )}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         );
       })}

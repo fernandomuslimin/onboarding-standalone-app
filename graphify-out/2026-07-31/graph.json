@@ -264,19 +264,10 @@
       "norm_label": "@vitejs/plugin-react"
     },
     {
-      "label": "playwright",
-      "file_type": "code",
-      "source_file": "package.json",
-      "source_location": "L20",
-      "id": "onboarding_standalone_app_package_devdependencies_playwright",
-      "community": 3,
-      "norm_label": "playwright"
-    },
-    {
       "label": "typescript",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L21",
+      "source_location": "L20",
       "id": "onboarding_standalone_app_package_devdependencies_typescript",
       "community": 3,
       "norm_label": "typescript"
@@ -285,7 +276,7 @@
       "label": "vite",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L22",
+      "source_location": "L21",
       "id": "onboarding_standalone_app_package_devdependencies_vite",
       "community": 3,
       "norm_label": "vite"
@@ -294,7 +285,7 @@
       "label": "vite-plugin-singlefile",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L23",
+      "source_location": "L22",
       "id": "onboarding_standalone_app_package_devdependencies_vite_plugin_singlefile",
       "community": 3,
       "norm_label": "vite-plugin-singlefile"
@@ -2555,7 +2546,7 @@
       "source_file": "src/knowledge-center/data.ts",
       "source_location": "L103",
       "id": "knowledge_center_data_productfield",
-      "community": 2,
+      "community": 1,
       "norm_label": "productfield"
     },
     {
@@ -2582,7 +2573,7 @@
       "source_file": "src/knowledge-center/data.ts",
       "source_location": "L231",
       "id": "knowledge_center_data_company_size_buckets",
-      "community": 21,
+      "community": 1,
       "norm_label": "company_size_buckets"
     },
     {
@@ -2591,7 +2582,7 @@
       "source_file": "src/knowledge-center/data.ts",
       "source_location": "L232",
       "id": "knowledge_center_data_funding_stage_buckets",
-      "community": 21,
+      "community": 1,
       "norm_label": "funding_stage_buckets"
     },
     {
@@ -2753,7 +2744,7 @@
       "source_file": "src/knowledge-center/data.ts",
       "source_location": "L935",
       "id": "knowledge_center_data_campaigncombosforpersona",
-      "community": 2,
+      "community": 21,
       "norm_label": "campaigncombosforpersona()"
     },
     {
@@ -2762,7 +2753,7 @@
       "source_file": "src/knowledge-center/data.ts",
       "source_location": "L939",
       "id": "knowledge_center_data_personaperformance",
-      "community": 2,
+      "community": 21,
       "norm_label": "personaperformance()"
     },
     {
@@ -2852,7 +2843,7 @@
       "source_file": "src/knowledge-center/ComboRow.tsx",
       "source_location": "L1",
       "id": "src_knowledge_center_comborow_tsx",
-      "community": 2,
+      "community": 1,
       "norm_label": "comborow.tsx"
     },
     {
@@ -2861,7 +2852,7 @@
       "source_file": "src/knowledge-center/ComboRow.tsx",
       "source_location": "L6",
       "id": "knowledge_center_comborow_channel_icon",
-      "community": 2,
+      "community": 1,
       "norm_label": "channel_icon"
     },
     {
@@ -2870,7 +2861,7 @@
       "source_file": "src/knowledge-center/ComboRow.tsx",
       "source_location": "L10",
       "id": "knowledge_center_comborow_status_style",
-      "community": 2,
+      "community": 1,
       "norm_label": "status_style"
     },
     {
@@ -2879,7 +2870,7 @@
       "source_file": "src/knowledge-center/ComboRow.tsx",
       "source_location": "L17",
       "id": "knowledge_center_comborow_overallfit",
-      "community": 2,
+      "community": 1,
       "norm_label": "overallfit()"
     },
     {
@@ -2888,7 +2879,7 @@
       "source_file": "src/knowledge-center/ComboRow.tsx",
       "source_location": "L20",
       "id": "knowledge_center_comborow_tone",
-      "community": 2,
+      "community": 1,
       "norm_label": "tone()"
     },
     {
@@ -2897,7 +2888,7 @@
       "source_file": "src/knowledge-center/ComboRow.tsx",
       "source_location": "L27",
       "id": "knowledge_center_comborow_header_cell",
-      "community": 2,
+      "community": 1,
       "norm_label": "header_cell"
     },
     {
@@ -2906,7 +2897,7 @@
       "source_file": "src/knowledge-center/ComboRow.tsx",
       "source_location": "L29",
       "id": "knowledge_center_comborow_combotableheader",
-      "community": 2,
+      "community": 1,
       "norm_label": "combotableheader()"
     },
     {
@@ -2915,7 +2906,7 @@
       "source_file": "src/knowledge-center/ComboRow.tsx",
       "source_location": "L43",
       "id": "knowledge_center_comborow_comborow",
-      "community": 2,
+      "community": 1,
       "norm_label": "comborow()"
     },
     {
@@ -3059,7 +3050,7 @@
       "source_file": "src/knowledge-center/ProductDetailPane.tsx",
       "source_location": "L5",
       "id": "knowledge_center_productdetailpane_emptyproduct",
-      "community": 2,
+      "community": 21,
       "norm_label": "emptyproduct()"
     },
     {
@@ -3077,7 +3068,7 @@
       "source_file": "src/knowledge-center/ProductDetailPane.tsx",
       "source_location": "L28",
       "id": "knowledge_center_productdetailpane_productdetailpane",
-      "community": 2,
+      "community": 21,
       "norm_label": "productdetailpane()"
     },
     {
@@ -3257,7 +3248,7 @@
       "source_file": "src/knowledge-center/IcpDetailPane.tsx",
       "source_location": "L1",
       "id": "src_knowledge_center_icpdetailpane_tsx",
-      "community": 21,
+      "community": 2,
       "norm_label": "icpdetailpane.tsx"
     },
     {
@@ -3275,7 +3266,7 @@
       "source_file": "src/knowledge-center/IcpDetailPane.tsx",
       "source_location": "L17",
       "id": "knowledge_center_icpdetailpane_icpcompletion",
-      "community": 21,
+      "community": 2,
       "norm_label": "icpcompletion()"
     },
     {
@@ -3284,7 +3275,7 @@
       "source_file": "src/knowledge-center/IcpDetailPane.tsx",
       "source_location": "L29",
       "id": "knowledge_center_icpdetailpane_percentstat",
-      "community": 21,
+      "community": 2,
       "norm_label": "percentstat()"
     },
     {
@@ -3446,7 +3437,7 @@
       "source_file": "src/knowledge-center/PersonaDetailPane.tsx",
       "source_location": "L46",
       "id": "knowledge_center_personadetailpane_performancesection",
-      "community": 2,
+      "community": 21,
       "norm_label": "performancesection()"
     },
     {
@@ -3567,10 +3558,19 @@
       "norm_label": "addpill()"
     },
     {
-      "label": "KnowledgeBrowse()",
+      "label": "StepButton()",
       "file_type": "code",
       "source_file": "src/knowledge-center/Browse.tsx",
       "source_location": "L46",
+      "id": "knowledge_center_browse_stepbutton",
+      "community": 21,
+      "norm_label": "stepbutton()"
+    },
+    {
+      "label": "KnowledgeBrowse()",
+      "file_type": "code",
+      "source_file": "src/knowledge-center/Browse.tsx",
+      "source_location": "L54",
       "id": "knowledge_center_browse_knowledgebrowse",
       "community": 21,
       "norm_label": "knowledgebrowse()"
@@ -3689,7 +3689,7 @@
       "source_file": "src/knowledge-center/ui.tsx",
       "source_location": "L12",
       "id": "knowledge_center_ui_iconname",
-      "community": 2,
+      "community": 1,
       "norm_label": "iconname"
     },
     {
@@ -3716,7 +3716,7 @@
       "source_file": "src/knowledge-center/ui.tsx",
       "source_location": "L58",
       "id": "knowledge_center_ui_icon",
-      "community": 1,
+      "community": 2,
       "norm_label": "icon()"
     },
     {
@@ -3734,7 +3734,7 @@
       "source_file": "src/knowledge-center/ui.tsx",
       "source_location": "L86",
       "id": "knowledge_center_ui_matchbadge",
-      "community": 21,
+      "community": 2,
       "norm_label": "matchbadge()"
     },
     {
@@ -3833,7 +3833,7 @@
       "source_file": "src/knowledge-center/ui.tsx",
       "source_location": "L252",
       "id": "knowledge_center_ui_kc_primary_btn",
-      "community": 21,
+      "community": 2,
       "norm_label": "kc_primary_btn"
     },
     {
@@ -3860,7 +3860,7 @@
       "source_file": "src/knowledge-center/ui.tsx",
       "source_location": "L270",
       "id": "knowledge_center_ui_iconbutton",
-      "community": 21,
+      "community": 2,
       "norm_label": "iconbutton()"
     },
     {
@@ -4006,15 +4006,6 @@
       "id": "onboarding_standalone_app_claude_graphify",
       "community": 20,
       "norm_label": "graphify"
-    },
-    {
-      "label": "StepButton()",
-      "file_type": "code",
-      "source_file": "src/knowledge-center/Browse.tsx",
-      "source_location": "L46",
-      "community": 21,
-      "norm_label": "stepbutton()",
-      "id": "knowledge_center_browse_stepbutton"
     },
     {
       "label": "HEADER_CELL",
@@ -4432,16 +4423,6 @@
       "confidence_score": 1.0,
       "source": "onboarding_standalone_app_package_dependencies",
       "target": "onboarding_standalone_app_package_dependencies_react_dom"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "package.json",
-      "source_location": "L20",
-      "weight": 1.0,
-      "source": "onboarding_standalone_app_package_devdependencies",
-      "target": "onboarding_standalone_app_package_devdependencies_playwright",
-      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -8523,9 +8504,9 @@
       "source_file": "src/knowledge-center/Dashboard.tsx",
       "source_location": "L1",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "src_knowledge_center_dashboard_tsx",
-      "target": "knowledge_center_data_treekey"
+      "target": "knowledge_center_data_treekey",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -9941,9 +9922,9 @@
       "source_file": "src/knowledge-center/Dashboard.tsx",
       "source_location": "L64",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "src_knowledge_center_dashboard_tsx",
-      "target": "knowledge_center_dashboard_performancecard"
+      "target": "knowledge_center_dashboard_performancecard",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -10032,9 +10013,9 @@
       "source_file": "src/knowledge-center/Dashboard.tsx",
       "source_location": "L4",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "src_knowledge_center_dashboard_tsx",
-      "target": "knowledge_center_diagram_personacard"
+      "target": "knowledge_center_diagram_personacard",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -10109,9 +10090,9 @@
       "source_file": "src/knowledge-center/Dashboard.tsx",
       "source_location": "L4",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "src_knowledge_center_dashboard_tsx",
-      "target": "src_knowledge_center_diagram_tsx"
+      "target": "src_knowledge_center_diagram_tsx",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports_from",
@@ -11698,9 +11679,9 @@
       "source_file": "src/knowledge-center/Browse.tsx",
       "source_location": "L12",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "src_knowledge_center_browse_tsx",
-      "target": "knowledge_center_browse_segtab"
+      "target": "knowledge_center_browse_segtab",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -11708,9 +11689,9 @@
       "source_file": "src/knowledge-center/Browse.tsx",
       "source_location": "L46",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "src_knowledge_center_browse_tsx",
-      "target": "knowledge_center_browse_stepbutton"
+      "target": "knowledge_center_browse_stepbutton",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -11728,9 +11709,9 @@
       "source_file": "src/knowledge-center/Browse.tsx",
       "source_location": "L7",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "src_knowledge_center_browse_tsx",
-      "target": "knowledge_center_browse_tier_label"
+      "target": "knowledge_center_browse_tier_label",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -11783,9 +11764,9 @@
       "source_file": "src/knowledge-center/Browse.tsx",
       "source_location": "L3",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "src_knowledge_center_browse_tsx",
-      "target": "knowledge_center_ui_iconbutton"
+      "target": "knowledge_center_ui_iconbutton",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
