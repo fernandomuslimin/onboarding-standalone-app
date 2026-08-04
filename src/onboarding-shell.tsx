@@ -280,7 +280,7 @@ function PageChrome() {
 /* ─── Progress bar ──────────────────────────────────────────────── */
 const PHASES: { label: string; steps: StepName[] }[] = [
   { label: "AI Agent Research", steps: ["website", "products", "research_summary"] },
-  { label: "Infrastructure", steps: ["primary_domain", "forwarding_domain", "volume", "senders", "split", "infra_summary"] },
+  { label: "Infrastructure", steps: ["primary_domain", "volume", "senders", "split", "infra_summary"] },
   { label: "Connections", steps: ["connect", "connect_linkedin", "connect_calendar", "invite", "connections_summary"] },
   { label: "Review & Approve", steps: ["review_order", "researching", "company_research", "products_services", "tam_icp", "personas", "outreach_campaign"] },
 ];
@@ -298,9 +298,11 @@ function PhaseStepper({ step }: { step: StepName }) {
           const active = i === currentPhaseIdx;
           const stepInPhase = active ? phase.steps.indexOf(step) : 0;
           const pct = done ? 100 : active ? ((stepInPhase + 1) / phase.steps.length) * 100 : 0;
+          const complete = pct >= 100;
           return (
-            <div key={phase.label} style={{ flex: 1, height: 4, borderRadius: 999, background: "var(--color-border)", overflow: "hidden" }}>
-              <div style={{ height: "100%", background: "var(--color-brand)", borderRadius: 999, width: `${pct}%`, transition: "width 300ms var(--ease-apple)" }} />
+            <div key={phase.label} title={complete ? `${phase.label} — 100% completed` : undefined}
+              style={{ flex: 1, height: 4, borderRadius: 999, background: "var(--color-border)", overflow: "hidden" }}>
+              <div style={{ height: "100%", background: complete ? "var(--color-success)" : "var(--color-brand)", borderRadius: 999, width: `${pct}%`, transition: "width 300ms var(--ease-apple), background 200ms var(--ease-apple)" }} />
             </div>
           );
         })}
@@ -317,7 +319,7 @@ function StepSplash({ onNext, onSkip }: { onNext: () => void; onSkip: () => void
   return (
     <div className="ob-card" style={{ ...CARD, maxWidth: 480, textAlign: "center" as const }}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/b2brocket-logo.png" alt="B2B Rocket — powered by BlackPearl" style={{ height: 40, margin: "0 auto 28px", display: "block" }} />
+      <img src={`${import.meta.env.BASE_URL}b2brocket-logo.png`} alt="B2B Rocket — powered by BlackPearl" style={{ height: 40, margin: "0 auto 28px", display: "block" }} />
       <p style={{ fontSize: 15, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 32px" }}>
         Answer a few quick questions and your AI agents get to work — prospecting, personalizing, and booking meetings for you.
       </p>
@@ -767,6 +769,13 @@ function StepResearchSummary({ website, products, onNext, onBack }: {
           </div>
         ))}
       </div>
+      <p style={{
+        fontSize: 12.5, color: "var(--color-warning)", background: "rgba(241,196,15,0.12)",
+        border: "1px solid rgba(241,196,15,0.3)", borderRadius: 10, padding: "10px 14px",
+        lineHeight: 1.5, margin: "0 0 14px",
+      }}>
+        You won&apos;t be able to come back to this step once you continue — make sure everything above looks right first.
+      </p>
       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
         <button onClick={onNext} className="ob-primary-btn" style={PRIMARY_BTN}>
           Looks good — continue
@@ -805,22 +814,33 @@ function StepStartingResearch({ onNext }: { onNext: () => void }) {
 }
 
 /* ════════════════════════════════════════════════════════════════════
-   STEP 3 — Primary domain
+   STEP 3 — Primary & forwarding domain
 ══════════════════════════════════════════════════════════════════════ */
-function StepPrimaryDomain({ website, onNext }: { website: string; onNext: (domain: string) => void }) {
+function StepPrimaryDomain({ website, onNext }: { website: string; onNext: (primaryDomain: string, forwardingDomain: string) => void }) {
   const [domain, setDomain] = useState(() => extractDomain(website));
-  const [focused, setFocused] = useState(false);
+  const [domainFocused, setDomainFocused] = useState(false);
+  const [sameAsPrimary, setSameAsPrimary] = useState(true);
+  const [forwardingDomain, setForwardingDomain] = useState("");
+  const [forwardingFocused, setForwardingFocused] = useState(false);
+
   const valid = isValidDomain(domain);
+  const effectiveForwarding = sameAsPrimary ? domain : forwardingDomain;
+  const canContinue = valid && isValidDomain(effectiveForwarding);
+
+  function submit() {
+    if (!canContinue) return;
+    onNext(domain.trim(), effectiveForwarding.trim());
+  }
 
   return (
     <div className="ob-card" style={{ ...CARD, maxWidth: 480 }}>
       <span style={{ fontSize: 12, fontWeight: 700, color: "var(--color-brand)", letterSpacing: "0.05em", textTransform: "uppercase" as const }}>Sending Setup</span>
-      <h1 style={{ fontSize: 24, margin: "8px 0 8px" }}>What's your primary domain?</h1>
+      <h1 style={{ fontSize: 24, margin: "8px 0 8px" }}>Set up your sending domain</h1>
       <p style={{ fontSize: 14, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 28px" }}>
-        Your main company domain — used as a reference for generating sending domain variations.
+        Your main company domain, and where replies should land.
       </p>
       <div style={{ marginBottom: 20 }}>
-        <label style={LABEL}>Domain</label>
+        <label style={LABEL}>Primary domain</label>
         <div style={{ position: "relative" }}>
           <input
             className="ob-input"
@@ -828,10 +848,10 @@ function StepPrimaryDomain({ website, onNext }: { website: string; onNext: (doma
             placeholder="yourcompany.com"
             value={domain}
             onChange={(e) => setDomain(e.target.value)}
-            onFocus={() => setFocused(true)}
-            onBlur={() => setFocused(false)}
-            onKeyDown={(e) => { if (e.key === "Enter" && valid) onNext(domain.trim()); }}
-            style={{ ...INPUT, ...(focused ? { borderColor: "var(--color-border-strong)", boxShadow: "var(--shadow-focus)" } : {}), ...(domain && valid ? { borderColor: "rgba(7,188,12,0.5)" } : domain && !valid ? { borderColor: "rgba(231,76,60,0.5)" } : {}) }}
+            onFocus={() => setDomainFocused(true)}
+            onBlur={() => setDomainFocused(false)}
+            onKeyDown={(e) => { if (e.key === "Enter" && canContinue) submit(); }}
+            style={{ ...INPUT, ...(domainFocused ? { borderColor: "var(--color-border-strong)", boxShadow: "var(--shadow-focus)" } : {}), ...(domain && valid ? { borderColor: "rgba(7,188,12,0.5)" } : domain && !valid ? { borderColor: "rgba(231,76,60,0.5)" } : {}) }}
           />
           {domain && (
             <span style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", fontSize: 12, fontWeight: 600, color: valid ? "var(--color-success)" : "var(--color-error)" }}>
@@ -839,74 +859,45 @@ function StepPrimaryDomain({ website, onNext }: { website: string; onNext: (doma
             </span>
           )}
         </div>
+        <p style={{ fontSize: 11.5, color: "var(--color-muted)", margin: "6px 0 0" }}>Used as a reference for generating sending domain variations.</p>
       </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-        <button onClick={() => onNext(domain.trim())} disabled={!valid} className="ob-primary-btn" style={{ ...PRIMARY_BTN, opacity: !valid ? 0.5 : 1, cursor: !valid ? "not-allowed" : "pointer" }}>Continue</button>
-      </div>
-    </div>
-  );
-}
-
-/* ════════════════════════════════════════════════════════════════════
-   STEP 4 — Forwarding domain
-══════════════════════════════════════════════════════════════════════ */
-function StepForwardingDomain({ primaryDomain, onNext, onBack }: {
-  primaryDomain: string;
-  onNext: (domain: string) => void;
-  onBack: () => void;
-}) {
-  const [sameAsPrimary, setSameAsPrimary] = useState(true);
-  const [domain, setDomain] = useState("");
-  const [focused, setFocused] = useState(false);
-
-  const effectiveDomain = sameAsPrimary ? primaryDomain : domain;
-  const valid = isValidDomain(effectiveDomain);
-
-  return (
-    <div className="ob-card" style={{ ...CARD, maxWidth: 480 }}>
-      <span style={{ fontSize: 12, fontWeight: 700, color: "var(--color-brand)", letterSpacing: "0.05em", textTransform: "uppercase" as const }}>Sending Setup</span>
-      <h1 style={{ fontSize: 24, margin: "8px 0 8px" }}>Where do replies forward?</h1>
-      <p style={{ fontSize: 14, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 24px" }}>
-        Replies to your sending domains will forward here — usually your main company domain.
-      </p>
-      <div
-        onClick={() => setSameAsPrimary((v) => !v)}
-        style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", borderRadius: 10, background: "var(--color-surface)", marginBottom: 16, cursor: "pointer" }}
-      >
-        <div>
-          <p style={{ fontSize: 13, fontWeight: 600, color: "var(--color-heading)", margin: 0 }}>Same as primary domain</p>
-          <p style={{ fontSize: 11, color: "var(--color-muted)", margin: "2px 0 0" }}>{primaryDomain}</p>
+      <div style={{ marginBottom: 20 }}>
+        <label style={LABEL}>Configure forwarding domain</label>
+        <div
+          onClick={() => setSameAsPrimary((v) => !v)}
+          style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", borderRadius: 10, background: "var(--color-surface)", marginBottom: 12, cursor: "pointer" }}
+        >
+          <div>
+            <p style={{ fontSize: 13, fontWeight: 600, color: "var(--color-heading)", margin: 0 }}>Same as primary domain</p>
+            <p style={{ fontSize: 11, color: "var(--color-muted)", margin: "2px 0 0" }}>{domain || "—"}</p>
+          </div>
+          <span style={{ display: "inline-flex", width: 36, height: 20, borderRadius: 10, background: sameAsPrimary ? "var(--color-brand)" : "var(--color-subtle)", transition: "background 200ms", alignItems: "center", padding: "0 3px", flexShrink: 0 }}>
+            <span style={{ width: 14, height: 14, borderRadius: "50%", background: "#fff", boxShadow: "0 1px 2px rgba(5,12,70,0.2)", transform: sameAsPrimary ? "translateX(16px)" : "translateX(0)", transition: "transform 200ms", display: "block" }} />
+          </span>
         </div>
-        <span style={{ display: "inline-flex", width: 36, height: 20, borderRadius: 10, background: sameAsPrimary ? "var(--color-brand)" : "var(--color-subtle)", transition: "background 200ms", alignItems: "center", padding: "0 3px", flexShrink: 0 }}>
-          <span style={{ width: 14, height: 14, borderRadius: "50%", background: "#fff", boxShadow: "0 1px 2px rgba(5,12,70,0.2)", transform: sameAsPrimary ? "translateX(16px)" : "translateX(0)", transition: "transform 200ms", display: "block" }} />
-        </span>
-      </div>
-      {!sameAsPrimary && (
-        <div style={{ marginBottom: 16 }}>
-          <label style={LABEL}>Forwarding domain</label>
+        {!sameAsPrimary && (
           <div style={{ position: "relative" }}>
             <input
               className="ob-input"
               type="text"
               placeholder="fwd.yourcompany.com"
-              value={domain}
-              onChange={(e) => setDomain(e.target.value)}
-              onFocus={() => setFocused(true)}
-              onBlur={() => setFocused(false)}
-              onKeyDown={(e) => { if (e.key === "Enter" && valid) onNext(effectiveDomain); }}
-              style={{ ...INPUT, ...(focused ? { borderColor: "var(--color-border-strong)", boxShadow: "var(--shadow-focus)" } : {}), ...(domain && isValidDomain(domain) ? { borderColor: "rgba(7,188,12,0.5)" } : domain ? { borderColor: "rgba(231,76,60,0.5)" } : {}) }}
+              value={forwardingDomain}
+              onChange={(e) => setForwardingDomain(e.target.value)}
+              onFocus={() => setForwardingFocused(true)}
+              onBlur={() => setForwardingFocused(false)}
+              onKeyDown={(e) => { if (e.key === "Enter" && canContinue) submit(); }}
+              style={{ ...INPUT, ...(forwardingFocused ? { borderColor: "var(--color-border-strong)", boxShadow: "var(--shadow-focus)" } : {}), ...(forwardingDomain && isValidDomain(forwardingDomain) ? { borderColor: "rgba(7,188,12,0.5)" } : forwardingDomain ? { borderColor: "rgba(231,76,60,0.5)" } : {}) }}
             />
-            {domain && (
-              <span style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", fontSize: 12, fontWeight: 600, color: isValidDomain(domain) ? "var(--color-success)" : "var(--color-error)" }}>
-                {isValidDomain(domain) ? "✓" : "✗"}
+            {forwardingDomain && (
+              <span style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", fontSize: 12, fontWeight: 600, color: isValidDomain(forwardingDomain) ? "var(--color-success)" : "var(--color-error)" }}>
+                {isValidDomain(forwardingDomain) ? "✓" : "✗"}
               </span>
             )}
           </div>
-        </div>
-      )}
+        )}
+      </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-        <button onClick={() => onNext(effectiveDomain)} disabled={!valid} className="ob-primary-btn" style={{ ...PRIMARY_BTN, opacity: !valid ? 0.5 : 1, cursor: !valid ? "not-allowed" : "pointer" }}>Continue</button>
-        <button onClick={onBack} className="ob-ghost-btn" style={GHOST_BTN}>Back</button>
+        <button onClick={submit} disabled={!canContinue} className="ob-primary-btn" style={{ ...PRIMARY_BTN, opacity: !canContinue ? 0.5 : 1, cursor: !canContinue ? "not-allowed" : "pointer" }}>Continue</button>
       </div>
     </div>
   );
@@ -3392,19 +3383,19 @@ type StepName =
   | "welcome"
   | "website" | "products" | "research_summary" | "starting_research"
   | "infra_intro"
-  | "primary_domain" | "forwarding_domain" | "volume"
+  | "primary_domain" | "volume"
   | "senders" | "split" | "infra_summary" | "connections_intro" | "connect" | "connect_linkedin" | "connect_calendar" | "invite" | "connections_summary" | "review_intro" | "review_order" | "researching" | "company_research" | "products_services" | "tam_icp" | "personas" | "outreach_campaign" | "all_set" | "cleared_for_launch";
 
 const STEP_ORDER: StepName[] = [
   "website", "products", "research_summary",
-  "primary_domain", "forwarding_domain", "volume",
+  "primary_domain", "volume",
   "senders", "split", "infra_summary", "connect", "connect_linkedin", "connect_calendar", "invite", "connections_summary", "review_intro", "review_order", "researching", "company_research", "products_services", "tam_icp", "personas", "outreach_campaign",
 ];
 
 /* ─── Resume draft ──────────────────────────────────────────────── */
 const ALL_STEPS: StepName[] = [
   "splash", "welcome", "website", "products", "research_summary", "starting_research",
-  "infra_intro", "primary_domain", "forwarding_domain", "volume", "senders", "split", "infra_summary",
+  "infra_intro", "primary_domain", "volume", "senders", "split", "infra_summary",
   "connections_intro", "connect", "connect_linkedin", "connect_calendar", "invite", "connections_summary",
   "review_intro", "review_order", "researching", "company_research",
   "products_services", "tam_icp", "personas", "outreach_campaign",
@@ -3642,10 +3633,7 @@ export function OnboardingShell() {
           <StepInfraIntro onNext={() => advance("primary_domain")} />
         )}
         {step === "primary_domain" && (
-          <StepPrimaryDomain website={website} onNext={(d) => advance("forwarding_domain", { primaryDomain: d })} />
-        )}
-        {step === "forwarding_domain" && (
-          <StepForwardingDomain primaryDomain={primaryDomain} onNext={(d) => advance("volume", { forwardingDomain: d })} onBack={goBack} />
+          <StepPrimaryDomain website={website} onNext={(primary, forwarding) => advance("volume", { primaryDomain: primary, forwardingDomain: forwarding })} />
         )}
         {step === "volume" && (
           <StepVolume onNext={(pkg) => advance("senders", { selectedPackage: pkg })} onBack={goBack} />
