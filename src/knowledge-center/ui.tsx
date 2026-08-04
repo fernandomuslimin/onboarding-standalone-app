@@ -14,7 +14,7 @@ export type IconName =
   | "chart" | "search" | "message" | "shield" | "list" | "folder" | "phone"
   | "mail" | "linkedin" | "check" | "clock" | "external" | "chevron-down"
   | "chevron-left" | "plus" | "trash" | "graph" | "grid" | "filter" | "brain"
-  | "compass" | "layers" | "route" | "handshake" | "book" | "map" | "edit";
+  | "compass" | "layers" | "route" | "handshake" | "book" | "map" | "edit" | "info" | "close";
 
 const ICON_PATHS: Record<IconName, React.ReactNode> = {
   building: <><path d="M4 21V4a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v17" /><path d="M15 9h4a1 1 0 0 1 1 1v11" /><path d="M9 8h.01M9 12h.01M9 16h.01M9 20h.01M18 13h.01M18 17h.01" /></>,
@@ -51,6 +51,8 @@ const ICON_PATHS: Record<IconName, React.ReactNode> = {
   book: <><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H12v16H5.5A1.5 1.5 0 0 1 4 18.5v-13Z" /><path d="M20 5.5A1.5 1.5 0 0 0 18.5 4H12v16h6.5a1.5 1.5 0 0 0 1.5-1.5v-13Z" /></>,
   map: <><path d="M9 4L4 6v14l5-2 6 2 5-2V4l-5 2-6-2Z" /><path d="M9 4v14M15 6v14" /></>,
   edit: <><path d="M4 20l1-4.2L15.8 5a1.4 1.4 0 0 1 2 0l1.2 1.2a1.4 1.4 0 0 1 0 2L8.2 19 4 20Z" /><path d="M13.2 6.8l4 4" /></>,
+  info: <><circle cx="12" cy="12" r="9" /><path d="M12 11v5.5" /><path d="M12 7.5h.01" /></>,
+  close: <path d="M6 6l12 12M18 6L6 18" />,
 };
 
 const FILLED_ICONS = new Set<IconName>(["linkedin"]);
@@ -318,6 +320,29 @@ export function Pagination({ page, pageCount, onChange }: { page: number; pageCo
   );
 }
 
+/* ─── Drawer ──────────────────────────────────────────────────────── */
+export function Drawer({ open, onClose, title, children, width = 480 }: {
+  open: boolean; onClose: () => void; title?: string; children: React.ReactNode; width?: number;
+}) {
+  if (!open) return null;
+  return (
+    <div style={{ position: "fixed", inset: 0, zIndex: 60, display: "flex", justifyContent: "flex-end" }}>
+      <div onClick={onClose} className="kc-drawer-backdrop" style={{ position: "absolute", inset: 0, background: "rgba(15, 18, 25, 0.4)" }} />
+      <div className="kc-drawer-panel" style={{
+        position: "relative", width, maxWidth: "92vw", height: "100%", background: "var(--color-page)",
+        borderLeft: "1px solid var(--color-border)", boxShadow: "var(--shadow-card)", overflowY: "auto",
+        padding: "20px 24px 28px",
+      }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+          <span style={{ fontSize: 15, fontWeight: 700, color: "var(--color-heading)" }}>{title}</span>
+          <IconButton icon="close" title="Close" onClick={onClose} />
+        </div>
+        {children}
+      </div>
+    </div>
+  );
+}
+
 /* ─── Shared style constants ─────────────────────────────────────── */
 export const KC_STYLES = `
 .kc-input:focus { background: var(--color-page) !important; border-color: var(--color-brand) !important; box-shadow: var(--shadow-focus); }
@@ -331,4 +356,8 @@ export const KC_STYLES = `
 @media (max-width: 900px) {
   .kc-sidebar { display: none !important; }
 }
+@keyframes kc-drawer-slide-in { from { transform: translateX(100%); } to { transform: translateX(0); } }
+@keyframes kc-drawer-fade-in { from { opacity: 0; } to { opacity: 1; } }
+.kc-drawer-panel { animation: kc-drawer-slide-in 0.22s ease-out; }
+.kc-drawer-backdrop { animation: kc-drawer-fade-in 0.22s ease-out; }
 `;

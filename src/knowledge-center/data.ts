@@ -865,6 +865,13 @@ export function overallScore(scores: Record<ScoreDimension, number>): number {
 }
 
 /* ─── Campaign ──────────────────────────────────────────────────── */
+export interface SequenceStep {
+  day: number;
+  channel: "Email" | "LinkedIn" | "Cold Calling";
+  subject?: string;
+  copy: string;
+}
+
 export interface CampaignCombo {
   id: string;
   productId: string;
@@ -879,6 +886,7 @@ export interface CampaignCombo {
   detail: string;
   opportunities: number;
   pipelineValue: number;
+  sequence: SequenceStep[];
 }
 
 export const CAMPAIGN_COMBOS: CampaignCombo[] = [
@@ -887,48 +895,97 @@ export const CAMPAIGN_COMBOS: CampaignCombo[] = [
     icpScore: 9.2, personaScore: 8.8, productScore: 9.4, channel: "Email", campaignName: "Time-to-First-Send — Mid-Market",
     status: "Completed", detail: "6-step email sequence emphasizing same-day sending and reply-rate proof points. Sent to 1,240 contacts, 14.2% reply rate.",
     opportunities: 14, pipelineValue: 210000,
+    sequence: [
+      { day: 1, channel: "Email", subject: "Sending live today, not in 3 weeks", copy: "Hi {{firstName}} — most teams your size spend 2-3 weeks on domains, mailboxes, and warmup before their first send. B2B Rocket gets you sending the same day you sign up. Worth a 15-min look?" },
+      { day: 3, channel: "Email", subject: "Re: Sending live today, not in 3 weeks", copy: "Bumping this up — reference customers are seeing 2-3x reply rates in the first 30 days versus manually written sequences. Happy to share the benchmark data if useful." },
+      { day: 6, channel: "Email", subject: "How {{competitor}} teams cut setup to zero", copy: "Quick one: teams switching off {{competitor}} skip the setup project entirely — domains, mailboxes, and warmup are handled for you. Want the 2-min walkthrough?" },
+      { day: 10, channel: "Email", subject: "14.2% reply rate, 1,240 sends", copy: "Sharing a proof point: a mid-market team just like yours hit a 14.2% reply rate on their first 1,240 sends using this exact setup. Can I send the playbook?" },
+      { day: 14, channel: "Email", subject: "Closing the loop", copy: "Haven't heard back — assuming timing isn't right. If reply rates and time-to-first-send become a priority again, I'm here." },
+      { day: 21, channel: "Email", subject: "One more idea", copy: "Last note from me: if it'd help, I can run a free deliverability check on your current sending domain — no strings attached. Just reply 'yes'." },
+    ],
   },
   {
     id: "combo-2", productId: "sending-platform", icpId: "vp-sales-midmarket", personaId: "vp-sales-revops",
     icpScore: 9.2, personaScore: 8.8, productScore: 9.4, channel: "LinkedIn", campaignName: "RevOps Peer Benchmarking",
     status: "Active", detail: "LinkedIn connection + 3-touch DM sequence sharing peer benchmarking data on reply rates.",
     opportunities: 9, pipelineValue: 95000,
+    sequence: [
+      { day: 1, channel: "LinkedIn", copy: "Connection note: Following the RevOps benchmarking work you've posted about — would love to stay connected." },
+      { day: 3, channel: "LinkedIn", copy: "Thanks for connecting! Curious what reply rates your team is seeing on outbound right now — we've been benchmarking mid-market RevOps orgs and the spread is bigger than I expected." },
+      { day: 7, channel: "LinkedIn", copy: "Following up with that benchmark data I mentioned — mid-market teams using AI-personalized sequences are averaging 2-3x the reply rate of manually written ones. Happy to send the full breakdown." },
+      { day: 12, channel: "LinkedIn", copy: "No pressure either way — if peer benchmarking data like this is useful for your planning, I'm glad to keep sharing what we're seeing across the market." },
+    ],
   },
   {
     id: "combo-3", productId: "sending-platform", icpId: "founder-led-startup", personaId: "founder-first-hire",
     icpScore: 7.2, personaScore: 6.6, productScore: 7.4, channel: "Email", campaignName: "Founder-Led Outbound Starter",
     status: "Scheduled", detail: "4-step lightweight sequence, easy yes/no CTA, timed around seed-round announcements.",
     opportunities: 4, pipelineValue: 38000,
+    sequence: [
+      { day: 1, channel: "Email", subject: "Congrats on the raise — quick q", copy: "Saw the seed round news — congrats. Fast question: are you doing outbound yourself right now, or is that on the roadmap post-raise?" },
+      { day: 4, channel: "Email", subject: "Re: Congrats on the raise — quick q", copy: "If outbound's on the list, worth knowing you can be sending personalized sequences same-day, no setup team needed. Interested?" },
+      { day: 8, channel: "Email", subject: "Yes or no?", copy: "Totally fine if now's not the time — just say no and I'll leave it there. If it's worth 10 minutes, say yes and I'll send a slot." },
+      { day: 13, channel: "Email", subject: "Closing this out", copy: "Assuming outbound isn't the priority right now post-raise. I'll check back in a quarter — good luck scaling the team." },
+    ],
   },
   {
     id: "combo-4", productId: "personalization-engine", icpId: "vp-sales-midmarket", personaId: "vp-sales-revops",
     icpScore: 9.2, personaScore: 8.8, productScore: 8.0, channel: "Cold Calling", campaignName: "Personalization Engine Cross-Sell",
     status: "Draft", detail: "Cold-call script for existing sending-platform accounts, positioning the personalization add-on.",
     opportunities: 2, pipelineValue: 21000,
+    sequence: [
+      { day: 1, channel: "Cold Calling", copy: "Opener: \"Hey {{firstName}}, it's {{repName}} from B2B Rocket — you've been on the Sending Platform for about two months now. Got 90 seconds? I want to flag something that could bump your reply rates without adding any manual work.\"" },
+      { day: 1, channel: "Cold Calling", copy: "Pitch: \"The Personalization Engine drafts per-recipient copy using firmographic and signal data — it's a layer on top of what you're already sending, no new tool to learn. Teams see reply rates jump noticeably in the first month.\"" },
+      { day: 1, channel: "Cold Calling", copy: "Objection handling: \"Totally fair if budget's tight this quarter — it's usage-based, so you'd only pay for what you send, and I can get you a trial period to test the lift before committing.\"" },
+      { day: 1, channel: "Cold Calling", copy: "Close: \"Can I get 15 minutes on your calendar this week with one of our solutions folks to walk through what it'd look like on your current sequences?\"" },
+    ],
   },
   {
     id: "combo-5", productId: "sending-platform", icpId: "vp-sales-midmarket", personaId: "head-of-revops",
     icpScore: 9.2, personaScore: 8.4, productScore: 9.4, channel: "Email", campaignName: "CRM Sync & Data Hygiene",
     status: "Active", detail: "5-step technical sequence leading with native two-way CRM sync and zero cleanup jobs. Sent to 680 contacts, 11.8% reply rate.",
     opportunities: 7, pipelineValue: 84000,
+    sequence: [
+      { day: 1, channel: "Email", subject: "No more Salesforce cleanup jobs", copy: "Hi {{firstName}} — how much time does your team spend each week reconciling outbound activity back into Salesforce? B2B Rocket syncs natively, two-way, no middleware." },
+      { day: 3, channel: "Email", subject: "Re: No more Salesforce cleanup jobs", copy: "To be specific: activity, replies, and status changes land in Salesforce in real time — no batch jobs, no field-mapping projects. Worth a look?" },
+      { day: 6, channel: "Email", subject: "The data hygiene angle", copy: "A lot of RevOps leads we talk to inherit messy outbound data because the sending tool and CRM don't agree on source of truth. This setup removes that problem entirely." },
+      { day: 9, channel: "Email", subject: "11.8% reply rate, zero cleanup", copy: "One data point: a similar mid-market team is at 680 sends, 11.8% reply rate, and reports zero manual CRM cleanup since switching. Happy to share how it's configured." },
+      { day: 13, channel: "Email", subject: "Last check-in", copy: "I'll leave this here — if CRM sync and data hygiene become a pain point again, feel free to reach back out." },
+    ],
   },
   {
     id: "combo-6", productId: "sending-platform", icpId: "vp-sales-midmarket", personaId: "sdr-manager",
     icpScore: 9.2, personaScore: 8.1, productScore: 9.4, channel: "LinkedIn", campaignName: "SDR Ramp Time Play",
     status: "Completed", detail: "Connection request plus 4-touch DM sequence built around cutting new-rep ramp from 90 to 45 days.",
     opportunities: 11, pipelineValue: 132000,
+    sequence: [
+      { day: 1, channel: "LinkedIn", copy: "Connection note: Managing SDR ramp time is one of the harder parts of scaling a team — following your posts on it, would love to connect." },
+      { day: 3, channel: "LinkedIn", copy: "Thanks for connecting — quick question: what's ramp time looking like for new SDRs on your team right now, roughly?" },
+      { day: 6, channel: "LinkedIn", copy: "Reason I ask: teams using AI-drafted sequences are cutting new-rep ramp from ~90 days to ~45, since reps aren't starting from a blank page on messaging quality." },
+      { day: 10, channel: "LinkedIn", copy: "If cutting ramp time in half is useful for your Q-planning, happy to share how the messaging library and coaching workflow are set up — no pitch, just the playbook." },
+    ],
   },
   {
     id: "combo-7", productId: "personalization-engine", icpId: "founder-led-startup", personaId: "head-of-growth",
     icpScore: 7.2, personaScore: 6.9, productScore: 8.0, channel: "Email", campaignName: "Growth Experiment Starter",
     status: "Scheduled", detail: "3-step sequence timed to funding announcements, positioning outbound as a channel test they can run this week.",
     opportunities: 3, pipelineValue: 27000,
+    sequence: [
+      { day: 1, channel: "Email", subject: "Testing outbound as a growth channel", copy: "Hi {{firstName}} — if outbound is on your list of channels to test this quarter, you can have a personalized sequence live this week, not next. Want the quick version?" },
+      { day: 5, channel: "Email", subject: "Re: Testing outbound as a growth channel", copy: "The AI drafts and personalizes copy per-recipient using firmographic signals, so there's no manual copywriting to get a real test running." },
+      { day: 9, channel: "Email", subject: "Worth a test or not?", copy: "Totally fine either way — just let me know if outbound experimentation is a priority right now or if it's better to check back later this quarter." },
+    ],
   },
   {
     id: "combo-8", productId: "infra-deliverability", icpId: "agency-fractional-sdr", personaId: "agency-ops-lead",
     icpScore: 5.8, personaScore: 5.4, productScore: 7.9, channel: "Email", campaignName: "Multi-Client Deliverability",
     status: "Draft", detail: "Sequence for agency ops leads on standing up client outbound in an afternoon instead of a week.",
     opportunities: 1, pipelineValue: 12000,
+    sequence: [
+      { day: 1, channel: "Email", subject: "Onboarding a new client's outbound in an afternoon", copy: "Hi {{firstName}} — how long does it typically take your team to stand up domains, mailboxes, and warmup for a new client account?" },
+      { day: 4, channel: "Email", subject: "Re: Onboarding a new client's outbound in an afternoon", copy: "With B2B Rocket's infrastructure layer, that same setup is done in an afternoon, same quality bar every time, across as many client accounts as you're running." },
+      { day: 8, channel: "Email", subject: "Multi-client deliverability, one dashboard", copy: "If managing deliverability across multiple client domains is a recurring headache, this consolidates it into one view instead of juggling separate tools per client." },
+    ],
   },
 ];
 
