@@ -186,20 +186,27 @@ export function Explorer({ reviewedKeys, onToggleReviewed, onNodeTypeChange }: {
     );
   }
 
-  // Browse's product/ICP tabs are pure navigation — selecting one shouldn't
-  // pop that item's full edit form under the card grid. Only a persona click
-  // (the thing this view is actually for) opens the detail pane here.
+  // Browse manages its own product/ICP/persona detail views inline (drawers
+  // for product & ICP, in-place swap for persona), so no detail pane is
+  // rendered at this level for the browse view.
   if (view === "browse") {
     return (
-      <div onClick={handleBackgroundClick} style={{ display: "flex", flexDirection: "column", gap: 20, minHeight: "70vh" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 20, minHeight: "70vh" }}>
         {viewToggle}
         <KnowledgeBrowse
           products={products} icps={icps} personas={personas}
           selection={selection} onSelect={setSelection}
           reviewedKeys={reviewedKeys}
           onAddProduct={addProduct} onAddIcp={addIcp} onAddPersona={addPersona}
+          onToggleReviewed={onToggleReviewed}
+          onPatchProductField={patchProductField}
+          onDeleteProduct={deleteProduct}
+          onPatchIcp={patchIcp}
+          onDeleteIcp={deleteIcp}
+          onPatchPersonaName={patchPersonaName}
+          onPatchPersonaField={patchPersonaField}
+          onDeletePersona={deletePersona}
         />
-        {selectedPersona && detailPane && <div ref={paneRef} style={{ maxWidth: 980 }}>{detailPane}</div>}
       </div>
     );
   }

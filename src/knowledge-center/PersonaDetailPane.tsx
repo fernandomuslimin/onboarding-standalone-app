@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
 import { PRODUCTS, PersonaDetail, PersonaField, personaPerformance } from "./data";
-import { CardSection, ChipList, EditableField, EmptyState, FieldLabel, Icon, IconButton, IconName, KC_DANGER_BTN, KC_PRIMARY_BTN, ProgressBar, StatTile, formatCurrencyShort } from "./ui";
+import { CardSection, ChipList, Drawer, EditableField, EmptyState, FieldLabel, Icon, IconButton, IconName, KC_DANGER_BTN, KC_PRIMARY_BTN, ProgressBar, StatTile, formatCurrencyShort } from "./ui";
 import { ComboRow, ComboTableHeader, overallFit } from "./ComboRow";
+import { CampaignSequenceView } from "./CampaignSequenceView";
 
 const SECTION_ICON: Record<string, IconName> = {
   "Overview": "compass",
@@ -45,8 +46,9 @@ function PersonaFieldRow({ field, onChange }: { field: PersonaField; onChange: (
 
 function PerformanceSection({ persona }: { persona: PersonaDetail }) {
   const { combos, products, opportunities, pipelineValue } = personaPerformance(persona.id);
-  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [openComboId, setOpenComboId] = useState<string | null>(null);
   const ranked = [...combos].sort((a, b) => overallFit(b) - overallFit(a));
+  const openCombo = combos.find((c) => c.id === openComboId) ?? null;
 
   return (
     <CardSection icon="chart" title="Performance">
@@ -61,12 +63,15 @@ function PerformanceSection({ persona }: { persona: PersonaDetail }) {
         <div style={{ borderRadius: 12, border: "1px solid var(--color-border)", overflow: "hidden" }}>
           <ComboTableHeader />
           {ranked.map((combo) => (
-            <ComboRow key={combo.id} combo={combo} expanded={expandedId === combo.id}
-              onToggle={() => setExpandedId((id) => (id === combo.id ? null : combo.id))}
+            <ComboRow key={combo.id} combo={combo} onOpen={() => setOpenComboId(combo.id)}
               subtitleOverride={PRODUCTS.find((p) => p.id === combo.productId)?.subtitle} />
           ))}
         </div>
       )}
+
+      <Drawer open={!!openCombo} onClose={() => setOpenComboId(null)} title="Campaign Sequence" width={720}>
+        {openCombo && <CampaignSequenceView combo={openCombo} />}
+      </Drawer>
     </CardSection>
   );
 }
@@ -83,7 +88,7 @@ export function PersonaDetailPane({ persona, reviewed, onToggleReviewed, onPatch
   const pct = useMemo(() => personaCompletion(persona), [persona]);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 20, maxWidth: 900 }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
       <div style={{ background: "var(--color-page)", border: "1px solid var(--color-border)", borderRadius: 14, padding: "18px 22px", boxShadow: "var(--shadow-card)" }}>
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 14, marginBottom: 8 }}>
           <EditableField value={persona.name} onChange={onPatchName} />
