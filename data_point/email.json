@@ -1,0 +1,124 @@
+{
+    "data": {
+        "rules": {
+            "tone": {
+                "value": "professional, direct, concise, action-oriented",
+                "reasoning": "The VP of Sales is a senior decision-maker with limited time who prefers clear and concise communication focused on business outcomes. The persona's email preference specifies around 80-100 words with BLUF and no long paragraphs, indicating a professional, direct, and action-oriented tone. The product messaging donts caution against robotic or overly formal language, so maintaining professionalism without jargon or buzzwords is appropriate."
+            },
+            "language": {
+                "value": "English (US)",
+                "reasoning": "The ICP includes North America as a primary geography and the persona is a VP of Sales in mid-sized to large B2B enterprises commonly located in the US market. English (US) is the standard dialect for outreach to such personas in this region and aligns with their likely language preferences."
+            },
+            "length": {
+                "value": "short",
+                "reasoning": "The persona's email preference explicitly states a concise email of about 80-100 words, emphasizing brevity due to their high volume of emails and limited time. This supports choosing 'short' length emails for initial outreach to maximize engagement and respect their schedule."
+            },
+            "channelMode": {
+                "value": "multi",
+                "reasoning": "The persona's best channels include email marketing and LinkedIn, and they are active on LinkedIn weekly posting content. The ICP notes that buyers in mid-sized to large B2B enterprises are highly active on LinkedIn and respond well to personalized multi-touch campaigns combining email and social media. Therefore, a multichannel approach blending email and LinkedIn is recommended to maximize engagement."
+            }
+        },
+        "sendingSchedule": {
+            "days": {
+                "value": ["monday", "tuesday", "wednesday", "thursday", "friday"],
+                "reasoning": "Standard B2B outreach best practices target weekdays only, Monday through Friday. The persona is a VP of Sales working regular business hours in enterprise environments where weekend outreach is generally ineffective and unwelcome."
+            },
+            "startTime": {
+                "value": "08:30",
+                "reasoning": "The persona's bestContactTime indicates morning to early afternoon windows are optimal. Starting at 8:30am captures early workday attention without too early intrusion. This respects typical business hours in the persona's time zone."
+            },
+            "endTime": {
+                "value": "17:00",
+                "reasoning": "Ending outreach at 5pm aligns with common end of the business day for mid-sized to large enterprises. It avoids sending messages after hours which could reduce response rates or annoy recipients."
+            },
+            "timezone": {
+                "value": "America/New_York",
+                "reasoning": "The ICP targets North America among other geographies, but given the importance of US-based mid-market and enterprise companies and the persona being a VP of Sales likely based in the US East Coast business hubs, America/New_York timezone is the most representative and practical choice for scheduling."
+            },
+            "minDelayInMins": {
+                "value": 90,
+                "reasoning": "Given the seniority of the VP of Sales persona and the cold nature of initial outreach, longer delays between sends improve deliverability and avoid spamming. A minimum delay of 90 minutes balances timely follow-ups with caution to maintain sender reputation."
+            },
+            "randomDelayInMins": {
+                "value": 30,
+                "reasoning": "Adding up to 30 minutes random delay introduces natural send-time jitter to avoid predictable patterns that spam filters detect, enhancing deliverability while keeping cadence efficient."
+            }
+        },
+        "sequence": {
+            "steps": [
+                {
+                    "template_count": 1,
+                    "template_settings": {
+                        "type": "default",
+                        "available_ai_vars": [],
+                        "objective": "",
+                        "dialect": "English (US)",
+                        "length": "medium"
+                    },
+                    "data": {
+                        "sender": {
+                            "company": {
+                                "additional_info": "B2B Rocket is an AI-powered sales engagement platform offering autonomous AI agents that automate outbound prospecting through multi-channel lead generation and qualification, targeting mid-sized to large B2B enterprises' sales and marketing teams."
+                            }
+                        }
+                    },
+                    "channel": "in.connect"
+                },
+                {
+                    "template_count": 1,
+                    "template_settings": {
+                        "type": "default",
+                        "available_ai_vars": [],
+                        "objective": "",
+                        "dialect": "English (US)",
+                        "length": "medium"
+                    },
+                    "data": {
+                        "sender": {
+                            "company": {
+                                "additional_info": "B2B Rocket is an AI-powered sales engagement platform offering autonomous AI agents that automate outbound prospecting through multi-channel lead generation and qualification, targeting mid-sized to large B2B enterprises' sales and marketing teams."
+                            }
+                        }
+                    },
+                    "channel": "in.message"
+                },
+                {
+                    "template_count": 1,
+                    "template_settings": {
+                        "type": "default",
+                        "available_ai_vars": [],
+                        "objective": "",
+                        "dialect": "English (US)",
+                        "length": "medium"
+                    },
+                    "data": {
+                        "sender": {
+                            "company": {
+                                "additional_info": "B2B Rocket is an AI-powered sales engagement platform offering autonomous AI agents that automate outbound prospecting through multi-channel lead generation and qualification, targeting mid-sized to large B2B enterprises' sales and marketing teams."
+                            }
+                        }
+                    },
+                    "channel": "in.message"
+                },
+                {
+                    "template_count": 1,
+                    "template_settings": {
+                        "type": "default",
+                        "available_ai_vars": [],
+                        "objective": "",
+                        "dialect": "English (US)",
+                        "length": "medium"
+                    },
+                    "data": {
+                        "sender": {
+                            "company": {
+                                "additional_info": "B2B Rocket is an AI-powered sales engagement platform offering autonomous AI agents that automate outbound prospecting through multi-channel lead generation and qualification, targeting mid-sized to large B2B enterprises' sales and marketing teams."
+                            }
+                        }
+                    },
+                    "channel": "in.message"
+                }
+            ]
+        }
+    }
+}

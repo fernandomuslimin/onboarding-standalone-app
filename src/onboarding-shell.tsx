@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { KnowledgeCenter } from "./knowledge-center/KnowledgeCenter";
 
 /* ─── Standalone shims ──────────────────────────────────────────────
    The real app imports these from next/navigation and next/link.
@@ -312,7 +313,7 @@ function PhaseStepper({ step }: { step: StepName }) {
 /* ════════════════════════════════════════════════════════════════════
    SPLASH — Landing page shown before onboarding starts
 ══════════════════════════════════════════════════════════════════════ */
-function StepSplash({ onNext }: { onNext: () => void }) {
+function StepSplash({ onNext, onSkip }: { onNext: () => void; onSkip: () => void }) {
   return (
     <div className="ob-card" style={{ ...CARD, maxWidth: 480, textAlign: "center" as const }}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -322,6 +323,9 @@ function StepSplash({ onNext }: { onNext: () => void }) {
       </p>
       <button onClick={onNext} style={PRIMARY_BTN} className="ob-primary-btn">
         Get started
+      </button>
+      <button onClick={onSkip} style={{ ...GHOST_BTN, marginTop: 4 }} className="ob-ghost-btn">
+        Skip to Knowledge Center (testing)
       </button>
     </div>
   );
@@ -3486,14 +3490,13 @@ function StepResume({ draft, onContinue }: { draft: OnboardingDraft; onContinue:
 }
 
 export function OnboardingShell() {
-  const router = useRouter();
-
   // Starts identical on server and client (no draft applied yet) so hydration
   // never mismatches; the actual localStorage check happens after mount below.
   const [draft, setDraft] = useState<OnboardingDraft | null>(null);
   const [showResume, setShowResume] = useState(false);
 
   const [step, setStep] = useState<StepName>("splash");
+  const [enteredApp, setEnteredApp] = useState(false);
 
   const [website, setWebsite] = useState("");
   const [products, setProducts] = useState<Product[]>([]);
@@ -3587,6 +3590,10 @@ export function OnboardingShell() {
     });
   }
 
+  if (enteredApp) {
+    return <KnowledgeCenter onExit={() => setEnteredApp(false)} />;
+  }
+
   if (showResume && draft) {
     return (
       <div className="ob-shell" style={PAGE_STYLE}>
@@ -3614,7 +3621,7 @@ export function OnboardingShell() {
         <PhaseStepper step={step} />
 
         {step === "splash" && (
-          <StepSplash onNext={() => advance("welcome")} />
+          <StepSplash onNext={() => advance("welcome")} onSkip={() => setEnteredApp(true)} />
         )}
         {step === "welcome" && (
           <StepWelcome onNext={() => advance("website")} />
@@ -3719,7 +3726,7 @@ export function OnboardingShell() {
                 dismissed: false,
               }));
             }
-            router.replace("/");
+            setEnteredApp(true);
           }} />
         )}
       </div>

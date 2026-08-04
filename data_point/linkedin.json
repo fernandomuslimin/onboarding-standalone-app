@@ -1,0 +1,124 @@
+{
+    "data": {
+        "rules": {
+            "tone": {
+                "value": "direct, personalized, value-driven, low-hype",
+                "reasoning": "The persona is a Sales Development Representative (SDR) at a mid-sized to large B2B enterprise, who prefers direct and personalized communication that respects their busy schedule and avoids generic or overly formal language. The tone recommendations emphasize clarity, empathy, and avoiding AI-generated robotic language. Given the product's messaging dos and don'ts, the outreach should be clear, humanized, and focused on tangible benefits without hype or jargon."
+            },
+            "language": {
+                "value": "English (US)",
+                "reasoning": "The ICP includes North America as a primary geography and the persona is an SDR/BDR in mid-sized to large enterprises where English (US) is a standard business language. The company and product are US-based, further supporting English (US) as the appropriate locale for outreach."
+            },
+            "length": {
+                "value": "short",
+                "reasoning": "The persona's email preference specifies ideal outbound prospecting emails between 50 to 125 words with first touches under 80 words structured in three short paragraphs with one clear ask. This indicates a short email length is optimal to respect the recipient's time and maximize engagement."
+            },
+            "channelMode": {
+                "value": "multi",
+                "reasoning": "The persona is highly active on LinkedIn multiple times per week, engaging in social selling and outreach, making LinkedIn an effective channel alongside email. The bestChannel includes email and LinkedIn, and multichannel outreach is advised to maximize engagement for this persona type. Therefore, a multi-channel approach combining email and LinkedIn is appropriate."
+            }
+        },
+        "sendingSchedule": {
+            "days": {
+                "value": ["monday", "tuesday", "wednesday", "thursday", "friday"],
+                "reasoning": "The best contact times for SDRs/BDRs are during weekday 'power hour' calling blocks from 8-9am and 4-5pm, plus effective email/LinkedIn times between 9am and 3pm. These align with typical business days Monday through Friday. No weekend outreach is indicated or justified by role or region."
+            },
+            "startTime": {
+                "value": "08:00",
+                "reasoning": "The persona's 'power hour' begins at 8am on weekdays, which aligns with early working hours when they are most receptive. Starting sends at 08:00 ensures messages arrive early enough to catch attention during the start of their day."
+            },
+            "endTime": {
+                "value": "17:00",
+                "reasoning": "The last 'power hour' ends at 5pm (17:00), which caps the acceptable outreach window within typical business hours. Extending send windows beyond 17:00 risks lower engagement and intrusiveness."
+            },
+            "timezone": {
+                "value": "America/New_York",
+                "reasoning": "Given the ICP targets North America primarily among other geographies, and most mid-sized to large B2B enterprises in North America operate in Eastern Time Zone as a representative timezone. Selecting America/New_York covers a significant portion of target accounts in the US business heartland."
+            },
+            "minDelayInMins": {
+                "value": 60,
+                "reasoning": "The persona is a front-line sales professional receiving high volumes of outreach; spacing sends by at least 60 minutes per mailbox reduces risk of spam filtering and respects deliverability best practices for cold outreach with AI-powered sequences."
+            },
+            "randomDelayInMins": {
+                "value": 30,
+                "reasoning": "Adding up to 30 minutes random delay introduces variability in sending cadence, improving deliverability by avoiding fixed patterns. This jitter balances responsiveness with spam filters avoidance for a persona receiving many automated emails daily."
+            }
+        },
+        "sequence": {
+            "steps": [
+                {
+                    "template_count": 1,
+                    "template_settings": {
+                        "type": "default",
+                        "available_ai_vars": [],
+                        "objective": "",
+                        "dialect": "English (US)",
+                        "length": "medium"
+                    },
+                    "data": {
+                        "sender": {
+                            "company": {
+                                "additional_info": "Sender company: B2B Rocket, AI-powered Sales Engagement Platform providing AI SDR agents for automating outbound sales and lead generation, serving mid-market to large enterprises for scalable prospecting."
+                            }
+                        }
+                    },
+                    "channel": "in.connect"
+                },
+                {
+                    "template_count": 1,
+                    "template_settings": {
+                        "type": "default",
+                        "available_ai_vars": [],
+                        "objective": "",
+                        "dialect": "English (US)",
+                        "length": "medium"
+                    },
+                    "data": {
+                        "sender": {
+                            "company": {
+                                "additional_info": "Sender company: B2B Rocket, AI-powered Sales Engagement Platform providing AI SDR agents for automating outbound sales and lead generation, serving mid-market to large enterprises for scalable prospecting."
+                            }
+                        }
+                    },
+                    "channel": "in.message"
+                },
+                {
+                    "template_count": 1,
+                    "template_settings": {
+                        "type": "default",
+                        "available_ai_vars": [],
+                        "objective": "",
+                        "dialect": "English (US)",
+                        "length": "medium"
+                    },
+                    "data": {
+                        "sender": {
+                            "company": {
+                                "additional_info": "Sender company: B2B Rocket, AI-powered Sales Engagement Platform providing AI SDR agents for automating outbound sales and lead generation, serving mid-market to large enterprises for scalable prospecting."
+                            }
+                        }
+                    },
+                    "channel": "in.message"
+                },
+                {
+                    "template_count": 1,
+                    "template_settings": {
+                        "type": "default",
+                        "available_ai_vars": [],
+                        "objective": "",
+                        "dialect": "English (US)",
+                        "length": "medium"
+                    },
+                    "data": {
+                        "sender": {
+                            "company": {
+                                "additional_info": "Sender company: B2B Rocket, AI-powered Sales Engagement Platform providing AI SDR agents for automating outbound sales and lead generation, serving mid-market to large enterprises for scalable prospecting."
+                            }
+                        }
+                    },
+                    "channel": "in.message"
+                }
+            ]
+        }
+    }
+}
