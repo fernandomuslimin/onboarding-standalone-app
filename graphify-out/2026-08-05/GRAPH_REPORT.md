@@ -1,16 +1,16 @@
-# Graph Report - onboarding-standalone-app  (2026-08-05)
+# Graph Report - onboarding-standalone-app  (2026-07-31)
 
 ## Corpus Check
-- 31 files · ~57,524 words
+- 29 files · ~54,903 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 467 nodes · 833 edges · 23 communities (14 shown, 9 thin omitted)
+- 457 nodes · 795 edges · 22 communities (12 shown, 10 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 7 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `1d3ac43b`
+- Built from commit: `0d6dbe07`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -39,16 +39,16 @@
 - [[_COMMUNITY_Community 21|Community 21]]
 
 ## God Nodes (most connected - your core abstractions)
-1. `Icon()` - 23 edges
+1. `Icon()` - 22 edges
 2. `OnboardingShell()` - 17 edges
-3. `PRODUCTS` - 14 edges
-4. `KnowledgeCenter()` - 14 edges
-5. `compilerOptions` - 13 edges
+3. `KnowledgeCenter()` - 14 edges
+4. `compilerOptions` - 13 edges
+5. `PRODUCTS` - 13 edges
 6. `IcpDetail` - 13 edges
 7. `PersonaDetail` - 13 edges
-8. `PERSONAS` - 13 edges
-9. `ProductDetail` - 12 edges
-10. `ICPS` - 11 edges
+8. `ProductDetail` - 12 edges
+9. `PERSONAS` - 12 edges
+10. `ICPS` - 10 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `Next.js Decoupling Shim (design rationale for standalone export)` --rationale_for--> `OnboardingShell()`  [EXTRACTED]
@@ -70,19 +70,19 @@
 - **Product / ICP / Persona Combination Data Model** — knowledge_center_data_productdetail, knowledge_center_data_icpdetail, knowledge_center_data_personadetail, knowledge_center_data_scorechain, knowledge_center_data_campaigncombo [INFERRED 0.90]
 - **Reviewed-Sections Progress Tracking Flow** — knowledge_center_knowledgecenter_knowledgecenter, knowledge_center_company_companysection, knowledge_center_product_productsection, knowledge_center_icp_icpsection, knowledge_center_persona_personasection [EXTRACTED 1.00]
 
-## Communities (23 total, 9 thin omitted)
+## Communities (22 total, 10 thin omitted)
 
 ### Community 0 - "Onboarding Step Data & Editing"
 Cohesion: 0.02
-Nodes (65): ALL_STEPS, AvailStatus, BACK_BTN, BRAND_HIGHLIGHTS, Campaign, CAMPAIGNS, CampaignStep, CARD (+57 more)
+Nodes (63): ALL_STEPS, AvailStatus, Campaign, CAMPAIGNS, CampaignStep, CARD, Channel, CHANNEL_BADGE (+55 more)
 
 ### Community 1 - "Knowledge Center Data Model"
-Cohesion: 0.08
-Nodes (46): CampaignSection(), ComboRow(), overallFit(), tone(), CAMPAIGN_COMBOS, campaignCombosForPersona(), ICPS, INFRASTRUCTURE_STATUS (+38 more)
+Cohesion: 0.09
+Nodes (45): CampaignSection(), CHANNEL_ICON, ComboRow(), HEADER_CELL, overallFit(), STATUS_STYLE, tone(), CAMPAIGN_COMBOS (+37 more)
 
 ### Community 2 - "Knowledge Center UI Components"
-Cohesion: 0.08
-Nodes (46): CHANNEL_ICON, HEADER_CELL, STATUS_STYLE, CampaignSequenceView(), CHANNEL_ICON, ComboRow(), ComboTableHeader(), HEADER_CELL (+38 more)
+Cohesion: 0.07
+Nodes (40): CHANNEL_ICON, ComboRow(), ComboTableHeader(), HEADER_CELL, overallFit(), STATUS_STYLE, tone(), CHIP_FIELDS (+32 more)
 
 ### Community 3 - "Build Tooling & Dependencies"
 Cohesion: 0.05
@@ -99,10 +99,6 @@ Nodes (7): firstSentence(), reviseCallPrepNotes(), reviseCompetitive(), revisePr
 ### Community 6 - "Website & Product Step Validation"
 Cohesion: 0.06
 Nodes (35): reasoning, value, data, rules, sendingSchedule, sequence, reasoning, value (+27 more)
-
-### Community 7 - "Claude Permission Config"
-Cohesion: 0.50
-Nodes (3): permissions, allow, prefersReducedMotion
 
 ### Community 8 - "Domain Step Validation"
 Cohesion: 0.67
@@ -121,17 +117,17 @@ Cohesion: 0.12
 Nodes (14): index.html (dev entry HTML), Build, code:bash (npm install), code:bash (npm run build), code:bash (npm run build:single), code:bash (npm run build:single && cp dist-single/index.html onboarding), code:tsx (import { useRouter } from "next/navigation";), Onboarding — standalone (+6 more)
 
 ### Community 21 - "Community 21"
-Cohesion: 0.07
-Nodes (45): KnowledgeBrowse(), TIER_LABEL, HEADER_CELL, KnowledgeDashboard(), NUM_CELL, PerformanceRow, Row(), Tier (+37 more)
+Cohesion: 0.06
+Nodes (49): KnowledgeBrowse(), TIER_LABEL, HEADER_CELL, KnowledgeDashboard(), NUM_CELL, PerformanceRow, Row(), Tier (+41 more)
 
 ## Ambiguous Edges - Review These
 - `CAMPAIGN_COMBOS` → `RoadmapPhase`  [AMBIGUOUS]
   src/knowledge-center/data.ts · relation: references
 
 ## Knowledge Gaps
-- **187 isolated node(s):** `name`, `private`, `version`, `type`, `dev` (+182 more)
+- **185 isolated node(s):** `name`, `private`, `version`, `type`, `dev` (+180 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **9 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **10 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
@@ -139,14 +135,14 @@ _Questions this graph is uniquely positioned to answer:_
 - **What is the exact relationship between `CAMPAIGN_COMBOS` and `RoadmapPhase`?**
   _Edge tagged AMBIGUOUS (relation: references) - confidence is low._
 - **Why does `OnboardingShell()` connect `App Entry & Standalone Shim` to `Onboarding Step Data & Editing`, `Knowledge Center Data Model`, `Community 18`?**
-  _High betweenness centrality (0.165) - this node is a cross-community bridge._
+  _High betweenness centrality (0.168) - this node is a cross-community bridge._
 - **Why does `KnowledgeCenter()` connect `Knowledge Center Data Model` to `Onboarding Step Data & Editing`, `Knowledge Center UI Components`, `App Entry & Standalone Shim`?**
-  _High betweenness centrality (0.104) - this node is a cross-community bridge._
-- **Why does `Icon()` connect `Knowledge Center UI Components` to `Knowledge Center Data Model`, `Community 21`?**
-  _High betweenness centrality (0.079) - this node is a cross-community bridge._
+  _High betweenness centrality (0.106) - this node is a cross-community bridge._
+- **Why does `Icon()` connect `Knowledge Center Data Model` to `Knowledge Center UI Components`, `Community 21`?**
+  _High betweenness centrality (0.080) - this node is a cross-community bridge._
 - **What connects `name`, `private`, `version` to the rest of the system?**
-  _188 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _186 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Onboarding Step Data & Editing` be split into smaller, more focused modules?**
-  _Cohesion score 0.017543859649122806 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.01818181818181818 - nodes in this community are weakly interconnected._
 - **Should `Knowledge Center Data Model` be split into smaller, more focused modules?**
-  _Cohesion score 0.07532467532467532 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.08506493506493507 - nodes in this community are weakly interconnected._

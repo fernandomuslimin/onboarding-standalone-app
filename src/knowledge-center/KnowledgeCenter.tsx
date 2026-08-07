@@ -3,14 +3,12 @@ import { NAV_GROUPS, NAV_LABEL, REVIEWABLE_SECTIONS, NavKey, PRODUCTS, ICPS, PER
 import { Icon, IconName, KC_STYLES } from "./ui";
 import { CompanySection } from "./Company";
 import { Explorer } from "./Explorer";
-import { ScoringSection } from "./Scoring";
 import { CampaignSection } from "./Campaign";
-import { StrategySection } from "./Strategy";
 import { ResourcesSection } from "./Resources";
 
 const NAV_ICON: Record<NavKey, IconName> = {
   company: "building", explorer: "layers",
-  scoring: "chart", campaign: "route", strategy: "compass", resources: "folder",
+  campaign: "route", resources: "folder",
 };
 
 function totalForSection(key: NavKey): number {
@@ -26,7 +24,7 @@ export function KnowledgeCenter({ onExit }: { onExit: () => void }) {
   const [section, setSection] = useState<NavKey>("company");
   const [reviewed, setReviewed] = useState<Record<NavKey, Set<string>>>({
     company: new Set(), explorer: new Set(),
-    scoring: new Set(), campaign: new Set(), strategy: new Set(), resources: new Set(),
+    campaign: new Set(), resources: new Set(),
   });
   const [explorerNodeType, setExplorerNodeType] = useState<TreeNodeType | null>(null);
 
@@ -125,9 +123,7 @@ export function KnowledgeCenter({ onExit }: { onExit: () => void }) {
               onNodeTypeChange={setExplorerNodeType}
             />
           )}
-          {section === "scoring" && <ScoringSection />}
           {section === "campaign" && <CampaignSection />}
-          {section === "strategy" && <StrategySection />}
           {section === "resources" && <ResourcesSection />}
         </div>
       </div>
