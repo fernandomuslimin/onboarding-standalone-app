@@ -7,7 +7,7 @@
 
 export type NavKey =
   | "company" | "explorer"
-  | "scoring" | "campaign" | "strategy"
+  | "campaign"
   | "resources";
 
 export interface NavItem { key: NavKey; label: string }
@@ -19,9 +19,7 @@ export const NAV_GROUPS: NavGroup[] = [
     { key: "explorer", label: "Explorer" },
   ] },
   { label: "Planning", items: [
-    { key: "scoring", label: "Scoring" },
     { key: "campaign", label: "Campaign" },
-    { key: "strategy", label: "Strategy" },
   ] },
   { label: "Resources", items: [
     { key: "resources", label: "Resources" },
@@ -30,7 +28,7 @@ export const NAV_GROUPS: NavGroup[] = [
 
 export const NAV_LABEL: Record<NavKey, string> = {
   company: "Company", explorer: "Explorer",
-  scoring: "Scoring", campaign: "Campaign", strategy: "Strategy", resources: "Resources",
+  campaign: "Campaign", resources: "Resources",
 };
 
 // Sections that show the "x/y reviewed" progress indicator in the top bar.
@@ -837,33 +835,6 @@ export const PERSONAS: PersonaDetail[] = [
   },
 ];
 
-/* ─── Scoring ───────────────────────────────────────────────────── */
-export const SCORE_DIMENSIONS = ["Market Size", "Product Fit", "Pain Urgency", "Reachability", "Competition"] as const;
-export type ScoreDimension = (typeof SCORE_DIMENSIONS)[number];
-
-export interface ScoreChain {
-  productId: string;
-  icpId: string;
-  personaId: string;
-  scores: Record<ScoreDimension, number>;
-}
-
-export const SCORE_CHAINS: ScoreChain[] = [
-  { productId: "sending-platform", icpId: "vp-sales-midmarket", personaId: "vp-sales-revops", scores: { "Market Size": 8, "Product Fit": 10, "Pain Urgency": 9, Reachability: 8, Competition: 6 } },
-  { productId: "sending-platform", icpId: "founder-led-startup", personaId: "founder-first-hire", scores: { "Market Size": 9, "Product Fit": 6, "Pain Urgency": 6, Reachability: 6, Competition: 7 } },
-  { productId: "personalization-engine", icpId: "vp-sales-midmarket", personaId: "vp-sales-revops", scores: { "Market Size": 7, "Product Fit": 8, "Pain Urgency": 8, Reachability: 7, Competition: 5 } },
-  { productId: "sending-platform", icpId: "vp-sales-midmarket", personaId: "head-of-revops", scores: { "Market Size": 8, "Product Fit": 9, "Pain Urgency": 7, Reachability: 7, Competition: 6 } },
-  { productId: "sending-platform", icpId: "vp-sales-midmarket", personaId: "sdr-manager", scores: { "Market Size": 8, "Product Fit": 9, "Pain Urgency": 9, Reachability: 9, Competition: 6 } },
-  { productId: "personalization-engine", icpId: "founder-led-startup", personaId: "head-of-growth", scores: { "Market Size": 7, "Product Fit": 7, "Pain Urgency": 6, Reachability: 7, Competition: 6 } },
-  { productId: "infra-deliverability", icpId: "agency-fractional-sdr", personaId: "agency-ops-lead", scores: { "Market Size": 5, "Product Fit": 7, "Pain Urgency": 6, Reachability: 4, Competition: 5 } },
-];
-// infra-deliverability x agency-fractional-sdr intentionally has no chain yet — used for the "Not scored yet" empty state.
-
-export function overallScore(scores: Record<ScoreDimension, number>): number {
-  const values = SCORE_DIMENSIONS.map((d) => scores[d]);
-  return values.reduce((sum, v) => sum + v, 0) / values.length;
-}
-
 /* ─── Campaign ──────────────────────────────────────────────────── */
 export interface SequenceStep {
   day: number;
@@ -1002,33 +973,6 @@ export function personaPerformance(personaId: string): { combos: CampaignCombo[]
     pipelineValue: combos.reduce((sum, c) => sum + c.pipelineValue, 0),
   };
 }
-
-/* ─── Strategy ──────────────────────────────────────────────────── */
-export interface InfrastructureChannel {
-  key: string;
-  label: string;
-  status: "warming_up" | "ready" | "placeholder";
-  detail: string;
-}
-
-export const INFRASTRUCTURE_STATUS: InfrastructureChannel[] = [
-  { key: "email", label: "Email", status: "warming_up", detail: "9 days remaining" },
-  { key: "linkedin", label: "LinkedIn", status: "ready", detail: "Ready to send" },
-  { key: "cold-calling", label: "Cold Calling", status: "ready", detail: "Ready to dial" },
-  { key: "phases", label: "Phases", status: "placeholder", detail: "Defined once roadmap is generated" },
-];
-
-export interface RoadmapPhase {
-  phase: string;
-  window: string;
-  combos: string[];
-}
-
-export const ROADMAP_PHASES: RoadmapPhase[] = [
-  { phase: "Phase 1", window: "Week 1–2", combos: ["Time-to-First-Send — Mid-Market (Email)", "RevOps Peer Benchmarking (LinkedIn)"] },
-  { phase: "Phase 2", window: "Week 3–4", combos: ["Founder-Led Outbound Starter (Email)"] },
-  { phase: "Phase 3", window: "Week 5+", combos: ["Personalization Engine Cross-Sell (Cold Calling)"] },
-];
 
 /* ─── Resources ─────────────────────────────────────────────────── */
 export interface ResourcePage {

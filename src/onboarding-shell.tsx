@@ -39,8 +39,10 @@ const STYLES = `
 .ob-primary-btn:hover:not(:disabled) { background: var(--color-brand-hover); box-shadow: var(--shadow-elevated); }
 .ob-primary-btn:active:not(:disabled) { transform: scale(0.98); }
 .ob-ghost-btn:hover:not(:disabled) { background: var(--color-surface); color: var(--color-heading); }
+.ob-back-btn:hover { background: var(--color-surface); color: var(--color-heading); }
 .ob-link-btn:hover { color: var(--color-brand-hover); }
-.ob-editable:hover { background: var(--color-surface); }
+.ob-editable-field:focus { border-color: var(--color-brand) !important; box-shadow: var(--shadow-focus); }
+.ob-hero-title { font-size: clamp(32px, 5vw, 56px); }
 
 @media (max-width: 640px) {
   .ob-shell { align-items: flex-start !important; }
@@ -134,6 +136,47 @@ const GHOST_BTN: React.CSSProperties = {
   transition: "background-color 150ms, color 150ms",
 };
 
+const BACK_BTN: React.CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  width: 36,
+  height: 36,
+  borderRadius: "50%",
+  border: "1px solid var(--color-border)",
+  background: "var(--color-page)",
+  color: "var(--color-subtle)",
+  cursor: "pointer",
+  flexShrink: 0,
+  marginBottom: 16,
+  transition: "background-color 150ms, color 150ms",
+};
+
+/* ─── Back button (sits at the top of the card content) ─────────────── */
+function BackButton({ onClick }: { onClick: () => void }) {
+  return (
+    <button type="button" onClick={onClick} aria-label="Back" title="Back" className="ob-back-btn" style={BACK_BTN}>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M15 18l-6-6 6-6" />
+      </svg>
+    </button>
+  );
+}
+
+/* ─── Point-of-no-return notice — shown on every section summary just
+   before the step that locks in that section's answers. ─────────── */
+function NoGoingBackNotice() {
+  return (
+    <p style={{
+      fontSize: 12.5, color: "var(--color-warning)", background: "rgba(241,196,15,0.12)",
+      border: "1px solid rgba(241,196,15,0.3)", borderRadius: 10, padding: "10px 14px",
+      lineHeight: 1.5, margin: "0 0 14px",
+    }}>
+      You won&apos;t be able to come back to this step once you continue — make sure everything above looks right first.
+    </p>
+  );
+}
+
 /* ─── Types ─────────────────────────────────────────────────────── */
 interface Product {
   name: string;
@@ -147,7 +190,7 @@ type PackageKey = "starter" | "growth" | "scale";
 
 const PACKAGES = [
   { key: "starter" as PackageKey, label: "Starter",  domains: 15, mailboxes: 45  },
-  { key: "growth"  as PackageKey, label: "Growth",   domains: 34, mailboxes: 100 },
+  { key: "growth"  as PackageKey, label: "Growth",   domains: 34, mailboxes: 102 },
   { key: "scale"   as PackageKey, label: "Scale",    domains: 67, mailboxes: 201 },
 ];
 
@@ -263,15 +306,9 @@ function PageChrome() {
   return (
     <>
       <div style={{ position: "absolute", top: -160, left: "50%", transform: "translateX(-50%)", width: 900, height: 480, borderRadius: "50%", background: "radial-gradient(ellipse, var(--color-brand-faint) 0%, transparent 70%)", pointerEvents: "none" }} />
-      <Link href="/login" className="ob-logo-link" style={{ position: "absolute", top: 28, left: 36, display: "flex", alignItems: "center", gap: 10, textDecoration: "none", zIndex: 10 }}>
-        <div style={{ width: 32, height: 32, background: "var(--color-brand)", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path d="M8 2C10.5 2 13 4 13.5 7C14 10 12.5 12.5 10 13.5C7.5 14.5 5 13.5 3.5 11.5C2 9.5 2.5 6.5 4 4.5C5 3 6.5 2 8 2Z" fill="white" fillOpacity="0.2" />
-            <path d="M6.5 10.5L4.5 12.5M9.5 5.5C9.5 5.5 11.5 5 12 7.5C12.5 10 11 11 11 11L8.5 8.5M9.5 5.5L7 8M9.5 5.5L8 4" stroke="white" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-            <circle cx="7" cy="9" r="1.2" fill="white" />
-          </svg>
-        </div>
-        <span style={{ fontSize: 15, fontWeight: 600, color: "var(--color-heading)", letterSpacing: "-0.01em" }}>B2B Rocket</span>
+      <Link href="/login" className="ob-logo-link" style={{ position: "absolute", top: 28, left: 36, display: "flex", alignItems: "center", textDecoration: "none", zIndex: 10 }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={`${import.meta.env.BASE_URL}b2brocket-logo.png`} alt="B2B Rocket" style={{ height: 26, display: "block" }} />
       </Link>
     </>
   );
@@ -280,9 +317,9 @@ function PageChrome() {
 /* ─── Progress bar ──────────────────────────────────────────────── */
 const PHASES: { label: string; steps: StepName[] }[] = [
   { label: "AI Agent Research", steps: ["website", "products", "research_summary"] },
-  { label: "Infrastructure", steps: ["primary_domain", "volume", "senders", "split", "infra_summary"] },
-  { label: "Connections", steps: ["connect", "connect_linkedin", "connect_calendar", "invite", "connections_summary"] },
-  { label: "Review & Approve", steps: ["review_order", "researching", "company_research", "products_services", "tam_icp", "personas", "outreach_campaign"] },
+  { label: "Infrastructure", steps: ["infra_intro", "primary_domain", "volume", "senders", "infra_summary"] },
+  { label: "Connections", steps: ["connections_intro", "connect", "connect_linkedin", "connect_calendar", "invite", "connections_summary"] },
+  { label: "Review & Approve", steps: ["review_intro", "review_order", "researching", "company_research", "product_review", "outreach_campaign"] },
 ];
 
 function PhaseStepper({ step }: { step: StepName }) {
@@ -313,53 +350,90 @@ function PhaseStepper({ step }: { step: StepName }) {
 }
 
 /* ════════════════════════════════════════════════════════════════════
-   SPLASH — Landing page shown before onboarding starts
+   BRAND WELCOME — First screen shown; leads straight into the journey
+   overview. Look & feel modeled on b2brocket.ai's marketing site: bold
+   confident headline, brand-navy/indigo palette.
 ══════════════════════════════════════════════════════════════════════ */
-function StepSplash({ onNext, onSkip }: { onNext: () => void; onSkip: () => void }) {
+
+function StepBrandWelcome({ onNext, onSkip }: { onNext: () => void; onSkip: () => void }) {
   return (
-    <div className="ob-card" style={{ ...CARD, maxWidth: 480, textAlign: "center" as const }}>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={`${import.meta.env.BASE_URL}b2brocket-logo.png`} alt="B2B Rocket — powered by BlackPearl" style={{ height: 40, margin: "0 auto 28px", display: "block" }} />
-      <p style={{ fontSize: 15, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 32px" }}>
-        Answer a few quick questions and your AI agents get to work — prospecting, personalizing, and booking meetings for you.
-      </p>
-      <button onClick={onNext} style={PRIMARY_BTN} className="ob-primary-btn">
-        Get started
-      </button>
-      <button onClick={onSkip} style={{ ...GHOST_BTN, marginTop: 4 }} className="ob-ghost-btn">
-        Skip to Knowledge Center (testing)
-      </button>
-    </div>
+    <>
+      <div style={{
+        position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none",
+        background: "radial-gradient(ellipse 1000px 620px at 50% -8%, var(--color-brand-tint) 0%, transparent 62%), radial-gradient(ellipse 700px 500px at 92% 105%, var(--color-brand-faint) 0%, transparent 65%)",
+      }} />
+      <div className="ob-brand-welcome" style={{
+        position: "relative", zIndex: 1, display: "flex", flexDirection: "column", alignItems: "center",
+        textAlign: "center", maxWidth: 760, width: "100%", animation: "ob-fadeInUp 0.6s var(--ease-apple) both",
+      }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={`${import.meta.env.BASE_URL}b2brocket-logo.png`} alt="B2B Rocket" style={{ height: 56, marginBottom: 32, display: "block" }} />
+
+        <span style={{ display: "inline-flex", alignItems: "center", fontSize: 12.5, fontWeight: 700, color: "var(--color-brand)", background: "var(--color-brand-tint)", padding: "7px 16px", borderRadius: 999, letterSpacing: "0.03em", textTransform: "uppercase" as const, marginBottom: 26 }}>
+          AI Agents for Outbound Sales
+        </span>
+
+        <h1 className="ob-hero-title" style={{ fontWeight: 800, letterSpacing: "-0.03em", lineHeight: 1.08, margin: "0 0 12px", color: "var(--color-heading)" }}>
+          Welcome to B2B Rocket
+        </h1>
+
+        <p style={{ fontSize: 15, fontWeight: 600, color: "var(--color-muted)", letterSpacing: "0.01em", margin: "0 0 24px" }}>
+          Powered by Black Pearl
+        </p>
+
+        <p style={{ fontSize: 17, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 44px", maxWidth: 560 }}>
+          B2B Rocket gets outbound sales teams sending personalized, AI-assisted sequences the same day they sign up — no weeks-long setup, no manual copywriting.
+        </p>
+
+        <button onClick={onNext} style={{ ...PRIMARY_BTN, width: "auto", padding: "16px 52px", fontSize: 15.5 }} className="ob-primary-btn">
+          Get Started
+        </button>
+        <button onClick={onSkip} style={{ ...GHOST_BTN, width: "auto" }} className="ob-ghost-btn">
+          Skip to Knowledge Center (testing)
+        </button>
+      </div>
+    </>
   );
 }
 
 /* ════════════════════════════════════════════════════════════════════
-   WELCOME — Intro to the AI agent research process
+   OVERVIEW — Whole-journey preview shown once, right after the brand
+   welcome hero.
+   A simulated four-node timeline stands in for a section-by-section
+   breakdown — the user sees the whole shape of the trip up front.
 ══════════════════════════════════════════════════════════════════════ */
-const WELCOME_BULLETS = [
-  "Your website & offerings",
-  "Any docs to learn from",
-  "AI research & knowledge base",
-  "Your ideal customer profile",
+const OVERVIEW_STEPS: { label: string; icon: React.ReactNode }[] = [
+  { label: "Research", icon: <><circle cx="11" cy="11" r="7" /><path d="m21 21-4.35-4.35" /></> },
+  { label: "Infrastructure", icon: <><rect x="3" y="4" width="18" height="6" rx="1.5" /><rect x="3" y="14" width="18" height="6" rx="1.5" /></> },
+  { label: "Connections", icon: <><path d="M9 17H7A5 5 0 0 1 7 7h2" /><path d="M15 7h2a5 5 0 1 1 0 10h-2" /><line x1="8" y1="12" x2="16" y2="12" /></> },
+  { label: "Review & Approve", icon: <path d="M20 6 9 17l-5-5" /> },
 ];
 
-function StepWelcome({ onNext }: { onNext: () => void }) {
+function StepOnboardingOverview({ onNext }: { onNext: () => void }) {
   return (
     <div className="ob-card" style={{ ...CARD, maxWidth: 480, textAlign: "center" as const }}>
-      <span style={{ display: "block", fontSize: 12, fontWeight: 700, color: "var(--color-brand)", letterSpacing: "0.05em", textTransform: "uppercase" as const, marginBottom: 8 }}>
-        Section 1 of 4
+      <span style={{ display: "inline-flex", alignItems: "center", fontSize: 11.5, fontWeight: 700, color: "var(--color-brand)", background: "var(--color-brand-tint)", padding: "6px 14px", borderRadius: 999, letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 16 }}>
+        ~5 minutes
       </span>
-      <h1 style={{ fontSize: 22, fontWeight: 800, margin: "0 0 10px" }}>AI Agent Research</h1>
-      <p style={{ fontSize: 14, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 24px" }}>
-        First, tell us about your business. Your agents read it, research your market, and draft everything they need to sound like you.
+      <h1 style={{ fontSize: 24, fontWeight: 800, letterSpacing: "-0.01em", margin: "0 0 10px" }}>
+        Here&apos;s what&apos;s ahead
+      </h1>
+      <p style={{ fontSize: 14, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 36px" }}>
+        Four quick sections. By the end, your research, infrastructure, connections, and outreach campaign are all set up and ready to launch.
       </p>
-      <div style={{ display: "flex", flexDirection: "column", gap: 6, textAlign: "left" as const, marginBottom: 28 }}>
-        {WELCOME_BULLETS.map((item, i) => (
-          <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
-            <span style={{ width: 4, height: 4, borderRadius: "50%", background: "var(--color-brand)", marginTop: 7, flexShrink: 0 }} />
-            <span style={{ fontSize: 12.5, color: "var(--color-heading)", lineHeight: 1.5 }}>{item}</span>
-          </div>
-        ))}
+      <div style={{ display: "flex", alignItems: "flex-start", margin: "0 0 32px" }}>
+        {OVERVIEW_STEPS.flatMap((s, i) => {
+          const node = (
+            <div key={`node-${s.label}`} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, flexShrink: 0, width: 76 }}>
+              <div style={{ width: 40, height: 40, borderRadius: "50%", background: "var(--color-brand-tint)", color: "var(--color-brand)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">{s.icon}</svg>
+              </div>
+              <span style={{ fontSize: 11, fontWeight: 600, color: "var(--color-heading)", lineHeight: 1.3 }}>{s.label}</span>
+            </div>
+          );
+          if (i === OVERVIEW_STEPS.length - 1) return [node];
+          return [node, <div key={`line-${i}`} style={{ flex: 1, height: 2, background: "var(--color-border)", marginTop: 19, minWidth: 8 }} />];
+        })}
       </div>
       <button onClick={onNext} style={PRIMARY_BTN} className="ob-primary-btn">
         Continue
@@ -563,7 +637,8 @@ function StepProducts({ initialProducts, onNext, onBack }: {
 
   if (stage === "intro") {
     return (
-      <div className="ob-card" style={{ ...CARD, maxWidth: 480 }}>
+        <div className="ob-card" style={{ ...CARD, maxWidth: 480 }}>
+        <BackButton onClick={onBack} />
         <span style={{ fontSize: 12, fontWeight: 700, color: "var(--color-brand)", letterSpacing: "0.05em", textTransform: "uppercase" as const }}>Products & Services</span>
         <h1 style={{ fontSize: 24, margin: "8px 0 8px" }}>What do you sell?</h1>
         <p style={{ fontSize: 14, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 24px" }}>
@@ -596,7 +671,6 @@ function StepProducts({ initialProducts, onNext, onBack }: {
               <button onClick={submitText} disabled={!freeText.trim()} className="ob-primary-btn" style={{ ...PRIMARY_BTN, opacity: !freeText.trim() ? 0.5 : 1, cursor: !freeText.trim() ? "not-allowed" : "pointer" }}>
                 Continue
               </button>
-              <button onClick={onBack} className="ob-ghost-btn" style={{ ...GHOST_BTN, color: "var(--color-subtle)" }}>Back</button>
             </div>
           </>
         ) : (
@@ -617,16 +691,16 @@ function StepProducts({ initialProducts, onNext, onBack }: {
               <button onClick={startList} className="ob-primary-btn" style={PRIMARY_BTN}>
                 Continue
               </button>
-              <button onClick={onBack} className="ob-ghost-btn" style={{ ...GHOST_BTN, color: "var(--color-subtle)" }}>Back</button>
             </div>
           </>
         )}
-      </div>
+        </div>
     );
   }
 
   return (
-    <div className="ob-card" style={{ ...CARD, maxWidth: 520 }}>
+      <div className="ob-card" style={{ ...CARD, maxWidth: 520 }}>
+      <BackButton onClick={goBackWithinStep} />
       <span style={{ fontSize: 12, fontWeight: 700, color: "var(--color-brand)", letterSpacing: "0.05em", textTransform: "uppercase" as const }}>Products & Services</span>
       <h1 style={{ fontSize: 24, margin: "8px 0 8px" }}>
         Product / service {index + 1} of {localProducts.length}
@@ -722,9 +796,8 @@ function StepProducts({ initialProducts, onNext, onBack }: {
             Next product →
           </button>
         )}
-        <button onClick={goBackWithinStep} className="ob-ghost-btn" style={{ ...GHOST_BTN, color: "var(--color-subtle)" }}>Back</button>
       </div>
-    </div>
+      </div>
   );
 }
 
@@ -739,50 +812,62 @@ function StepResearchSummary({ website, products, onNext, onBack }: {
   onBack: () => void;
 }) {
   const domain = extractDomain(website) || website || "—";
-  const productNames = products.map((p) => p.name.trim()).filter(Boolean);
-  const fallbackDescription = products[0]?.description.trim() || "";
-  const productsValue = productNames.length
-    ? productNames.join(", ")
-    : fallbackDescription
-    ? (fallbackDescription.length > 60 ? `${fallbackDescription.slice(0, 60)}…` : fallbackDescription)
-    : "—";
+  const productItems = products
+    .map((p) => p.name.trim() || p.description.trim())
+    .filter(Boolean);
   const totalFiles = products.reduce((sum, p) => sum + p.files.length, 0);
 
-  const rows = [
-    { label: "Website", value: domain },
-    { label: "Products / services", value: productsValue },
-    { label: "Files shared", value: totalFiles > 0 ? `${totalFiles} file${totalFiles > 1 ? "s" : ""}` : "None" },
-  ];
+  const [showAllProducts, setShowAllProducts] = useState(false);
+  const VISIBLE_PRODUCTS = 3;
+  const visibleProducts = showAllProducts ? productItems : productItems.slice(0, VISIBLE_PRODUCTS);
+  const hiddenCount = productItems.length - VISIBLE_PRODUCTS;
 
   return (
-    <div className="ob-card" style={{ ...CARD, maxWidth: 480 }}>
+      <div className="ob-card" style={{ ...CARD, maxWidth: 480 }}>
+      <BackButton onClick={onBack} />
       <span style={{ fontSize: 12, fontWeight: 700, color: "var(--color-brand)", letterSpacing: "0.05em", textTransform: "uppercase" as const }}>AI Agent Research</span>
       <h1 style={{ fontSize: 24, margin: "8px 0 8px" }}>Your research, at a glance</h1>
       <p style={{ fontSize: 14, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 24px" }}>
         Here&apos;s what your agents will work from.
       </p>
       <div style={{ borderRadius: 14, border: "1px solid var(--color-border)", overflow: "hidden", marginBottom: 24 }}>
-        {rows.map(({ label, value }, i) => (
-          <div key={label} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, padding: "16px 18px", borderBottom: i < rows.length - 1 ? "1px solid var(--color-border)" : "none" }}>
-            <span style={{ fontSize: 13.5, color: "var(--color-muted)" }}>{label}</span>
-            <span style={{ fontSize: 14, fontWeight: 700, color: "var(--color-heading)", textAlign: "right" as const, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" as const, maxWidth: "60%" }}>{value}</span>
-          </div>
-        ))}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, padding: "16px 18px", borderBottom: "1px solid var(--color-border)" }}>
+          <span style={{ fontSize: 13.5, color: "var(--color-muted)" }}>Website</span>
+          <span style={{ fontSize: 14, fontWeight: 700, color: "var(--color-heading)", textAlign: "right" as const, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" as const, maxWidth: "60%" }}>{domain}</span>
+        </div>
+        <div style={{ padding: "16px 18px", borderBottom: "1px solid var(--color-border)" }}>
+          <span style={{ fontSize: 13.5, color: "var(--color-muted)", display: "block", marginBottom: 8 }}>Products / services</span>
+          {productItems.length ? (
+            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              {visibleProducts.map((item, i) => (
+                <span key={i} style={{ fontSize: 14, fontWeight: 700, color: "var(--color-heading)", lineHeight: 1.4, whiteSpace: "pre-wrap" as const, wordBreak: "break-word" as const }}>{item}</span>
+              ))}
+            </div>
+          ) : (
+            <span style={{ fontSize: 14, fontWeight: 700, color: "var(--color-heading)" }}>—</span>
+          )}
+          {hiddenCount > 0 && (
+            <button
+              type="button"
+              onClick={() => setShowAllProducts((v) => !v)}
+              style={{ background: "none", border: "none", padding: 0, marginTop: 10, fontSize: 13, fontWeight: 700, color: "var(--color-brand)", cursor: "pointer" }}
+            >
+              {showAllProducts ? "Show less" : `Show ${hiddenCount} more`}
+            </button>
+          )}
+        </div>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, padding: "16px 18px" }}>
+          <span style={{ fontSize: 13.5, color: "var(--color-muted)" }}>Files shared</span>
+          <span style={{ fontSize: 14, fontWeight: 700, color: "var(--color-heading)", textAlign: "right" as const, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" as const, maxWidth: "60%" }}>{totalFiles > 0 ? `${totalFiles} file${totalFiles > 1 ? "s" : ""}` : "None"}</span>
+        </div>
       </div>
-      <p style={{
-        fontSize: 12.5, color: "var(--color-warning)", background: "rgba(241,196,15,0.12)",
-        border: "1px solid rgba(241,196,15,0.3)", borderRadius: 10, padding: "10px 14px",
-        lineHeight: 1.5, margin: "0 0 14px",
-      }}>
-        You won&apos;t be able to come back to this step once you continue — make sure everything above looks right first.
-      </p>
+      <NoGoingBackNotice />
       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
         <button onClick={onNext} className="ob-primary-btn" style={PRIMARY_BTN}>
           Looks good — continue
         </button>
-        <button onClick={onBack} className="ob-ghost-btn" style={GHOST_BTN}>Back</button>
       </div>
-    </div>
+      </div>
   );
 }
 
@@ -791,23 +876,36 @@ function StepResearchSummary({ website, products, onNext, onBack }: {
    into Setup Infrastructure. Brief and auto-advancing, no user input.
 ══════════════════════════════════════════════════════════════════════ */
 function StepStartingResearch({ onNext }: { onNext: () => void }) {
+  const [phase, setPhase] = useState<"loading" | "success">("loading");
+
   useEffect(() => {
-    const t = setTimeout(onNext, 1800);
-    return () => clearTimeout(t);
+    const t1 = setTimeout(() => setPhase("success"), 1200);
+    const t2 = setTimeout(onNext, 3400);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const success = phase === "success";
+
   return (
     <div className="ob-card" style={{ ...CARD, maxWidth: 440, textAlign: "center" as const }}>
-      <div style={{ width: 40, height: 40, margin: "0 auto 18px", background: "var(--color-brand-faint)", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <svg style={{ animation: "ob-spin 0.8s linear infinite" }} width="20" height="20" viewBox="0 0 24 24" fill="none">
-          <circle cx="12" cy="12" r="10" stroke="var(--color-border)" strokeWidth="3" />
-          <path d="M12 2a10 10 0 0 1 10 10" stroke="var(--color-brand)" strokeWidth="3" strokeLinecap="round" />
-        </svg>
+      <div style={{ width: 40, height: 40, margin: "0 auto 18px", background: success ? "rgba(7,188,12,0.12)" : "var(--color-brand-faint)", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", transition: "background 250ms" }}>
+        {success ? (
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M20 6L9 17l-5-5" />
+          </svg>
+        ) : (
+          <svg style={{ animation: "ob-spin 0.8s linear infinite" }} width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="10" stroke="var(--color-border)" strokeWidth="3" />
+            <path d="M12 2a10 10 0 0 1 10 10" stroke="var(--color-brand)" strokeWidth="3" strokeLinecap="round" />
+          </svg>
+        )}
       </div>
-      <h1 style={{ fontSize: 20, margin: "0 0 8px" }}>Starting AI research…</h1>
+      <h1 style={{ fontSize: 20, margin: "0 0 8px" }}>{success ? "Research started" : "Starting AI research…"}</h1>
       <p style={{ fontSize: 14, color: "var(--color-body)", lineHeight: 1.6, margin: 0 }}>
-        We're kicking off research on your company and products in the background. Let's set up your sending infrastructure next.
+        {success
+          ? "We're researching your company and products in the background. Let's set up your sending infrastructure next."
+          : "We're kicking off research on your company and products in the background."}
       </p>
     </div>
   );
@@ -816,11 +914,13 @@ function StepStartingResearch({ onNext }: { onNext: () => void }) {
 /* ════════════════════════════════════════════════════════════════════
    STEP 3 — Primary & forwarding domain
 ══════════════════════════════════════════════════════════════════════ */
-function StepPrimaryDomain({ website, onNext }: { website: string; onNext: (primaryDomain: string, forwardingDomain: string) => void }) {
-  const [domain, setDomain] = useState(() => extractDomain(website));
+function StepPrimaryDomain({ website, initialPrimaryDomain, initialForwardingDomain, onNext }: {
+  website: string; initialPrimaryDomain: string; initialForwardingDomain: string; onNext: (primaryDomain: string, forwardingDomain: string) => void;
+}) {
+  const [domain, setDomain] = useState(() => initialPrimaryDomain || extractDomain(website));
   const [domainFocused, setDomainFocused] = useState(false);
-  const [sameAsPrimary, setSameAsPrimary] = useState(true);
-  const [forwardingDomain, setForwardingDomain] = useState("");
+  const [sameAsPrimary, setSameAsPrimary] = useState(() => !initialForwardingDomain || initialForwardingDomain === (initialPrimaryDomain || extractDomain(website)));
+  const [forwardingDomain, setForwardingDomain] = useState(initialForwardingDomain);
   const [forwardingFocused, setForwardingFocused] = useState(false);
 
   const valid = isValidDomain(domain);
@@ -834,7 +934,6 @@ function StepPrimaryDomain({ website, onNext }: { website: string; onNext: (prim
 
   return (
     <div className="ob-card" style={{ ...CARD, maxWidth: 480 }}>
-      <span style={{ fontSize: 12, fontWeight: 700, color: "var(--color-brand)", letterSpacing: "0.05em", textTransform: "uppercase" as const }}>Sending Setup</span>
       <h1 style={{ fontSize: 24, margin: "8px 0 8px" }}>Set up your sending domain</h1>
       <p style={{ fontSize: 14, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 28px" }}>
         Your main company domain, and where replies should land.
@@ -906,16 +1005,13 @@ function StepPrimaryDomain({ website, onNext }: { website: string; onNext: (prim
 /* ════════════════════════════════════════════════════════════════════
    STEP 5 — Volume package
 ══════════════════════════════════════════════════════════════════════ */
-function StepVolume({ onNext, onBack }: { onNext: (pkg: PackageKey) => void; onBack: () => void }) {
-  const [selected, setSelected] = useState<PackageKey>("scale");
+function StepVolume({ initialPackage, onNext, onBack }: { initialPackage: PackageKey; onNext: (pkg: PackageKey) => void; onBack: () => void }) {
+  const [selected, setSelected] = useState<PackageKey>(initialPackage);
 
   return (
-    <div className="ob-card" style={{ ...CARD, maxWidth: 520 }}>
-      <span style={{ fontSize: 12, fontWeight: 700, color: "var(--color-brand)", letterSpacing: "0.05em", textTransform: "uppercase" as const }}>Sending Setup</span>
-      <h1 style={{ fontSize: 24, margin: "8px 0 8px" }}>How much volume?</h1>
-      <p style={{ fontSize: 14, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 24px" }}>
-        Pick a tier — 3 mailboxes per domain. You can change it later.
-      </p>
+      <div className="ob-card" style={{ ...CARD, maxWidth: 520 }}>
+      <BackButton onClick={onBack} />
+      <h1 style={{ fontSize: 24, margin: "8px 0 24px" }}>How many domains and mailboxes?</h1>
       <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 24 }}>
         {PACKAGES.map((p) => {
           const active = selected === p.key;
@@ -935,82 +1031,18 @@ function StepVolume({ onNext, onBack }: { onNext: (pkg: PackageKey) => void; onB
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
         <button onClick={() => onNext(selected)} className="ob-primary-btn" style={PRIMARY_BTN}>Continue</button>
-        <button onClick={onBack} className="ob-ghost-btn" style={GHOST_BTN}>Back</button>
       </div>
-    </div>
+      </div>
   );
 }
 
 /* ════════════════════════════════════════════════════════════════════
-   STEP 6 — Who is sending?
+   STEP 6 — Who is sending? (name + volume split)
 ══════════════════════════════════════════════════════════════════════ */
-function StepSenders({ onNext, onBack }: { onNext: (senders: Sender[]) => void; onBack: () => void }) {
-  const [senders, setSenders] = useState<Sender[]>([{ first: "", last: "", pct: 100 }]);
-  const [focused, setFocused] = useState<string | null>(null);
-
-  function updateSender(idx: number, field: "first" | "last", val: string) {
-    setSenders((prev) => prev.map((s, i) => i === idx ? { ...s, [field]: val } : s));
-  }
-
-  function addSender() {
-    setSenders((prev) => redistributePct([...prev, { first: "", last: "", pct: 0 }]));
-  }
-
-  function removeSender(idx: number) {
-    if (senders.length <= 1) return;
-    setSenders((prev) => redistributePct(prev.filter((_, i) => i !== idx)));
-  }
-
-  const valid = senders.every((s) => s.first.trim().length > 0);
-
-  return (
-    <div className="ob-card" style={{ ...CARD, maxWidth: 520 }}>
-      <span style={{ fontSize: 12, fontWeight: 700, color: "var(--color-brand)", letterSpacing: "0.05em", textTransform: "uppercase" as const }}>Sending Setup</span>
-      <h1 style={{ fontSize: 24, margin: "8px 0 8px" }}>Who is sending?</h1>
-      <p style={{ fontSize: 14, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 24px" }}>
-        Each sender becomes a few mailboxes per domain. Add as many as you like.
-      </p>
-      <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 12 }}>
-        {senders.map((s, idx) => (
-          <div key={idx} style={{ display: "flex", gap: 8, alignItems: "center" }}>
-            <input className="ob-input" type="text" placeholder="First name" value={s.first} onChange={(e) => updateSender(idx, "first", e.target.value)}
-              onFocus={() => setFocused(`f${idx}`)} onBlur={() => setFocused(null)}
-              style={{ ...INPUT, flex: 1, ...(focused === `f${idx}` ? { borderColor: "var(--color-border-strong)", boxShadow: "var(--shadow-focus)" } : {}) }} />
-            <input className="ob-input" type="text" placeholder="Last name" value={s.last} onChange={(e) => updateSender(idx, "last", e.target.value)}
-              onFocus={() => setFocused(`l${idx}`)} onBlur={() => setFocused(null)}
-              style={{ ...INPUT, flex: 1, ...(focused === `l${idx}` ? { borderColor: "var(--color-border-strong)", boxShadow: "var(--shadow-focus)" } : {}) }} />
-            {senders.length > 1 && (
-              <button type="button" onClick={() => removeSender(idx)} style={{ width: 32, height: 32, flexShrink: 0, background: "var(--color-surface)", border: "none", borderRadius: 8, color: "var(--color-muted)", fontSize: 18, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "inherit" }}>×</button>
-            )}
-          </div>
-        ))}
-      </div>
-      <button type="button" onClick={addSender} className="ob-link-btn" style={{ fontSize: 13, color: "var(--color-brand)", background: "none", border: "none", cursor: "pointer", padding: "0 0 16px", fontFamily: "inherit", fontWeight: 500, transition: "color 150ms" }}>
-        + Add another sender
-      </button>
-      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-        <button onClick={() => onNext(redistributePct(senders))} disabled={!valid} className="ob-primary-btn" style={{ ...PRIMARY_BTN, opacity: !valid ? 0.5 : 1, cursor: !valid ? "not-allowed" : "pointer" }}>Continue</button>
-        <button onClick={onBack} className="ob-ghost-btn" style={GHOST_BTN}>Back</button>
-      </div>
-    </div>
-  );
-}
-
-/* ════════════════════════════════════════════════════════════════════
-   STEP 7 — Split the volume
-══════════════════════════════════════════════════════════════════════ */
-function StepSplit({ senders, onNext, onBack }: {
-  senders: Sender[];
-  onNext: (senders: Sender[]) => void;
-  onBack: () => void;
-}) {
-  const [entries, setEntries] = useState<Sender[]>(() => redistributePct(senders));
+function StepSenders({ initialSenders, onNext, onBack }: { initialSenders: Sender[]; onNext: (senders: Sender[]) => void; onBack: () => void }) {
+  const [senders, setSenders] = useState<Sender[]>(() => initialSenders.length > 0 ? initialSenders : [{ first: "", last: "", pct: 100 }]);
   const [locked, setLocked] = useState<Set<number>>(new Set());
-
-  function update(idx: number, val: string) {
-    const newPct = Math.min(100, Math.max(0, parseInt(val) || 0));
-    setEntries((prev) => prev.map((s, i) => i === idx ? { ...s, pct: newPct } : s));
-  }
+  const [focused, setFocused] = useState<string | null>(null);
 
   function rebalance(list: Sender[], lockedSet: Set<number>): Sender[] {
     const unlockedIdxs = list.map((_, i) => i).filter((i) => !lockedSet.has(i));
@@ -1026,43 +1058,74 @@ function StepSplit({ senders, onNext, onBack }: {
     });
   }
 
+  function shiftLocked(lockedSet: Set<number>, removedIdx: number): Set<number> {
+    const next = new Set<number>();
+    lockedSet.forEach((i) => { if (i < removedIdx) next.add(i); else if (i > removedIdx) next.add(i - 1); });
+    return next;
+  }
+
+  function updateSender(idx: number, field: "first" | "last", val: string) {
+    setSenders((prev) => prev.map((s, i) => i === idx ? { ...s, [field]: val } : s));
+  }
+
+  function addSender() {
+    setSenders((prev) => rebalance([...prev, { first: "", last: "", pct: 0 }], locked));
+  }
+
+  function removeSender(idx: number) {
+    if (senders.length <= 1) return;
+    const newLocked = shiftLocked(locked, idx);
+    setLocked(newLocked);
+    setSenders((prev) => rebalance(prev.filter((_, i) => i !== idx), newLocked));
+  }
+
+  function updatePct(idx: number, val: string) {
+    const newPct = Math.min(100, Math.max(0, parseInt(val) || 0));
+    setSenders((prev) => prev.map((s, i) => i === idx ? { ...s, pct: newPct } : s));
+  }
+
   function lockField(idx: number) {
-    const lockedTotal = entries.reduce((sum, s, i) => locked.has(i) ? sum + s.pct : sum, 0);
+    const lockedTotal = senders.reduce((sum, s, i) => locked.has(i) ? sum + s.pct : sum, 0);
     const available = Math.max(0, 100 - lockedTotal);
-    const clamped = entries.map((s, i) => i === idx ? { ...s, pct: Math.min(s.pct, available) } : s);
+    const clamped = senders.map((s, i) => i === idx ? { ...s, pct: Math.min(s.pct, available) } : s);
     const newLocked = new Set(locked).add(idx);
     setLocked(newLocked);
-    setEntries(rebalance(clamped, newLocked));
+    setSenders(rebalance(clamped, newLocked));
   }
 
   function unlockField(idx: number) {
     setLocked((prev) => { const next = new Set(prev); next.delete(idx); return next; });
   }
 
-  const total = entries.reduce((s, e) => s + e.pct, 0);
+  const namesValid = senders.every((s) => s.first.trim().length > 0);
+  const total = senders.reduce((sum, s) => sum + s.pct, 0);
   const isExact = total === 100;
+  const canContinue = namesValid && isExact;
 
   return (
-    <div className="ob-card" style={{ ...CARD, maxWidth: 520 }}>
-      <span style={{ fontSize: 12, fontWeight: 700, color: "var(--color-brand)", letterSpacing: "0.05em", textTransform: "uppercase" as const }}>Sending Setup</span>
-      <h1 style={{ fontSize: 24, margin: "8px 0 8px" }}>Split the volume</h1>
+      <div className="ob-card" style={{ ...CARD, maxWidth: 520 }}>
+      <BackButton onClick={onBack} />
+      <h1 style={{ fontSize: 24, margin: "8px 0 8px" }}>Who is sending?</h1>
       <p style={{ fontSize: 14, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 24px" }}>
-        Split evenly to start. Change a share to lock it — the rest rebalance around locked ones and the total stays at or under 100%.
+        Add each sender and set how volume is split between them. Add as many as you like.
       </p>
-      <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 16 }}>
-        {entries.map((s, idx) => {
+      <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 12 }}>
+        {senders.map((s, idx) => {
           const isLocked = locked.has(idx);
           return (
-            <div key={idx} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", borderRadius: 10, background: "var(--color-surface)" }}>
-              <div style={{ flex: 1 }}>
-                <span style={{ fontSize: 14, fontWeight: 600, color: "var(--color-heading)" }}>{s.first} {s.last}</span>
-              </div>
+            <div key={idx} style={{ display: "flex", gap: 8, alignItems: "center" }}>
+              <input className="ob-input" type="text" placeholder="First name" value={s.first} onChange={(e) => updateSender(idx, "first", e.target.value)}
+                onFocus={() => setFocused(`f${idx}`)} onBlur={() => setFocused(null)}
+                style={{ ...INPUT, flex: 1, ...(focused === `f${idx}` ? { borderColor: "var(--color-border-strong)", boxShadow: "var(--shadow-focus)" } : {}) }} />
+              <input className="ob-input" type="text" placeholder="Last name" value={s.last} onChange={(e) => updateSender(idx, "last", e.target.value)}
+                onFocus={() => setFocused(`l${idx}`)} onBlur={() => setFocused(null)}
+                style={{ ...INPUT, flex: 1, ...(focused === `l${idx}` ? { borderColor: "var(--color-border-strong)", boxShadow: "var(--shadow-focus)" } : {}) }} />
               {isLocked ? (
                 <button
                   type="button"
                   onClick={() => unlockField(idx)}
                   title="Click to unlock and edit"
-                  style={{ display: "flex", alignItems: "center", gap: 6, background: "var(--color-page)", border: "1px solid var(--color-border)", borderRadius: 8, padding: "6px 10px", cursor: "pointer", fontFamily: "inherit" }}
+                  style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0, background: "var(--color-surface)", border: "1px solid var(--color-border)", borderRadius: 8, padding: "6px 10px", cursor: "pointer", fontFamily: "inherit" }}
                 >
                   <span style={{ fontSize: 13, fontWeight: 600, color: "var(--color-heading)" }}>{s.pct}%</span>
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--color-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -1070,40 +1133,47 @@ function StepSplit({ senders, onNext, onBack }: {
                   </svg>
                 </button>
               ) : (
-                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
                   <input
                     className="ob-input"
                     type="number"
                     min={0}
                     max={100}
                     value={s.pct || ""}
-                    onChange={(e) => update(idx, e.target.value)}
+                    onChange={(e) => updatePct(idx, e.target.value)}
                     onBlur={() => lockField(idx)}
-                    style={{ ...INPUT, background: "var(--color-page)", width: 64, textAlign: "center" as const, padding: "8px 10px" }}
+                    style={{ ...INPUT, width: 60, textAlign: "center" as const, padding: "8px 10px" }}
                   />
                   <span style={{ fontSize: 13, color: "var(--color-muted)", fontWeight: 500 }}>%</span>
                 </div>
+              )}
+              {senders.length > 1 && (
+                <button type="button" onClick={() => removeSender(idx)} style={{ width: 32, height: 32, flexShrink: 0, background: "var(--color-surface)", border: "none", borderRadius: 8, color: "var(--color-muted)", fontSize: 18, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "inherit" }}>×</button>
               )}
             </div>
           );
         })}
       </div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-        <button type="button" onClick={() => { setEntries(redistributePct(senders)); setLocked(new Set()); }} className="ob-link-btn" style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, color: "var(--color-brand)", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", padding: 0, transition: "color 150ms" }}>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
-          </svg>
-          Reset
-        </button>
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          <button type="button" onClick={addSender} className="ob-link-btn" style={{ fontSize: 13, color: "var(--color-brand)", background: "none", border: "none", cursor: "pointer", padding: 0, fontFamily: "inherit", fontWeight: 500, transition: "color 150ms" }}>
+            + Add another sender
+          </button>
+          <button type="button" onClick={() => { setSenders(redistributePct(senders)); setLocked(new Set()); }} className="ob-link-btn" style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12, color: "var(--color-muted)", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", padding: 0, transition: "color 150ms" }}>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="1 4 1 10 7 10" /><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+            </svg>
+            Reset split
+          </button>
+        </div>
         <span style={{ fontSize: 13, fontWeight: 600, color: isExact ? "var(--color-success)" : total > 100 ? "var(--color-error)" : "var(--color-muted)" }}>
           {total}%
         </span>
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-        <button onClick={() => onNext(entries)} disabled={!isExact} className="ob-primary-btn" style={{ ...PRIMARY_BTN, opacity: !isExact ? 0.5 : 1, cursor: !isExact ? "not-allowed" : "pointer" }}>Continue</button>
-        <button onClick={onBack} className="ob-ghost-btn" style={GHOST_BTN}>Back</button>
+        <button onClick={() => onNext(senders)} disabled={!canContinue} className="ob-primary-btn" style={{ ...PRIMARY_BTN, opacity: !canContinue ? 0.5 : 1, cursor: !canContinue ? "not-allowed" : "pointer" }}>Continue</button>
       </div>
-    </div>
+      </div>
   );
 }
 
@@ -1111,11 +1181,12 @@ function StepSplit({ senders, onNext, onBack }: {
    Infrastructure summary — quick review of the sending setup before
    moving on to Connections.
 ══════════════════════════════════════════════════════════════════════ */
-function StepInfraSummary({ primaryDomain, selectedPackage, senders, onNext }: {
+function StepInfraSummary({ primaryDomain, selectedPackage, senders, onNext, onBack }: {
   primaryDomain: string;
   selectedPackage: PackageKey;
   senders: Sender[];
   onNext: () => void;
+  onBack: () => void;
 }) {
   const pkg = PACKAGES.find((p) => p.key === selectedPackage)!;
   const senderNames = senders.map((s) => `${s.first} ${s.last}`.trim());
@@ -1131,6 +1202,7 @@ function StepInfraSummary({ primaryDomain, selectedPackage, senders, onNext }: {
 
   return (
     <div className="ob-card" style={{ ...CARD, maxWidth: 480 }}>
+      <BackButton onClick={onBack} />
       <span style={{ fontSize: 12, fontWeight: 700, color: "var(--color-brand)", letterSpacing: "0.05em", textTransform: "uppercase" as const }}>Infrastructure</span>
       <h1 style={{ fontSize: 24, margin: "8px 0 8px" }}>Your sending setup</h1>
       <p style={{ fontSize: 14, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 24px" }}>
@@ -1144,6 +1216,7 @@ function StepInfraSummary({ primaryDomain, selectedPackage, senders, onNext }: {
           </div>
         ))}
       </div>
+      <NoGoingBackNotice />
       <button onClick={onNext} className="ob-primary-btn" style={PRIMARY_BTN}>
         Looks good — continue
       </button>
@@ -1189,10 +1262,9 @@ function StepConnectionsIntro({ onNext }: { onNext: () => void }) {
 /* ════════════════════════════════════════════════════════════════════
    STEP 8 — Connect accounts
 ══════════════════════════════════════════════════════════════════════ */
-function StepConnect({ initialConnected, onNext, onBack }: {
+function StepConnect({ initialConnected, onNext }: {
   initialConnected: string[];
   onNext: (connected: string[]) => void;
-  onBack: () => void;
 }) {
   const [connected, setConnected] = useState<Set<string>>(() => new Set(initialConnected));
   const [connecting, setConnecting] = useState<string | null>(null);
@@ -1215,7 +1287,7 @@ function StepConnect({ initialConnected, onNext, onBack }: {
   ];
 
   return (
-    <div className="ob-card" style={{ ...CARD, maxWidth: 520 }}>
+      <div className="ob-card" style={{ ...CARD, maxWidth: 520 }}>
       <span style={{ fontSize: 12, fontWeight: 700, color: "var(--color-brand)", letterSpacing: "0.05em", textTransform: "uppercase" as const }}>Connect</span>
       <h1 style={{ fontSize: 24, margin: "8px 0 8px" }}>Connect your primary mailbox</h1>
       <p style={{ fontSize: 14, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 24px" }}>
@@ -1245,9 +1317,8 @@ function StepConnect({ initialConnected, onNext, onBack }: {
       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
         {connected.size > 0 && <button onClick={() => onNext(Array.from(connected))} className="ob-primary-btn" style={PRIMARY_BTN}>Continue</button>}
         <button onClick={() => onNext(Array.from(connected))} className="ob-ghost-btn" style={GHOST_BTN}>Skip for now</button>
-        <button onClick={onBack} className="ob-ghost-btn" style={{ ...GHOST_BTN, color: "var(--color-subtle)" }}>Back</button>
       </div>
-    </div>
+      </div>
   );
 }
 
@@ -1272,7 +1343,8 @@ function StepConnectLinkedIn({ initialConnected, onNext, onBack }: {
   const isLoading = connecting === "linkedin";
 
   return (
-    <div className="ob-card" style={{ ...CARD, maxWidth: 520 }}>
+      <div className="ob-card" style={{ ...CARD, maxWidth: 520 }}>
+      <BackButton onClick={onBack} />
       <span style={{ fontSize: 12, fontWeight: 700, color: "var(--color-brand)", letterSpacing: "0.05em", textTransform: "uppercase" as const }}>Connect</span>
       <h1 style={{ fontSize: 24, margin: "8px 0 8px" }}>Connect your LinkedIn</h1>
       <p style={{ fontSize: 14, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 24px" }}>
@@ -1296,9 +1368,8 @@ function StepConnectLinkedIn({ initialConnected, onNext, onBack }: {
       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
         {isDone && <button onClick={() => onNext(Array.from(connected))} className="ob-primary-btn" style={PRIMARY_BTN}>Continue</button>}
         <button onClick={() => onNext(Array.from(connected))} className="ob-ghost-btn" style={GHOST_BTN}>Skip for now</button>
-        <button onClick={onBack} className="ob-ghost-btn" style={{ ...GHOST_BTN, color: "var(--color-subtle)" }}>Back</button>
       </div>
-    </div>
+      </div>
   );
 }
 
@@ -1335,7 +1406,8 @@ function StepConnectCalendar({ initialConnected, onNext, onBack }: {
   ];
 
   return (
-    <div className="ob-card" style={{ ...CARD, maxWidth: 520 }}>
+      <div className="ob-card" style={{ ...CARD, maxWidth: 520 }}>
+      <BackButton onClick={onBack} />
       <span style={{ fontSize: 12, fontWeight: 700, color: "var(--color-brand)", letterSpacing: "0.05em", textTransform: "uppercase" as const }}>Connect</span>
       <h1 style={{ fontSize: 24, margin: "8px 0 8px" }}>Connect your calendar</h1>
       <p style={{ fontSize: 14, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 24px" }}>
@@ -1365,9 +1437,8 @@ function StepConnectCalendar({ initialConnected, onNext, onBack }: {
       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
         {connected.size > 0 && <button onClick={() => onNext(Array.from(connected))} className="ob-primary-btn" style={PRIMARY_BTN}>Continue</button>}
         <button onClick={() => onNext(Array.from(connected))} className="ob-ghost-btn" style={GHOST_BTN}>Skip for now</button>
-        <button onClick={onBack} className="ob-ghost-btn" style={{ ...GHOST_BTN, color: "var(--color-subtle)" }}>Back</button>
       </div>
-    </div>
+      </div>
   );
 }
 
@@ -1412,7 +1483,8 @@ function StepInvite({ initialInvitees, onNext, onBack }: {
   }
 
   return (
-    <div className="ob-card" style={{ ...CARD, maxWidth: 480 }}>
+      <div className="ob-card" style={{ ...CARD, maxWidth: 480 }}>
+      <BackButton onClick={onBack} />
       <span style={{ fontSize: 12, fontWeight: 700, color: "var(--color-brand)", letterSpacing: "0.05em", textTransform: "uppercase" as const }}>Your Team</span>
       <h1 style={{ fontSize: 24, margin: "8px 0 8px" }}>Invite your team</h1>
       <p style={{ fontSize: 14, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 24px" }}>
@@ -1473,9 +1545,8 @@ function StepInvite({ initialInvitees, onNext, onBack }: {
           </button>
         )}
         <button onClick={() => onNext(invitees)} className="ob-ghost-btn" style={GHOST_BTN}>Skip for now</button>
-        <button onClick={onBack} className="ob-ghost-btn" style={{ ...GHOST_BTN, color: "var(--color-subtle)" }}>Back</button>
       </div>
-    </div>
+      </div>
   );
 }
 
@@ -1483,24 +1554,26 @@ function StepInvite({ initialInvitees, onNext, onBack }: {
    Connections summary — quick review of what's plugged in before
    moving on to Review & Approve.
 ══════════════════════════════════════════════════════════════════════ */
-function StepConnectionsSummary({ connectedAccounts, connectedCalendars, invitees, onNext }: {
+function StepConnectionsSummary({ connectedAccounts, connectedCalendars, invitees, onNext, onBack }: {
   connectedAccounts: string[];
   connectedCalendars: string[];
   invitees: Invitee[];
   onNext: () => void;
+  onBack: () => void;
 }) {
   const mailboxCount = connectedAccounts.filter((id) => id === "google" || id === "microsoft").length;
   const linkedinConnected = connectedAccounts.includes("linkedin");
 
   const rows = [
-    { label: "Sending mailboxes", value: mailboxCount > 0 ? `${mailboxCount} connected` : "None yet" },
-    { label: "LinkedIn", value: linkedinConnected ? "1 connected" : "Not connected" },
-    { label: "Scheduling", value: connectedCalendars.length > 0 ? `${connectedCalendars.length} connected` : "Not connected" },
+    { label: "Sending mailboxes", value: mailboxCount > 0 ? `${mailboxCount} connected` : "Not Connected" },
+    { label: "LinkedIn", value: linkedinConnected ? "1 connected" : "Not Connected" },
+    { label: "Scheduling", value: connectedCalendars.length > 0 ? `${connectedCalendars.length} connected` : "Not Connected" },
     { label: "Team invites", value: invitees.length > 0 ? `${invitees.length} invited` : "None" },
   ];
 
   return (
     <div className="ob-card" style={{ ...CARD, maxWidth: 480 }}>
+      <BackButton onClick={onBack} />
       <span style={{ fontSize: 12, fontWeight: 700, color: "var(--color-brand)", letterSpacing: "0.05em", textTransform: "uppercase" as const }}>Connections</span>
       <h1 style={{ fontSize: 24, margin: "8px 0 8px" }}>Your connections</h1>
       <p style={{ fontSize: 14, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 24px" }}>
@@ -1514,6 +1587,7 @@ function StepConnectionsSummary({ connectedAccounts, connectedCalendars, invitee
           </div>
         ))}
       </div>
+      <NoGoingBackNotice />
       <button onClick={onNext} className="ob-primary-btn" style={PRIMARY_BTN}>
         Looks good — continue
       </button>
@@ -1530,9 +1604,9 @@ const REVIEW_INTRO_BULLETS = [
   "Senders & split",
 ];
 
-function StepReviewIntro({ onNext, onBack }: { onNext: () => void; onBack: () => void }) {
+function StepReviewIntro({ onNext }: { onNext: () => void }) {
   return (
-    <div className="ob-card" style={{ ...CARD, maxWidth: 480, textAlign: "center" as const }}>
+      <div className="ob-card" style={{ ...CARD, maxWidth: 480, textAlign: "center" as const }}>
       <span style={{ display: "block", fontSize: 12, fontWeight: 700, color: "var(--color-brand)", letterSpacing: "0.05em", textTransform: "uppercase" as const, marginBottom: 8 }}>
         Section 4 of 4
       </span>
@@ -1552,9 +1626,8 @@ function StepReviewIntro({ onNext, onBack }: { onNext: () => void; onBack: () =>
         <button onClick={onNext} style={PRIMARY_BTN} className="ob-primary-btn">
           Continue
         </button>
-        <button onClick={onBack} className="ob-ghost-btn" style={{ ...GHOST_BTN, color: "var(--color-subtle)" }}>Back</button>
       </div>
-    </div>
+      </div>
   );
 }
 
@@ -1598,7 +1671,8 @@ function StepReviewOrder({ forwardingDomain, selectedPackage, senders, onNext, o
   const allMailboxes = selectedDomains.flatMap((d) => getMailboxesForDomain(d, senders)).slice(0, pkg.mailboxes);
 
   return (
-    <div className="ob-card" style={{ ...CARD, maxWidth: 480, padding: "28px 28px 24px" }}>
+      <div className="ob-card" style={{ ...CARD, maxWidth: 480, padding: "28px 28px 24px" }}>
+      <BackButton onClick={onBack} />
       <div style={{ marginBottom: 16 }}>
         <h1 style={{ fontSize: 22, margin: "0 0 4px" }}>Review your domains</h1>
         <p style={{ fontSize: 13, color: "var(--color-body)", margin: 0 }}>Here are the domains we've secured for you. Taken domains are excluded automatically.</p>
@@ -1642,13 +1716,13 @@ function StepReviewOrder({ forwardingDomain, selectedPackage, senders, onNext, o
         </div>
       </div>
 
+      <NoGoingBackNotice />
       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
         <button onClick={() => onNext(selectedDomains, allMailboxes)} disabled={isChecking || allMailboxes.length !== pkg.mailboxes} className="ob-primary-btn" style={{ ...PRIMARY_BTN, opacity: isChecking || allMailboxes.length !== pkg.mailboxes ? 0.5 : 1, cursor: isChecking || allMailboxes.length !== pkg.mailboxes ? "not-allowed" : "pointer" }}>
           Approve &amp; Continue
         </button>
-        <button onClick={onBack} className="ob-ghost-btn" style={GHOST_BTN}>Back</button>
       </div>
-    </div>
+      </div>
   );
 }
 
@@ -1667,7 +1741,7 @@ function StepResearch({ onFinish }: { onFinish: () => void }) {
   const [step, setStep] = useState(0);
 
   useEffect(() => {
-    const delays = [200, 400, 600, 800, 1000];
+    const delays = [700, 1400, 2100, 2800, 3500];
     const timers = delays.map((d, i) => setTimeout(() => setStep(i + 1), d));
     return () => timers.forEach(clearTimeout);
   }, []);
@@ -1687,7 +1761,7 @@ function StepResearch({ onFinish }: { onFinish: () => void }) {
           const running = i === step && !allDone;
           return (
             <div key={label} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", borderRadius: 10, background: "transparent", border: `1px solid ${running ? "var(--color-brand)" : "transparent"}`, borderBottom: `1px solid ${running ? "var(--color-brand)" : i < RESEARCH_ITEMS.length - 1 ? "var(--color-border)" : "transparent"}`, transition: "all 400ms" }}>
-              <div style={{ width: 28, height: 28, borderRadius: "50%", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: done ? "var(--color-brand)" : "var(--color-page)", border: done ? "none" : `1.5px solid ${running ? "var(--color-brand)" : "var(--color-border-strong)"}` }}>
+              <div style={{ width: 28, height: 28, borderRadius: "50%", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: done ? "var(--color-success)" : "var(--color-page)", border: done ? "none" : `1.5px solid ${running ? "var(--color-brand)" : "var(--color-border-strong)"}`, transition: "background 250ms" }}>
                 {done
                   ? <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5" /></svg>
                   : running
@@ -1728,11 +1802,6 @@ function SectionLabel({ children, ai }: { children: React.ReactNode; ai?: React.
 }
 
 type RiskLevel = "HIGH" | "MEDIUM" | "LOW";
-const RISK_BADGE: Record<RiskLevel, React.CSSProperties> = {
-  HIGH: { color: "var(--color-error)", background: "rgba(231,76,60,0.1)", border: "1px solid rgba(231,76,60,0.3)" },
-  MEDIUM: { color: "var(--color-warning)", background: "rgba(241,196,15,0.15)", border: "1px solid rgba(241,196,15,0.35)" },
-  LOW: { color: "var(--color-success)", background: "rgba(7,188,12,0.1)", border: "1px solid rgba(7,188,12,0.3)" },
-};
 type Channel = "LinkedIn" | "Email";
 const CHANNEL_BADGE: Record<Channel, React.CSSProperties> = {
   LinkedIn: { color: "var(--color-info)", background: "rgba(41,112,255,0.1)", border: "1px solid rgba(41,112,255,0.3)" },
@@ -1754,34 +1823,19 @@ function BulletList({ items, tone = "body" }: { items: string[]; tone?: "body" |
   );
 }
 
-/* ─── Inline click-to-edit primitives ──────────────────────────────
-   Shared by any "AI-drafted, human-reviewable" step. A click turns
-   text into an input/textarea; Enter/blur commits, Escape cancels. */
+/* ─── Inline editable field primitives ─────────────────────────────
+   Shared by any "AI-drafted, human-reviewable" step. Always rendered
+   as a live input/textarea — no click needed to start editing —
+   with an optional "Ask AI" trigger for a revise-by-instruction pass. */
 function EditableText({ value, onChange, multiline = false, placeholder, style, rows = 3, revise }: {
   value: string; onChange: (v: string) => void; multiline?: boolean; placeholder?: string; style?: React.CSSProperties; rows?: number;
   revise?: (current: string, instruction: string) => string;
 }) {
-  const [editing, setEditing] = useState(false);
-  const [draft, setDraft] = useState(value);
   const [aiOpen, setAiOpen] = useState(false);
   const [aiInstruction, setAiInstruction] = useState("");
   const [aiBusy, setAiBusy] = useState(false);
   const [undoValue, setUndoValue] = useState<string | null>(null);
   const containerRef = useRef<HTMLSpanElement>(null);
-
-  useEffect(() => { if (!editing) setDraft(value); }, [value, editing]);
-
-  function forceCommit() {
-    setEditing(false);
-    setAiOpen(false);
-    const trimmed = draft.trim();
-    if (trimmed && trimmed !== value) onChange(trimmed);
-    else setDraft(value);
-  }
-  // The main field blurs when the AI prompt's own input steals focus (it
-  // autofocuses on open) — that's expected, not a request to close, so skip.
-  function commit() { if (!aiOpen) forceCommit(); }
-  function cancel() { setDraft(value); setEditing(false); setAiOpen(false); }
 
   function applyAI() {
     if (!revise) return;
@@ -1789,105 +1843,84 @@ function EditableText({ value, onChange, multiline = false, placeholder, style, 
     if (!instruction || aiBusy) return;
     setAiBusy(true);
     setTimeout(() => {
-      const revised = revise(draft, instruction);
-      setUndoValue(draft);
-      setDraft(revised);
-      onChange(revised);
+      setUndoValue(value);
+      onChange(revise(value, instruction));
       setAiBusy(false);
       setAiOpen(false);
       setAiInstruction("");
-      setEditing(false);
     }, 800);
   }
 
   const fieldStyle: React.CSSProperties = {
-    display: "block", width: "100%", background: "var(--color-page)", border: "1px solid var(--color-brand)",
+    display: "block", width: "100%", background: "var(--color-surface)", border: "1px solid var(--color-border)",
     borderRadius: 7, padding: revise ? "5px 32px 5px 7px" : "5px 7px", fontFamily: "inherit", outline: "none", boxSizing: "border-box" as const,
-    color: "var(--color-heading)", lineHeight: 1.5, ...style,
+    color: "var(--color-heading)", lineHeight: 1.5, transition: "border-color 150ms, box-shadow 150ms", ...style,
   };
 
-  if (editing) {
-    return (
-      <span ref={containerRef} style={{ position: "relative", display: "block" }}>
-        <span style={{ position: "relative", display: "block" }}>
-          {multiline ? (
-            <textarea
-              autoFocus rows={rows} value={draft}
-              onChange={(e) => setDraft(e.target.value)}
-              onBlur={commit}
-              onKeyDown={(e) => { if (e.key === "Escape") { e.preventDefault(); cancel(); } }}
-              style={{ ...fieldStyle, resize: "vertical" as const }}
-            />
-          ) : (
-            <input
-              autoFocus value={draft}
-              onChange={(e) => setDraft(e.target.value)}
-              onBlur={commit}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") { e.preventDefault(); commit(); }
-                if (e.key === "Escape") { e.preventDefault(); cancel(); }
-              }}
-              style={fieldStyle}
-            />
-          )}
-          {revise && (
-            <button
-              type="button"
-              onMouseDown={(e) => e.preventDefault()} // keep focus on the field; only React state (aiOpen) decides the popup, not a focus/blur race
-              onClick={() => setAiOpen((o) => !o)}
-              title="Ask AI to revise this"
-              style={{
-                position: "absolute", top: 0, right: 4, bottom: 0, margin: "auto 0", width: 22, height: 22, display: "flex", alignItems: "center", justifyContent: "center",
-                borderRadius: "50%", border: "none", cursor: "pointer", padding: 0, boxShadow: "0 1px 2px rgba(0,0,0,0.15)",
-                background: aiOpen ? "var(--color-brand)" : "var(--color-brand-tint)",
-                ...(multiline ? { top: 4, bottom: "auto", margin: 0 } : {}),
-              }}
-            >
-              <svg width="13" height="13" viewBox="0 0 24 24" fill={aiOpen ? "#fff" : "var(--color-brand)"}><path d="M12 5l1.8 5.4L19 12l-5.2 1.6L12 19l-1.8-5.4L5 12l5.2-1.6L12 5z" /></svg>
-            </button>
-          )}
-        </span>
-        {aiOpen && (
-          <div style={{ display: "flex", gap: 6, marginTop: 6 }}>
-            <input
-              autoFocus value={aiInstruction} onChange={(e) => setAiInstruction(e.target.value)}
-              onBlur={() => {
-                // Popup's own blur: if focus left the whole field+popup group
-                // entirely (not just moved between its own pieces), close for real.
-                requestAnimationFrame(() => {
-                  if (containerRef.current && !containerRef.current.contains(document.activeElement)) forceCommit();
-                });
-              }}
-              onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); applyAI(); } if (e.key === "Escape") { e.preventDefault(); setAiOpen(false); setAiInstruction(""); } }}
-              placeholder="Tell AI what to change…" disabled={aiBusy}
-              style={{ flex: 1, minWidth: 0, fontSize: 11.5, border: "1px solid var(--color-border)", borderRadius: 7, padding: "5px 7px", outline: "none", fontFamily: "inherit", background: "var(--color-surface)", color: "var(--color-heading)" }}
-            />
-            <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={applyAI} disabled={aiBusy || !aiInstruction.trim()}
-              style={{ flexShrink: 0, fontSize: 11, fontWeight: 600, borderRadius: 7, border: "none", padding: "0 10px", background: "var(--color-brand)", color: "#fff", cursor: aiBusy || !aiInstruction.trim() ? "default" : "pointer", opacity: aiBusy || !aiInstruction.trim() ? 0.6 : 1, display: "flex", alignItems: "center", fontFamily: "inherit" }}>
-              {aiBusy ? <Spinner inverted /> : "Go"}
-            </button>
-          </div>
+  return (
+    <span ref={containerRef} style={{ position: "relative", display: "block" }}>
+      <span style={{ position: "relative", display: "block" }}>
+        {multiline ? (
+          <textarea
+            className="ob-editable-field" rows={rows} value={value} placeholder={placeholder}
+            onChange={(e) => onChange(e.target.value)}
+            style={{ ...fieldStyle, resize: "vertical" as const }}
+          />
+        ) : (
+          <input
+            className="ob-editable-field" value={value} placeholder={placeholder}
+            onChange={(e) => onChange(e.target.value)}
+            style={fieldStyle}
+          />
+        )}
+        {revise && (
+          <button
+            type="button"
+            onMouseDown={(e) => e.preventDefault()} // keep focus on the field; only React state (aiOpen) decides the popup, not a focus/blur race
+            onClick={() => setAiOpen((o) => !o)}
+            title="Ask AI to revise this"
+            style={{
+              position: "absolute", top: 0, right: 4, bottom: 0, margin: "auto 0", width: 15, height: 15, display: "flex", alignItems: "center", justifyContent: "center",
+              borderRadius: "50%", border: "none", cursor: "pointer", padding: 0, boxShadow: "0 1px 2px rgba(0,0,0,0.15)",
+              background: aiOpen ? "var(--color-brand)" : "var(--color-brand-tint)",
+              ...(multiline ? { top: 4, bottom: "auto", margin: 0 } : {}),
+            }}
+          >
+            <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke={aiOpen ? "#fff" : "var(--color-brand)"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72Z" />
+              <path d="m14 7 3 3" /><path d="M5 6v4" /><path d="M19 14v4" />
+            </svg>
+          </button>
         )}
       </span>
-    );
-  }
-  return (
-    <>
-      <span
-        onClick={() => setEditing(true)}
-        title="Click to edit"
-        className="ob-editable"
-        style={{ cursor: "text", borderRadius: 5, padding: "1px 4px", margin: "-1px -4px", ...style }}
-      >
-        {value || <span style={{ color: "var(--color-subtle)", fontStyle: "italic" as const }}>{placeholder ?? "Click to add"}</span>}
-      </span>
+      {aiOpen && (
+        <div style={{ display: "flex", gap: 6, marginTop: 6 }}>
+          <input
+            autoFocus value={aiInstruction} onChange={(e) => setAiInstruction(e.target.value)}
+            onBlur={() => {
+              // Popup's own blur: if focus left the whole field+popup group
+              // entirely (not just moved between its own pieces), close for real.
+              requestAnimationFrame(() => {
+                if (containerRef.current && !containerRef.current.contains(document.activeElement)) { setAiOpen(false); setAiInstruction(""); }
+              });
+            }}
+            onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); applyAI(); } if (e.key === "Escape") { e.preventDefault(); setAiOpen(false); setAiInstruction(""); } }}
+            placeholder="Tell AI what to change…" disabled={aiBusy}
+            style={{ flex: 1, minWidth: 0, fontSize: 11.5, border: "1px solid var(--color-border)", borderRadius: 7, padding: "5px 7px", outline: "none", fontFamily: "inherit", background: "var(--color-surface)", color: "var(--color-heading)" }}
+          />
+          <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={applyAI} disabled={aiBusy || !aiInstruction.trim()}
+            style={{ flexShrink: 0, fontSize: 11, fontWeight: 600, borderRadius: 7, border: "none", padding: "0 10px", background: "var(--color-brand)", color: "#fff", cursor: aiBusy || !aiInstruction.trim() ? "default" : "pointer", opacity: aiBusy || !aiInstruction.trim() ? 0.6 : 1, display: "flex", alignItems: "center", fontFamily: "inherit" }}>
+            {aiBusy ? <Spinner inverted /> : "Go"}
+          </button>
+        </div>
+      )}
       {undoValue !== null && (
         <button type="button" onClick={() => { onChange(undoValue); setUndoValue(null); }}
-          style={{ marginLeft: 6, fontSize: 10, fontWeight: 600, color: "var(--color-brand)", background: "none", border: "none", cursor: "pointer", textDecoration: "underline", padding: 0, fontFamily: "inherit" }}>
+          style={{ display: "block", marginTop: 4, fontSize: 10, fontWeight: 600, color: "var(--color-brand)", background: "none", border: "none", cursor: "pointer", textDecoration: "underline", padding: 0, fontFamily: "inherit" }}>
           Undo
         </button>
       )}
-    </>
+    </span>
   );
 }
 
@@ -1895,7 +1928,6 @@ function EditableBulletList({ items, onChange, tone = "body" }: {
   items: string[]; onChange: (items: string[]) => void; tone?: "body" | "brand";
 }) {
   const textColor = tone === "brand" ? "var(--color-brand)" : "var(--color-body)";
-  const dotColor = tone === "brand" ? "var(--color-brand)" : "var(--color-subtle)";
   const updateAt = (i: number, v: string) => onChange(items.map((it, idx) => (idx === i ? v : it)));
   const removeAt = (i: number) => onChange(items.filter((_, idx) => idx !== i));
   const add = () => onChange([...items, "New point"]);
@@ -1904,7 +1936,6 @@ function EditableBulletList({ items, onChange, tone = "body" }: {
     <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
       {items.map((item, i) => (
         <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
-          <span style={{ width: 4, height: 4, borderRadius: "50%", background: dotColor, marginTop: 7, flexShrink: 0 }} />
           <span style={{ flex: 1, minWidth: 0 }}>
             <EditableText value={item} onChange={(v) => updateAt(i, v)} multiline rows={2} style={{ fontSize: 12.5, color: textColor }} revise={reviseText} />
           </span>
@@ -1960,7 +1991,7 @@ function AIRevise<T>({ value, onChange, revise, scale = "field" }: {
   const [instruction, setInstruction] = useState("");
   const [busy, setBusy] = useState(false);
   const [undoValue, setUndoValue] = useState<T | null>(null);
-  const iconSize = scale === "section" ? 13 : 11;
+  const iconSize = scale === "section" ? 9 : 7;
 
   function apply() {
     const text = instruction.trim();
@@ -1980,7 +2011,10 @@ function AIRevise<T>({ value, onChange, revise, scale = "field" }: {
     <span style={{ position: "relative", display: "inline-flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
       <button type="button" onClick={() => setOpen((o) => !o)} title="Ask AI to revise this"
         style={{ background: "none", border: "none", cursor: "pointer", padding: 2, lineHeight: 0, opacity: open ? 1 : 0.55, fontFamily: "inherit" }}>
-        <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="var(--color-brand)"><path d="M12 5l1.8 5.4L19 12l-5.2 1.6L12 19l-1.8-5.4L5 12l5.2-1.6L12 5z" /></svg>
+        <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="var(--color-brand)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72Z" />
+          <path d="m14 7 3 3" /><path d="M5 6v4" /><path d="M19 14v4" />
+        </svg>
       </button>
       {undoValue !== null && !open && (
         <button type="button" onClick={() => { onChange(undoValue); setUndoValue(null); }}
@@ -2213,7 +2247,7 @@ function StepCompanyResearch({ products, onNext }: { products: Product[]; onNext
       <span style={{ fontSize: 12, fontWeight: 700, color: "var(--color-brand)", letterSpacing: "0.05em", textTransform: "uppercase" as const }}>Company Research</span>
       <h1 style={{ fontSize: 24, margin: "8px 0 8px" }}>Here&apos;s what we found</h1>
       <p style={{ fontSize: 14, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 24px" }}>
-        AI-researched from your website. Click any field to edit it, or hit <span style={{ color: "var(--color-brand)" }}>✨</span> to ask AI to revise it.
+        AI-researched from your website. Edit any field directly, or hit <span style={{ color: "var(--color-brand)" }}>🪄</span> to ask AI to revise it.
       </p>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 22, marginBottom: 24 }}>
@@ -2293,14 +2327,10 @@ function StepCompanyResearch({ products, onNext }: { products: Product[]; onNext
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {icpHypotheses.map((icp, i) => (
               <div key={i} style={{ padding: "10px 12px", borderRadius: 10, border: "1px solid var(--color-border)" }}>
-                <div style={{ display: "flex", alignItems: "flex-start", gap: 8, marginBottom: 4 }}>
-                  <span style={{ flex: 1, fontSize: 12.5, fontWeight: 600, color: "var(--color-heading)", lineHeight: 1.4 }}>
+                <div style={{ marginBottom: 4 }}>
+                  <span style={{ fontSize: 12.5, fontWeight: 600, color: "var(--color-heading)", lineHeight: 1.4 }}>
                     <EditableText value={icp.title} onChange={(v) => updateIcp(i, { title: v })} style={{ fontSize: 12.5, fontWeight: 600 }} revise={reviseText} />
                   </span>
-                  <button type="button" onClick={() => updateIcp(i, { risk: nextRisk(icp.risk) })} title="Click to change risk level"
-                    style={{ flexShrink: 0, fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 6, cursor: "pointer", fontFamily: "inherit", ...RISK_BADGE[icp.risk] }}>
-                    {icp.risk}
-                  </button>
                 </div>
                 <div style={{ fontSize: 12, color: "var(--color-muted)", lineHeight: 1.5, margin: "0 0 8px" }}>
                   <EditableText value={icp.body} onChange={(v) => updateIcp(i, { body: v })} multiline rows={2} style={{ fontSize: 12, color: "var(--color-muted)" }} revise={reviseText} />
@@ -2358,7 +2388,8 @@ function StepCompanyResearch({ products, onNext }: { products: Product[]; onNext
 }
 
 /* ════════════════════════════════════════════════════════════════════
-   STEP 13 — Products & Services summary (AI-drafted result)
+   Shared Products & Services building blocks — used by the merged
+   Product / ICP / Persona review step further below.
 ══════════════════════════════════════════════════════════════════════ */
 type PSContent = string | string[];
 interface PSSection { label: string; content: PSContent }
@@ -2430,81 +2461,9 @@ function buildInitialPSProduct(product?: Product): PSProductState {
   return { name, badge, tabs };
 }
 
-function StepProductsServices({ products, onNext }: { products: Product[]; onNext: () => void }) {
-  const [productStates, setProductStates] = useState<PSProductState[]>(() => products.map((p) => buildInitialPSProduct(p)));
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const current = productStates[selectedIndex];
-  const tabNames = Object.keys(current.tabs);
-  const [activeTab, setActiveTab] = useState(tabNames[0]);
-
-  function patchCurrent(fields: Partial<Pick<PSProductState, "name" | "badge">>) {
-    setProductStates((cur) => cur.map((p, i) => (i === selectedIndex ? { ...p, ...fields } : p)));
-  }
-  function updateSection(tab: string, i: number, content: PSContent) {
-    setProductStates((cur) => cur.map((p, idx) => (idx === selectedIndex ? { ...p, tabs: { ...p.tabs, [tab]: p.tabs[tab].map((s, si) => (si === i ? { ...s, content } : s)) } } : p)));
-  }
-
-  return (
-    <div className="ob-card" style={{ ...CARD, maxWidth: 580 }}>
-      <span style={{ fontSize: 12, fontWeight: 700, color: "var(--color-brand)", letterSpacing: "0.05em", textTransform: "uppercase" as const }}>Products & Services</span>
-      <h1 style={{ fontSize: 24, margin: "8px 0 8px" }}>Here&apos;s your product profile</h1>
-      <p style={{ fontSize: 14, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 24px" }}>
-        {products.length > 1
-          ? `AI-mapped ${products.length} products from your details. Review each, then we'll build your ICP.`
-          : "AI-mapped from your product details. Review, then we'll build your ICP."}{" "}
-        Click any field to edit it, or hit <span style={{ color: "var(--color-brand)" }}>✨</span> to ask AI to revise it.
-      </p>
-
-      <div style={{ borderRadius: 12, border: "1px solid var(--color-border)", overflow: "hidden", marginBottom: 24 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "14px 16px", borderBottom: "1px solid var(--color-border)" }}>
-          {products.length > 1 ? (
-            <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
-              {products.map((p, i) => (
-                <button key={i} type="button" onClick={() => setSelectedIndex(i)} title={p.name?.trim() || `Product ${i + 1}`}
-                  style={{ width: 24, height: 24, borderRadius: "50%", fontSize: 11, fontWeight: 700, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", border: "none", cursor: "pointer", fontFamily: "inherit", transition: "all 150ms", background: i === selectedIndex ? "var(--color-brand)" : "var(--color-surface)", color: i === selectedIndex ? "#fff" : "var(--color-muted)" }}>
-                  {i + 1}
-                </button>
-              ))}
-            </div>
-          ) : (
-            <div style={{ width: 24, height: 24, borderRadius: "50%", background: "var(--color-brand)", color: "#fff", fontSize: 11, fontWeight: 700, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>1</div>
-          )}
-          <span style={{ fontSize: 14, fontWeight: 600, color: "var(--color-heading)", minWidth: 0 }}>
-            <EditableText key={`name-${selectedIndex}`} value={current.name} onChange={(v) => patchCurrent({ name: v })} style={{ fontSize: 14, fontWeight: 600 }} revise={reviseText} />
-          </span>
-          <span style={{ fontSize: 11, fontWeight: 500, color: "var(--color-brand)", border: "1px solid var(--color-border)", background: "var(--color-brand-tint)", borderRadius: 999, padding: "2px 10px", flexShrink: 0 }}>
-            <EditableText key={`badge-${selectedIndex}`} value={current.badge} onChange={(v) => patchCurrent({ badge: v })} style={{ fontSize: 11, fontWeight: 500, color: "var(--color-brand)" }} revise={reviseText} />
-          </span>
-          {products.length > 1 && (
-            <span style={{ fontSize: 11, color: "var(--color-muted)", marginLeft: "auto", flexShrink: 0 }}>{selectedIndex + 1} / {products.length}</span>
-          )}
-        </div>
-
-        <div style={{ display: "flex", gap: 6, padding: "10px 12px", borderBottom: "1px solid var(--color-border)", overflowX: "auto" as const }}>
-          {tabNames.map((tab) => (
-            <button key={tab} type="button" onClick={() => setActiveTab(tab)}
-              style={{ flexShrink: 0, height: 28, padding: "0 12px", borderRadius: 999, fontSize: 12, fontWeight: 500, fontFamily: "inherit", cursor: "pointer", whiteSpace: "nowrap" as const, border: "none", transition: "all 150ms", ...(activeTab === tab ? { background: "var(--color-brand)", color: "#fff" } : { background: "transparent", color: "var(--color-muted)" }) }}>
-              {tab}
-            </button>
-          ))}
-        </div>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: 16, padding: "16px" }}>
-          {current.tabs[activeTab].map((section, i) => (
-            <PSField key={`${selectedIndex}-${activeTab}-${section.label}`} section={section} onChange={(content) => updateSection(activeTab, i, content)} />
-          ))}
-        </div>
-      </div>
-
-      <button onClick={onNext} className="ob-primary-btn" style={PRIMARY_BTN}>
-        Approve and Continue
-      </button>
-    </div>
-  );
-}
-
 /* ════════════════════════════════════════════════════════════════════
-   STEP 14 — Personas summary (AI-drafted result)
+   Shared Persona building blocks — used by the merged Product / ICP /
+   Persona review step further below.
 ══════════════════════════════════════════════════════════════════════ */
 interface PersonaData {
   title: string;
@@ -2629,85 +2588,6 @@ const PERSONAS_DEFAULT: PersonaData[] = [
 
 const PERSONA_TAB_NAMES = Object.keys(PERSONAS_DEFAULT[0].tabs);
 
-function StepPersonas({ onNext }: { onNext: () => void }) {
-  const [personaStates, setPersonaStates] = useState<PersonaData[]>(() => PERSONAS_DEFAULT.map((p) => ({ ...p, tabs: { ...p.tabs } })));
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const [activeTab, setActiveTab] = useState(PERSONA_TAB_NAMES[0]);
-  const persona = personaStates[selectedIndex];
-
-  function patchCurrent(fields: Partial<Pick<PersonaData, "title" | "roleTag" | "subtitle">>) {
-    setPersonaStates((cur) => cur.map((p, i) => (i === selectedIndex ? { ...p, ...fields } : p)));
-  }
-  function updateSection(tab: string, i: number, content: PSContent) {
-    setPersonaStates((cur) => cur.map((p, idx) => (idx === selectedIndex ? { ...p, tabs: { ...p.tabs, [tab]: p.tabs[tab].map((s, si) => (si === i ? { ...s, content } : s)) } } : p)));
-  }
-
-  return (
-    <div className="ob-card" style={{ ...CARD, maxWidth: 580 }}>
-      <span style={{ fontSize: 12, fontWeight: 700, color: "var(--color-brand)", letterSpacing: "0.05em", textTransform: "uppercase" as const }}>Personas</span>
-      <h1 style={{ fontSize: 24, margin: "8px 0 8px" }}>Here&apos;s who you&apos;re selling to</h1>
-      <p style={{ fontSize: 14, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 24px" }}>
-        {personaStates.length > 1
-          ? `AI built ${personaStates.length} buyer personas from your ICP. Review each, then we'll draft your outreach campaigns.`
-          : "AI built a buyer persona from your ICP. Review it, then we'll draft your outreach campaigns."}{" "}
-        Click any field to edit it, or hit <span style={{ color: "var(--color-brand)" }}>✨</span> to ask AI to revise it.
-      </p>
-
-      <div style={{ borderRadius: 12, border: "1px solid var(--color-border)", overflow: "hidden", marginBottom: 24 }}>
-        <div style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "14px 16px", borderBottom: "1px solid var(--color-border)" }}>
-          {personaStates.length > 1 ? (
-            <div style={{ display: "flex", gap: 6, flexShrink: 0, marginTop: 1 }}>
-              {personaStates.map((p, i) => (
-                <button key={i} type="button" onClick={() => setSelectedIndex(i)} title={p.title}
-                  style={{ width: 24, height: 24, borderRadius: "50%", fontSize: 11, fontWeight: 700, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", border: "none", cursor: "pointer", fontFamily: "inherit", transition: "all 150ms", background: i === selectedIndex ? "var(--color-brand)" : "var(--color-surface)", color: i === selectedIndex ? "#fff" : "var(--color-muted)" }}>
-                  {i + 1}
-                </button>
-              ))}
-            </div>
-          ) : (
-            <div style={{ width: 24, height: 24, borderRadius: "50%", background: "var(--color-brand)", color: "#fff", fontSize: 11, fontWeight: 700, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", marginTop: 1 }}>1</div>
-          )}
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" as const }}>
-              <span style={{ fontSize: 14, fontWeight: 600, color: "var(--color-heading)" }}>
-                <EditableText key={`title-${selectedIndex}`} value={persona.title} onChange={(v) => patchCurrent({ title: v })} style={{ fontSize: 14, fontWeight: 600 }} revise={reviseText} />
-              </span>
-              <span style={{ fontSize: 11, fontWeight: 500, color: "var(--color-brand)", border: "1px solid var(--color-border)", background: "var(--color-brand-tint)", borderRadius: 999, padding: "2px 10px" }}>
-                <EditableText key={`roleTag-${selectedIndex}`} value={persona.roleTag} onChange={(v) => patchCurrent({ roleTag: v })} style={{ fontSize: 11, fontWeight: 500, color: "var(--color-brand)" }} revise={reviseText} />
-              </span>
-            </div>
-            <p style={{ fontSize: 12, color: "var(--color-muted)", lineHeight: 1.5, margin: "4px 0 0" }}>
-              <EditableText key={`subtitle-${selectedIndex}`} value={persona.subtitle} onChange={(v) => patchCurrent({ subtitle: v })} multiline rows={2} style={{ fontSize: 12, color: "var(--color-muted)" }} revise={reviseText} />
-            </p>
-          </div>
-          {personaStates.length > 1 && (
-            <span style={{ fontSize: 11, color: "var(--color-muted)", flexShrink: 0, marginTop: 1 }}>{selectedIndex + 1} / {personaStates.length}</span>
-          )}
-        </div>
-
-        <div style={{ display: "flex", gap: 6, padding: "10px 12px", borderBottom: "1px solid var(--color-border)", overflowX: "auto" as const }}>
-          {PERSONA_TAB_NAMES.map((tab) => (
-            <button key={tab} type="button" onClick={() => setActiveTab(tab)}
-              style={{ flexShrink: 0, height: 28, padding: "0 12px", borderRadius: 999, fontSize: 12, fontWeight: 500, fontFamily: "inherit", cursor: "pointer", whiteSpace: "nowrap" as const, border: "none", transition: "all 150ms", ...(activeTab === tab ? { background: "var(--color-brand)", color: "#fff" } : { background: "transparent", color: "var(--color-muted)" }) }}>
-              {tab}
-            </button>
-          ))}
-        </div>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: 16, padding: "16px" }}>
-          {persona.tabs[activeTab].map((section, i) => (
-            <PSField key={`${selectedIndex}-${activeTab}-${section.label}`} section={section} onChange={(content) => updateSection(activeTab, i, content)} />
-          ))}
-        </div>
-      </div>
-
-      <button onClick={onNext} className="ob-primary-btn" style={PRIMARY_BTN}>
-        Approve and Continue
-      </button>
-    </div>
-  );
-}
-
 /* ════════════════════════════════════════════════════════════════════
    STEP 15 — Outreach Campaign summary (AI-drafted result)
 ══════════════════════════════════════════════════════════════════════ */
@@ -2790,6 +2670,7 @@ function StepCardContent({ step }: { step: CampaignStep }) {
 
 function StepOutreachCampaign({ onNext }: { onNext: () => void }) {
   const [campaignIndex, setCampaignIndex] = useState(0);
+  const [approved, setApproved] = useState<boolean[]>(() => CAMPAIGNS.map(() => false));
   const [stepIndex, setStepIndex] = useState(0);
   const [dragX, setDragX] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
@@ -2835,6 +2716,18 @@ function StepOutreachCampaign({ onNext }: { onNext: () => void }) {
   function selectCampaign(i: number) {
     setCampaignIndex(i);
     setStepIndex(0);
+  }
+
+  const allCampaignsApproved = approved.every(Boolean);
+  const firstUnapproved = approved.findIndex((a) => !a);
+  const unlockedUpTo = firstUnapproved === -1 ? CAMPAIGNS.length - 1 : firstUnapproved;
+
+  function approveAndAdvance() {
+    const nextApproved = approved.map((a, i) => (i === campaignIndex ? true : a));
+    setApproved(nextApproved);
+    const nextUnapproved = nextApproved.findIndex((a) => !a);
+    if (nextUnapproved !== -1) selectCampaign(nextUnapproved);
+    else onNext();
   }
 
   function animateTo(target: number, commit: () => void) {
@@ -2921,12 +2814,24 @@ function StepOutreachCampaign({ onNext }: { onNext: () => void }) {
       </p>
 
       <div style={{ display: "flex", gap: 6, marginBottom: 16 }}>
-        {CAMPAIGNS.map((c, i) => (
-          <button key={i} type="button" onClick={() => selectCampaign(i)} title={c.name}
-            style={{ width: 24, height: 24, borderRadius: "50%", fontSize: 11, fontWeight: 700, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", border: "none", cursor: "pointer", fontFamily: "inherit", transition: "all 150ms", background: i === campaignIndex ? "var(--color-brand)" : "var(--color-surface)", color: i === campaignIndex ? "#fff" : "var(--color-muted)" }}>
-            {i + 1}
-          </button>
-        ))}
+        {CAMPAIGNS.map((c, i) => {
+          const done = approved[i];
+          const isCurrent = i === campaignIndex;
+          const locked = i > unlockedUpTo;
+          return (
+            <button key={i} type="button" onClick={() => !locked && selectCampaign(i)} disabled={locked} title={c.name}
+              style={{
+                width: 24, height: 24, borderRadius: "50%", fontSize: 11, fontWeight: 700, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center",
+                border: "none", cursor: locked ? "not-allowed" : "pointer", fontFamily: "inherit", transition: "all 150ms",
+                background: done ? "var(--color-success)" : isCurrent ? "var(--color-brand)" : "var(--color-surface)",
+                color: done || isCurrent ? "#fff" : "var(--color-muted)", opacity: locked ? 0.5 : 1,
+              }}>
+              {done ? (
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5" /></svg>
+              ) : i + 1}
+            </button>
+          );
+        })}
       </div>
 
       <span style={{ display: "block", fontSize: 11, fontWeight: 700, color: "var(--color-brand)", letterSpacing: "0.05em", textTransform: "uppercase" as const, marginBottom: 10 }}>
@@ -2980,8 +2885,8 @@ function StepOutreachCampaign({ onNext }: { onNext: () => void }) {
         </button>
       </div>
 
-      <button onClick={onNext} className="ob-primary-btn" style={PRIMARY_BTN}>
-        Approve and Continue
+      <button onClick={allCampaignsApproved ? onNext : approveAndAdvance} className="ob-primary-btn" style={PRIMARY_BTN}>
+        {allCampaignsApproved || approved[campaignIndex] ? "Continue" : "Approve and Continue"}
       </button>
     </div>
   );
@@ -3058,7 +2963,10 @@ function StepClearedForLaunch({ onFinish }: { onFinish: () => void }) {
 }
 
 /* ════════════════════════════════════════════════════════════════════
-   STEP 18 — ICP Scoring Matrix (AI-drafted result)
+   Shared ICP building blocks, then STEP 13 — the merged Product / ICP /
+   Persona review: one page per product, three collapsible sections
+   (Product & Services, ICP, Personas) approved in sequence before the
+   next product unlocks.
 ══════════════════════════════════════════════════════════════════════ */
 const SCORE_DIMENSIONS = ["Market Size", "Product Fit", "Pain Urgency", "Reachability", "Competition"] as const;
 type ScoreDimension = (typeof SCORE_DIMENSIONS)[number];
@@ -3170,38 +3078,25 @@ const MATRIX_HEADER_CELL: React.CSSProperties = {
 };
 
 function EditableScoreCell({ value, onChange }: { value: number; onChange: (v: number) => void }) {
-  const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(String(value));
-  useEffect(() => { if (!editing) setDraft(String(value)); }, [value, editing]);
+  useEffect(() => { setDraft(String(value)); }, [value]);
 
   function commit() {
-    setEditing(false);
     const n = Math.round(Number(draft));
     if (!Number.isNaN(n)) onChange(Math.max(0, Math.min(10, n)));
     else setDraft(String(value));
   }
 
-  if (editing) {
-    return (
-      <input
-        autoFocus type="number" min={0} max={10} value={draft}
-        onChange={(e) => setDraft(e.target.value)}
-        onBlur={commit}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") { e.preventDefault(); commit(); }
-          if (e.key === "Escape") { e.preventDefault(); setDraft(String(value)); setEditing(false); }
-        }}
-        style={{ width: 42, fontFamily: MONO_FONT, fontSize: 13, border: "1px solid var(--color-brand)", borderRadius: 6, padding: "2px 4px", outline: "none", background: "var(--color-page)", color: "var(--color-heading)" }}
-      />
-    );
-  }
   const tone = scoreTone(value);
   return (
-    <span onClick={() => setEditing(true)} title="Click to edit" className="ob-editable"
-      style={{ fontFamily: MONO_FONT, fontSize: 13, whiteSpace: "nowrap" as const, cursor: "text", borderRadius: 5, padding: "1px 4px", margin: "-1px -4px" }}>
-      <span style={{ fontWeight: 700, color: tone }}>{value}</span>
-      <span style={{ color: "var(--color-subtle)" }}>/10</span>
-    </span>
+    <input
+      className="ob-editable-field"
+      type="number" min={0} max={10} value={draft}
+      onChange={(e) => setDraft(e.target.value)}
+      onBlur={commit}
+      onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); commit(); } }}
+      style={{ width: 46, fontFamily: MONO_FONT, fontSize: 13, fontWeight: 700, border: "1px solid var(--color-border)", borderRadius: 6, padding: "2px 4px", outline: "none", background: "var(--color-surface)", color: tone }}
+    />
   );
 }
 
@@ -3265,63 +3160,138 @@ function reviseMarketSegments(segments: MarketSegment[], instruction: string): M
   return segments;
 }
 
-function StepTamIcp({ products, onNext }: { products: Product[]; onNext: () => void }) {
-  const [view, setView] = useState<"Graph" | "Matrix">("Graph");
-  const [tamDescription, setTamDescription] = useState(TAM_DESCRIPTION_DEFAULT);
-  const [segments, setSegments] = useState<MarketSegment[]>(MARKET_SEGMENTS_DEFAULT);
-  const [icps, setIcps] = useState<IcpScore[]>(ICP_SCORES_DEFAULT);
-  const productName = products[0]?.name?.trim() || "Your product";
+/* ─── Collapsible accordion primitive for the merged review step ───
+   Header row (checkmark/lock + label + optional collapsed summary +
+   chevron) toggles the body open; approving marks it done and lets the
+   parent decide what opens next. */
+function CollapsibleReviewSection({ label, approved, active, locked, summary, onToggle, onApprove, children }: {
+  label: string; approved: boolean; active: boolean; locked: boolean; summary?: string;
+  onToggle: () => void; onApprove: () => void; children: React.ReactNode;
+}) {
+  return (
+    <div style={{ borderRadius: 14, border: "1px solid var(--color-border)", overflow: "hidden", marginBottom: 14 }}>
+      <button
+        type="button"
+        onClick={onToggle}
+        disabled={locked}
+        style={{
+          width: "100%", display: "flex", alignItems: "center", gap: 12, padding: "14px 16px",
+          background: active ? "var(--color-surface)" : "transparent", border: "none", cursor: locked ? "not-allowed" : "pointer",
+          fontFamily: "inherit", textAlign: "left" as const, opacity: locked ? 0.5 : 1,
+        }}
+      >
+        <span style={{ width: 24, height: 24, borderRadius: "50%", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: approved ? "var(--color-success)" : "var(--color-page)", border: approved ? "none" : "1.5px solid var(--color-border-strong)" }}>
+          {approved ? (
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5" /></svg>
+          ) : locked ? (
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--color-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
+          ) : null}
+        </span>
+        <span style={{ flex: 1, fontSize: 14, fontWeight: 600, color: "var(--color-heading)" }}>{label}</span>
+        {!active && approved && summary && (
+          <span style={{ fontSize: 12, color: "var(--color-muted)", flexShrink: 0, maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" as const }}>{summary}</span>
+        )}
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, transform: active ? "rotate(90deg)" : "none", transition: "transform 150ms" }}>
+          <polyline points="9 6 15 12 9 18" />
+        </svg>
+      </button>
+      {active && (
+        <div style={{ padding: "16px", borderTop: "1px solid var(--color-border)" }}>
+          {children}
+          <button type="button" onClick={onApprove} className="ob-primary-btn" style={{ ...PRIMARY_BTN, width: "auto", padding: "10px 22px", fontSize: 13, marginTop: 16 }}>
+            {approved ? "Save" : "Approve"}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
 
-  function updateSegment(i: number, fields: Partial<MarketSegment>) {
-    setSegments((cur) => cur.map((s, idx) => (idx === i ? { ...s, ...fields } : s)));
+function ProductServicesPanel({ state, onChange }: { state: PSProductState; onChange: (next: PSProductState) => void }) {
+  const tabNames = Object.keys(state.tabs);
+  const [activeTab, setActiveTab] = useState(tabNames[0]);
+
+  function patch(fields: Partial<Pick<PSProductState, "name" | "badge">>) {
+    onChange({ ...state, ...fields });
   }
-  function removeSegment(i: number) {
-    setSegments((cur) => cur.filter((_, idx) => idx !== i));
-  }
-  function addSegment() {
-    setSegments((cur) => [...cur, { name: "New segment", size: "TBD" }]);
-  }
-  function updateIcpName(i: number, name: string) {
-    setIcps((cur) => cur.map((icp, idx) => (idx === i ? { ...icp, name } : icp)));
-  }
-  function updateIcpScore(i: number, dim: ScoreDimension, value: number) {
-    setIcps((cur) => cur.map((icp, idx) => (idx === i ? { ...icp, scores: { ...icp.scores, [dim]: value } } : icp)));
-  }
-  function cycleRecommendation(i: number) {
-    setIcps((cur) => cur.map((icp, idx) => (idx === i ? { ...icp, recommendation: nextRecommendation(icp.recommendation) } : icp)));
+  function updateSection(i: number, content: PSContent) {
+    onChange({ ...state, tabs: { ...state.tabs, [activeTab]: state.tabs[activeTab].map((s, si) => (si === i ? { ...s, content } : s)) } });
   }
 
   return (
-    <div className="ob-card" style={{ ...CARD, maxWidth: 760 }}>
-      <span style={{ fontSize: 12, fontWeight: 700, color: "var(--color-brand)", letterSpacing: "0.05em", textTransform: "uppercase" as const }}>Ideal Customer Profile</span>
+    <div>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+        <span style={{ fontSize: 14, fontWeight: 600, color: "var(--color-heading)", minWidth: 0 }}>
+          <EditableText value={state.name} onChange={(v) => patch({ name: v })} style={{ fontSize: 14, fontWeight: 600 }} revise={reviseText} />
+        </span>
+        <span style={{ fontSize: 12, fontWeight: 500, color: "var(--color-muted)", flexShrink: 0 }}>
+          {state.badge}
+        </span>
+      </div>
+      <div style={{ display: "flex", gap: 6, marginBottom: 14, overflowX: "auto" as const }}>
+        {tabNames.map((tab) => (
+          <button key={tab} type="button" onClick={() => setActiveTab(tab)}
+            style={{ flexShrink: 0, height: 28, padding: "0 12px", borderRadius: 999, fontSize: 12, fontWeight: 500, fontFamily: "inherit", cursor: "pointer", whiteSpace: "nowrap" as const, border: "none", transition: "all 150ms", ...(activeTab === tab ? { background: "var(--color-brand)", color: "#fff" } : { background: "transparent", color: "var(--color-muted)" }) }}>
+            {tab}
+          </button>
+        ))}
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        {state.tabs[activeTab].map((section, i) => (
+          <PSField key={`${activeTab}-${section.label}`} section={section} onChange={(content) => updateSection(i, content)} />
+        ))}
+      </div>
+    </div>
+  );
+}
 
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, flexWrap: "wrap" as const, margin: "8px 0 8px" }}>
-        <h1 style={{ fontSize: 26, fontWeight: 800, margin: 0 }}>ICP Scoring Matrix</h1>
-        <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
-          <div style={{ display: "inline-flex", background: "var(--color-surface)", borderRadius: 999, padding: 3, gap: 2 }}>
-            {(["Graph", "Matrix"] as const).map((v) => (
-              <button key={v} type="button" onClick={() => setView(v)} style={{
-                border: "none", borderRadius: 999, padding: "6px 14px", fontSize: 12.5, fontWeight: 600, fontFamily: "inherit", cursor: "pointer", transition: "all 150ms",
-                background: view === v ? "var(--color-page)" : "transparent",
-                color: view === v ? "var(--color-brand)" : "var(--color-muted)",
-                boxShadow: view === v ? "var(--shadow-card)" : "none",
-              }}>
-                {v}
-              </button>
-            ))}
-          </div>
+function IcpPanel({ productName, tamDescription, segments, icps, onChangeTam, onChangeSegments, onChangeIcps }: {
+  productName: string; tamDescription: string; segments: MarketSegment[]; icps: IcpScore[];
+  onChangeTam: (v: string) => void; onChangeSegments: (v: MarketSegment[]) => void; onChangeIcps: (v: IcpScore[]) => void;
+}) {
+  const [view, setView] = useState<"Graph" | "Matrix">("Graph");
+
+  function updateSegment(i: number, fields: Partial<MarketSegment>) {
+    onChangeSegments(segments.map((s, idx) => (idx === i ? { ...s, ...fields } : s)));
+  }
+  function removeSegment(i: number) {
+    onChangeSegments(segments.filter((_, idx) => idx !== i));
+  }
+  function addSegment() {
+    onChangeSegments([...segments, { name: "New segment", size: "TBD" }]);
+  }
+  function updateIcpName(i: number, name: string) {
+    onChangeIcps(icps.map((icp, idx) => (idx === i ? { ...icp, name } : icp)));
+  }
+  function updateIcpScore(i: number, dim: ScoreDimension, value: number) {
+    onChangeIcps(icps.map((icp, idx) => (idx === i ? { ...icp, scores: { ...icp.scores, [dim]: value } } : icp)));
+  }
+  function cycleRecommendation(i: number) {
+    onChangeIcps(icps.map((icp, idx) => (idx === i ? { ...icp, recommendation: nextRecommendation(icp.recommendation) } : icp)));
+  }
+
+  return (
+    <div>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", marginBottom: 14 }}>
+        <div style={{ display: "inline-flex", background: "var(--color-surface)", borderRadius: 999, padding: 3, gap: 2 }}>
+          {(["Graph", "Matrix"] as const).map((v) => (
+            <button key={v} type="button" onClick={() => setView(v)} style={{
+              border: "none", borderRadius: 999, padding: "6px 14px", fontSize: 12.5, fontWeight: 600, fontFamily: "inherit", cursor: "pointer", transition: "all 150ms",
+              background: view === v ? "var(--color-page)" : "transparent",
+              color: view === v ? "var(--color-brand)" : "var(--color-muted)",
+              boxShadow: view === v ? "var(--shadow-card)" : "none",
+            }}>
+              {v}
+            </button>
+          ))}
         </div>
       </div>
 
-      <p style={{ fontSize: 14, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 20px" }}>
-        AI scores each ICP on 5 dimensions to identify which to launch first, test small, or defer. Click any field to edit it, or hit <span style={{ color: "var(--color-brand)" }}>✨</span> to ask AI to revise it.
-      </p>
-
       <div style={{ borderRadius: 14, border: "1px solid var(--color-border)", padding: "20px 22px", marginBottom: 20 }}>
         <p style={{ fontSize: 13.5, color: "var(--color-body)", lineHeight: 1.7, margin: "0 0 16px" }}>
-          <EditableText value={tamDescription} onChange={setTamDescription} multiline rows={4} style={{ fontSize: 13.5, lineHeight: 1.7 }} revise={reviseText} />
+          <EditableText value={tamDescription} onChange={onChangeTam} multiline rows={4} style={{ fontSize: 13.5, lineHeight: 1.7 }} revise={reviseText} />
         </p>
-        <SectionLabel ai={<AIRevise value={segments} onChange={setSegments} revise={reviseMarketSegments} scale="section" />}>
+        <SectionLabel ai={<AIRevise value={segments} onChange={onChangeSegments} revise={reviseMarketSegments} scale="section" />}>
           Market Segments <span style={{ fontWeight: 400, textTransform: "none" as const, letterSpacing: "normal" }}>· sizes are rough estimates</span>
         </SectionLabel>
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -3367,9 +3337,207 @@ function StepTamIcp({ products, onNext }: { products: Product[]; onNext: () => v
       ) : (
         <IcpMatrix icps={icps} onUpdateName={updateIcpName} onUpdateScore={updateIcpScore} onCycleRecommendation={cycleRecommendation} />
       )}
+    </div>
+  );
+}
 
-      <button onClick={onNext} className="ob-primary-btn" style={{ ...PRIMARY_BTN, marginTop: 24 }}>
-        Approve and Continue
+function PersonasPanel({ personas, onChange }: { personas: PersonaData[]; onChange: (next: PersonaData[]) => void }) {
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [activeTab, setActiveTab] = useState(PERSONA_TAB_NAMES[0]);
+  const persona = personas[selectedIndex];
+
+  function patchCurrent(fields: Partial<Pick<PersonaData, "title" | "roleTag" | "subtitle">>) {
+    onChange(personas.map((p, i) => (i === selectedIndex ? { ...p, ...fields } : p)));
+  }
+  function updateSection(i: number, content: PSContent) {
+    onChange(personas.map((p, idx) => (idx === selectedIndex ? { ...p, tabs: { ...p.tabs, [activeTab]: p.tabs[activeTab].map((s, si) => (si === i ? { ...s, content } : s)) } } : p)));
+  }
+
+  return (
+    <div>
+      <div style={{ display: "flex", alignItems: "flex-start", gap: 10, marginBottom: 14 }}>
+        {personas.length > 1 ? (
+          <div style={{ display: "flex", gap: 6, flexShrink: 0, marginTop: 1 }}>
+            {personas.map((p, i) => (
+              <button key={i} type="button" onClick={() => setSelectedIndex(i)} title={p.title}
+                style={{ width: 24, height: 24, borderRadius: "50%", fontSize: 11, fontWeight: 700, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", border: "none", cursor: "pointer", fontFamily: "inherit", transition: "all 150ms", background: i === selectedIndex ? "var(--color-brand)" : "var(--color-surface)", color: i === selectedIndex ? "#fff" : "var(--color-muted)" }}>
+                {i + 1}
+              </button>
+            ))}
+          </div>
+        ) : (
+          <div style={{ width: 24, height: 24, borderRadius: "50%", background: "var(--color-brand)", color: "#fff", fontSize: 11, fontWeight: 700, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", marginTop: 1 }}>1</div>
+        )}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" as const }}>
+            <span style={{ fontSize: 14, fontWeight: 600, color: "var(--color-heading)" }}>
+              <EditableText key={`title-${selectedIndex}`} value={persona.title} onChange={(v) => patchCurrent({ title: v })} style={{ fontSize: 14, fontWeight: 600 }} revise={reviseText} />
+            </span>
+            <span style={{ fontSize: 11, fontWeight: 500, color: "var(--color-brand)", border: "1px solid var(--color-border)", background: "var(--color-brand-tint)", borderRadius: 999, padding: "2px 10px" }}>
+              <EditableText key={`roleTag-${selectedIndex}`} value={persona.roleTag} onChange={(v) => patchCurrent({ roleTag: v })} style={{ fontSize: 11, fontWeight: 500, color: "var(--color-brand)" }} revise={reviseText} />
+            </span>
+          </div>
+          <p style={{ fontSize: 12, color: "var(--color-muted)", lineHeight: 1.5, margin: "4px 0 0" }}>
+            <EditableText key={`subtitle-${selectedIndex}`} value={persona.subtitle} onChange={(v) => patchCurrent({ subtitle: v })} multiline rows={2} style={{ fontSize: 12, color: "var(--color-muted)" }} revise={reviseText} />
+          </p>
+        </div>
+        {personas.length > 1 && (
+          <span style={{ fontSize: 11, color: "var(--color-muted)", flexShrink: 0, marginTop: 1 }}>{selectedIndex + 1} / {personas.length}</span>
+        )}
+      </div>
+
+      <div style={{ display: "flex", gap: 6, marginBottom: 14, overflowX: "auto" as const }}>
+        {PERSONA_TAB_NAMES.map((tab) => (
+          <button key={tab} type="button" onClick={() => setActiveTab(tab)}
+            style={{ flexShrink: 0, height: 28, padding: "0 12px", borderRadius: 999, fontSize: 12, fontWeight: 500, fontFamily: "inherit", cursor: "pointer", whiteSpace: "nowrap" as const, border: "none", transition: "all 150ms", ...(activeTab === tab ? { background: "var(--color-brand)", color: "#fff" } : { background: "transparent", color: "var(--color-muted)" }) }}>
+            {tab}
+          </button>
+        ))}
+      </div>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        {persona.tabs[activeTab].map((section, i) => (
+          <PSField key={`${selectedIndex}-${activeTab}-${section.label}`} section={section} onChange={(content) => updateSection(i, content)} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+type ReviewSectionKey = "product" | "icp" | "personas";
+const REVIEW_SECTION_ORDER: ReviewSectionKey[] = ["product", "icp", "personas"];
+function nextReviewSection(s: ReviewSectionKey): ReviewSectionKey | null {
+  const idx = REVIEW_SECTION_ORDER.indexOf(s);
+  return idx < REVIEW_SECTION_ORDER.length - 1 ? REVIEW_SECTION_ORDER[idx + 1] : null;
+}
+
+interface ProductReviewState {
+  product: PSProductState;
+  tamDescription: string;
+  segments: MarketSegment[];
+  icps: IcpScore[];
+  personas: PersonaData[];
+  approved: { product: boolean; icp: boolean; personas: boolean };
+  activeSection: ReviewSectionKey | null;
+}
+
+function buildInitialProductReview(product: Product): ProductReviewState {
+  return {
+    product: buildInitialPSProduct(product),
+    tamDescription: TAM_DESCRIPTION_DEFAULT,
+    segments: MARKET_SEGMENTS_DEFAULT.map((s) => ({ ...s })),
+    icps: ICP_SCORES_DEFAULT.map((icp) => ({ ...icp, scores: { ...icp.scores } })),
+    personas: PERSONAS_DEFAULT.map((p) => ({ ...p, tabs: { ...p.tabs } })),
+    approved: { product: false, icp: false, personas: false },
+    activeSection: "product",
+  };
+}
+
+function StepProductReview({ products, onNext }: { products: Product[]; onNext: () => void }) {
+  const [reviewStates, setReviewStates] = useState<ProductReviewState[]>(() => products.map((p) => buildInitialProductReview(p)));
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const current = reviewStates[selectedIndex];
+  const n = selectedIndex + 1;
+
+  function patchCurrent(fields: Partial<ProductReviewState>) {
+    setReviewStates((cur) => cur.map((s, i) => (i === selectedIndex ? { ...s, ...fields } : s)));
+  }
+  function toggleSection(section: ReviewSectionKey) {
+    patchCurrent({ activeSection: current.activeSection === section ? null : section });
+  }
+  function approveSection(section: ReviewSectionKey) {
+    patchCurrent({ approved: { ...current.approved, [section]: true }, activeSection: nextReviewSection(section) });
+  }
+
+  const allApproved = (s: ProductReviewState) => s.approved.product && s.approved.icp && s.approved.personas;
+  const firstIncompleteIndex = reviewStates.findIndex((s) => !allApproved(s));
+  const unlockedUpTo = firstIncompleteIndex === -1 ? reviewStates.length - 1 : firstIncompleteIndex;
+  const currentDone = allApproved(current);
+
+  function handleContinue() {
+    if (selectedIndex < products.length - 1) setSelectedIndex(selectedIndex + 1);
+    else onNext();
+  }
+
+  return (
+    <div className="ob-card" style={{ ...CARD, maxWidth: 640 }}>
+      <span style={{ fontSize: 12, fontWeight: 700, color: "var(--color-brand)", letterSpacing: "0.05em", textTransform: "uppercase" as const }}>Product, ICP &amp; Personas</span>
+      <h1 style={{ fontSize: 24, margin: "8px 0 8px" }}>
+        {products.length > 1 ? `Product ${n} of ${products.length} — ${current.product.name}` : "Review your product, ICP & personas"}
+      </h1>
+      <p style={{ fontSize: 14, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 20px" }}>
+        Review each section below and approve it to unlock the next. Edit any field directly, or hit <span style={{ color: "var(--color-brand)" }}>🪄</span> to ask AI to revise it.
+      </p>
+
+      {products.length > 1 && (
+        <div style={{ display: "flex", gap: 6, marginBottom: 20 }}>
+          {reviewStates.map((s, i) => {
+            const done = allApproved(s);
+            const isCurrent = i === selectedIndex;
+            const locked = i > unlockedUpTo;
+            return (
+              <button key={i} type="button" onClick={() => !locked && setSelectedIndex(i)} disabled={locked} title={s.product.name}
+                style={{
+                  width: 26, height: 26, borderRadius: "50%", fontSize: 11, fontWeight: 700, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center",
+                  border: "none", cursor: locked ? "not-allowed" : "pointer", fontFamily: "inherit", transition: "all 150ms",
+                  background: done ? "var(--color-success)" : isCurrent ? "var(--color-brand)" : "var(--color-surface)",
+                  color: done || isCurrent ? "#fff" : "var(--color-muted)", opacity: locked ? 0.5 : 1,
+                }}>
+                {done ? (
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5" /></svg>
+                ) : i + 1}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      <CollapsibleReviewSection
+        label={`${n}. Product & Services`}
+        approved={current.approved.product}
+        active={current.activeSection === "product"}
+        locked={false}
+        summary={current.product.name}
+        onToggle={() => toggleSection("product")}
+        onApprove={() => approveSection("product")}
+      >
+        <ProductServicesPanel state={current.product} onChange={(next) => patchCurrent({ product: next })} />
+      </CollapsibleReviewSection>
+
+      <CollapsibleReviewSection
+        label={`${n}A. Ideal Customer Profile`}
+        approved={current.approved.icp}
+        active={current.activeSection === "icp"}
+        locked={!current.approved.product}
+        summary={`${current.icps.length} ICPs scored`}
+        onToggle={() => toggleSection("icp")}
+        onApprove={() => approveSection("icp")}
+      >
+        <IcpPanel
+          productName={current.product.name}
+          tamDescription={current.tamDescription}
+          segments={current.segments}
+          icps={current.icps}
+          onChangeTam={(v) => patchCurrent({ tamDescription: v })}
+          onChangeSegments={(v) => patchCurrent({ segments: v })}
+          onChangeIcps={(v) => patchCurrent({ icps: v })}
+        />
+      </CollapsibleReviewSection>
+
+      <CollapsibleReviewSection
+        label={`${n}B. Personas`}
+        approved={current.approved.personas}
+        active={current.activeSection === "personas"}
+        locked={!current.approved.icp}
+        summary={`${current.personas.length} persona${current.personas.length > 1 ? "s" : ""}`}
+        onToggle={() => toggleSection("personas")}
+        onApprove={() => approveSection("personas")}
+      >
+        <PersonasPanel personas={current.personas} onChange={(v) => patchCurrent({ personas: v })} />
+      </CollapsibleReviewSection>
+
+      <button onClick={handleContinue} disabled={!currentDone} className="ob-primary-btn" style={{ ...PRIMARY_BTN, marginTop: 10, opacity: currentDone ? 1 : 0.5, cursor: currentDone ? "pointer" : "not-allowed" }}>
+        Approve &amp; Continue
       </button>
     </div>
   );
@@ -3379,26 +3547,26 @@ function StepTamIcp({ products, onNext }: { products: Product[]; onNext: () => v
    MAIN SHELL
 ══════════════════════════════════════════════════════════════════════ */
 type StepName =
-  | "splash"
+  | "brand_welcome"
   | "welcome"
   | "website" | "products" | "research_summary" | "starting_research"
   | "infra_intro"
   | "primary_domain" | "volume"
-  | "senders" | "split" | "infra_summary" | "connections_intro" | "connect" | "connect_linkedin" | "connect_calendar" | "invite" | "connections_summary" | "review_intro" | "review_order" | "researching" | "company_research" | "products_services" | "tam_icp" | "personas" | "outreach_campaign" | "all_set" | "cleared_for_launch";
+  | "senders" | "infra_summary" | "connections_intro" | "connect" | "connect_linkedin" | "connect_calendar" | "invite" | "connections_summary" | "review_intro" | "review_order" | "researching" | "company_research" | "product_review" | "outreach_campaign" | "all_set" | "cleared_for_launch";
 
 const STEP_ORDER: StepName[] = [
   "website", "products", "research_summary",
   "primary_domain", "volume",
-  "senders", "split", "infra_summary", "connect", "connect_linkedin", "connect_calendar", "invite", "connections_summary", "review_intro", "review_order", "researching", "company_research", "products_services", "tam_icp", "personas", "outreach_campaign",
+  "senders", "infra_summary", "connect", "connect_linkedin", "connect_calendar", "invite", "connections_summary", "review_intro", "review_order", "researching", "company_research", "product_review", "outreach_campaign",
 ];
 
 /* ─── Resume draft ──────────────────────────────────────────────── */
 const ALL_STEPS: StepName[] = [
-  "splash", "welcome", "website", "products", "research_summary", "starting_research",
-  "infra_intro", "primary_domain", "volume", "senders", "split", "infra_summary",
+  "brand_welcome", "welcome", "website", "products", "research_summary", "starting_research",
+  "infra_intro", "primary_domain", "volume", "senders", "infra_summary",
   "connections_intro", "connect", "connect_linkedin", "connect_calendar", "invite", "connections_summary",
   "review_intro", "review_order", "researching", "company_research",
-  "products_services", "tam_icp", "personas", "outreach_campaign",
+  "product_review", "outreach_campaign",
   "all_set", "cleared_for_launch",
 ];
 
@@ -3486,14 +3654,14 @@ export function OnboardingShell() {
   const [draft, setDraft] = useState<OnboardingDraft | null>(null);
   const [showResume, setShowResume] = useState(false);
 
-  const [step, setStep] = useState<StepName>("splash");
+  const [step, setStep] = useState<StepName>("brand_welcome");
   const [enteredApp, setEnteredApp] = useState(false);
 
   const [website, setWebsite] = useState("");
   const [products, setProducts] = useState<Product[]>([]);
   const [primaryDomain, setPrimaryDomain] = useState("");
   const [forwardingDomain, setForwardingDomain] = useState("");
-  const [selectedPackage, setSelectedPackage] = useState<PackageKey>("starter");
+  const [selectedPackage, setSelectedPackage] = useState<PackageKey>("growth");
   const [senders, setSenders] = useState<Sender[]>([]);
   const [connectedAccounts, setConnectedAccounts] = useState<string[]>([]);
   const [connectedCalendars, setConnectedCalendars] = useState<string[]>([]);
@@ -3604,18 +3772,18 @@ export function OnboardingShell() {
       <div
         className="ob-shell-content"
         style={
-          step === "starting_research"
+          step === "starting_research" || step === "brand_welcome"
             ? { display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: "100%", minHeight: "100vh", padding: "24px", position: "relative", zIndex: 1 }
             : { display: "flex", flexDirection: "column", alignItems: "center", width: "100%", padding: "80px 24px 40px", position: "relative", zIndex: 1 }
         }
       >
         <PhaseStepper step={step} />
 
-        {step === "splash" && (
-          <StepSplash onNext={() => advance("welcome")} onSkip={() => setEnteredApp(true)} />
+        {step === "brand_welcome" && (
+          <StepBrandWelcome onNext={() => advance("welcome")} onSkip={() => setEnteredApp(true)} />
         )}
         {step === "welcome" && (
-          <StepWelcome onNext={() => advance("website")} />
+          <StepOnboardingOverview onNext={() => advance("website")} />
         )}
         {step === "website" && (
           <StepWebsite onNext={(w) => advance("products", { website: w })} />
@@ -3633,25 +3801,22 @@ export function OnboardingShell() {
           <StepInfraIntro onNext={() => advance("primary_domain")} />
         )}
         {step === "primary_domain" && (
-          <StepPrimaryDomain website={website} onNext={(primary, forwarding) => advance("volume", { primaryDomain: primary, forwardingDomain: forwarding })} />
+          <StepPrimaryDomain website={website} initialPrimaryDomain={primaryDomain} initialForwardingDomain={forwardingDomain} onNext={(primary, forwarding) => advance("volume", { primaryDomain: primary, forwardingDomain: forwarding })} />
         )}
         {step === "volume" && (
-          <StepVolume onNext={(pkg) => advance("senders", { selectedPackage: pkg })} onBack={goBack} />
+          <StepVolume initialPackage={selectedPackage} onNext={(pkg) => advance("senders", { selectedPackage: pkg })} onBack={goBack} />
         )}
         {step === "senders" && (
-          <StepSenders onNext={(s) => advance("split", { senders: s })} onBack={goBack} />
-        )}
-        {step === "split" && (
-          <StepSplit senders={senders} onNext={(s) => advance("infra_summary", { senders: s })} onBack={goBack} />
+          <StepSenders initialSenders={senders} onNext={(s) => advance("infra_summary", { senders: s })} onBack={goBack} />
         )}
         {step === "infra_summary" && (
-          <StepInfraSummary primaryDomain={primaryDomain} selectedPackage={selectedPackage} senders={senders} onNext={() => advance("connections_intro")} />
+          <StepInfraSummary primaryDomain={primaryDomain} selectedPackage={selectedPackage} senders={senders} onNext={() => advance("connections_intro")} onBack={goBack} />
         )}
         {step === "connections_intro" && (
           <StepConnectionsIntro onNext={() => advance("connect")} />
         )}
         {step === "connect" && (
-          <StepConnect initialConnected={connectedAccounts} onNext={(c) => advance("connect_linkedin", { connectedAccounts: c })} onBack={goBack} />
+          <StepConnect initialConnected={connectedAccounts} onNext={(c) => advance("connect_linkedin", { connectedAccounts: c })} />
         )}
         {step === "connect_linkedin" && (
           <StepConnectLinkedIn initialConnected={connectedAccounts} onNext={(c) => advance("connect_calendar", { connectedAccounts: c })} onBack={goBack} />
@@ -3663,10 +3828,10 @@ export function OnboardingShell() {
           <StepInvite initialInvitees={invitees} onNext={(inv) => advance("connections_summary", { invitees: inv })} onBack={goBack} />
         )}
         {step === "connections_summary" && (
-          <StepConnectionsSummary connectedAccounts={connectedAccounts} connectedCalendars={connectedCalendars} invitees={invitees} onNext={() => advance("review_intro")} />
+          <StepConnectionsSummary connectedAccounts={connectedAccounts} connectedCalendars={connectedCalendars} invitees={invitees} onNext={() => advance("review_intro")} onBack={goBack} />
         )}
         {step === "review_intro" && (
-          <StepReviewIntro onNext={() => advance("review_order")} onBack={goBack} />
+          <StepReviewIntro onNext={() => advance("review_order")} />
         )}
         {step === "review_order" && (
           <StepReviewOrder
@@ -3681,16 +3846,10 @@ export function OnboardingShell() {
           <StepResearch onFinish={() => advance("company_research")} />
         )}
         {step === "company_research" && (
-          <StepCompanyResearch products={products} onNext={() => advance("products_services")} />
+          <StepCompanyResearch products={products} onNext={() => advance("product_review")} />
         )}
-        {step === "products_services" && (
-          <StepProductsServices products={products} onNext={() => advance("tam_icp")} />
-        )}
-        {step === "tam_icp" && (
-          <StepTamIcp products={products} onNext={() => advance("personas")} />
-        )}
-        {step === "personas" && (
-          <StepPersonas onNext={() => advance("outreach_campaign")} />
+        {step === "product_review" && (
+          <StepProductReview products={products} onNext={() => advance("outreach_campaign")} />
         )}
         {step === "outreach_campaign" && (
           <StepOutreachCampaign onNext={() => advance("all_set")} />
