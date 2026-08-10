@@ -302,14 +302,16 @@ function StepIcon({ children }: { children: React.ReactNode }) {
   );
 }
 
-function PageChrome() {
+function PageChrome({ hideLogo = false }: { hideLogo?: boolean }) {
   return (
     <>
       <div style={{ position: "absolute", top: -160, left: "50%", transform: "translateX(-50%)", width: 900, height: 480, borderRadius: "50%", background: "radial-gradient(ellipse, var(--color-brand-faint) 0%, transparent 70%)", pointerEvents: "none" }} />
-      <Link href="/login" className="ob-logo-link" style={{ position: "absolute", top: 28, left: 36, display: "flex", alignItems: "center", textDecoration: "none", zIndex: 10 }}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={`${import.meta.env.BASE_URL}b2brocket-logo.png`} alt="B2B Rocket" style={{ height: 26, display: "block" }} />
-      </Link>
+      {!hideLogo && (
+        <Link href="/login" className="ob-logo-link" style={{ position: "absolute", top: 28, left: 36, display: "flex", alignItems: "center", textDecoration: "none", zIndex: 10 }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={`${import.meta.env.BASE_URL}b2brocket-logo.png`} alt="B2B Rocket" style={{ height: 26, display: "block" }} />
+        </Link>
+      )}
     </>
   );
 }
@@ -350,93 +352,73 @@ function PhaseStepper({ step }: { step: StepName }) {
 }
 
 /* ════════════════════════════════════════════════════════════════════
-   BRAND WELCOME — First screen shown; leads straight into the journey
-   overview. Look & feel modeled on b2brocket.ai's marketing site: bold
-   confident headline, brand-navy/indigo palette.
+   BRAND WELCOME — First screen shown. A single card previewing the
+   concrete outputs of onboarding, then straight into the flow.
 ══════════════════════════════════════════════════════════════════════ */
+const WELCOME_ITEMS: { title: string; desc: string; icon: React.ReactNode }[] = [
+  {
+    title: "A Knowledge Center",
+    desc: "Your company, products and market, researched and written up.",
+    icon: <><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></>,
+  },
+  {
+    title: "ICPs & personas",
+    desc: "Who to go after, what they care about, and how to open.",
+    icon: <><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></>,
+  },
+  {
+    title: "Sending infrastructure",
+    desc: "Domains and mailboxes provisioned, configured and warming.",
+    icon: <><rect x="3" y="4" width="18" height="6" rx="1.5" /><rect x="3" y="14" width="18" height="6" rx="1.5" /></>,
+  },
+  {
+    title: "Live campaigns",
+    desc: "Email and LinkedIn sequences drafted from your own research.",
+    icon: <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />,
+  },
+];
 
 function StepBrandWelcome({ onNext, onSkip }: { onNext: () => void; onSkip: () => void }) {
   return (
-    <>
-      <div style={{
-        position: "fixed", inset: 0, zIndex: 0, pointerEvents: "none",
-        background: "radial-gradient(ellipse 1000px 620px at 50% -8%, var(--color-brand-tint) 0%, transparent 62%), radial-gradient(ellipse 700px 500px at 92% 105%, var(--color-brand-faint) 0%, transparent 65%)",
-      }} />
-      <div className="ob-brand-welcome" style={{
-        position: "relative", zIndex: 1, display: "flex", flexDirection: "column", alignItems: "center",
-        textAlign: "center", maxWidth: 760, width: "100%", animation: "ob-fadeInUp 0.6s var(--ease-apple) both",
-      }}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={`${import.meta.env.BASE_URL}b2brocket-logo.png`} alt="B2B Rocket" style={{ height: 56, marginBottom: 32, display: "block" }} />
+    <div className="ob-card" style={{ ...CARD, maxWidth: 520, textAlign: "center" as const }}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={`${import.meta.env.BASE_URL}b2brocket-logo.png`} alt="B2B Rocket" style={{ height: 44, marginBottom: 28, display: "block", marginLeft: "auto", marginRight: "auto" }} />
 
-        <span style={{ display: "inline-flex", alignItems: "center", fontSize: 12.5, fontWeight: 700, color: "var(--color-brand)", background: "var(--color-brand-tint)", padding: "7px 16px", borderRadius: 999, letterSpacing: "0.03em", textTransform: "uppercase" as const, marginBottom: 26 }}>
-          AI Agents for Outbound Sales
-        </span>
-
-        <h1 className="ob-hero-title" style={{ fontWeight: 800, letterSpacing: "-0.03em", lineHeight: 1.08, margin: "0 0 12px", color: "var(--color-heading)" }}>
-          Welcome to B2B Rocket
-        </h1>
-
-        <p style={{ fontSize: 15, fontWeight: 600, color: "var(--color-muted)", letterSpacing: "0.01em", margin: "0 0 24px" }}>
-          Powered by Black Pearl
-        </p>
-
-        <p style={{ fontSize: 17, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 44px", maxWidth: 560 }}>
-          B2B Rocket gets outbound sales teams sending personalized, AI-assisted sequences the same day they sign up — no weeks-long setup, no manual copywriting.
-        </p>
-
-        <button onClick={onNext} style={{ ...PRIMARY_BTN, width: "auto", padding: "16px 52px", fontSize: 15.5 }} className="ob-primary-btn">
-          Get Started
-        </button>
-        <button onClick={onSkip} style={{ ...GHOST_BTN, width: "auto" }} className="ob-ghost-btn">
-          Skip to Knowledge Center (testing)
-        </button>
-      </div>
-    </>
-  );
-}
-
-/* ════════════════════════════════════════════════════════════════════
-   OVERVIEW — Whole-journey preview shown once, right after the brand
-   welcome hero.
-   A simulated four-node timeline stands in for a section-by-section
-   breakdown — the user sees the whole shape of the trip up front.
-══════════════════════════════════════════════════════════════════════ */
-const OVERVIEW_STEPS: { label: string; icon: React.ReactNode }[] = [
-  { label: "Research", icon: <><circle cx="11" cy="11" r="7" /><path d="m21 21-4.35-4.35" /></> },
-  { label: "Infrastructure", icon: <><rect x="3" y="4" width="18" height="6" rx="1.5" /><rect x="3" y="14" width="18" height="6" rx="1.5" /></> },
-  { label: "Connections", icon: <><path d="M9 17H7A5 5 0 0 1 7 7h2" /><path d="M15 7h2a5 5 0 1 1 0 10h-2" /><line x1="8" y1="12" x2="16" y2="12" /></> },
-  { label: "Review & Approve", icon: <path d="M20 6 9 17l-5-5" /> },
-];
-
-function StepOnboardingOverview({ onNext }: { onNext: () => void }) {
-  return (
-    <div className="ob-card" style={{ ...CARD, maxWidth: 480, textAlign: "center" as const }}>
-      <span style={{ display: "inline-flex", alignItems: "center", fontSize: 11.5, fontWeight: 700, color: "var(--color-brand)", background: "var(--color-brand-tint)", padding: "6px 14px", borderRadius: 999, letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 16 }}>
-        ~5 minutes
-      </span>
-      <h1 style={{ fontSize: 24, fontWeight: 800, letterSpacing: "-0.01em", margin: "0 0 10px" }}>
-        Here&apos;s what&apos;s ahead
+      <h1 style={{ fontSize: 28, fontWeight: 800, letterSpacing: "-0.02em", lineHeight: 1.2, margin: "0 0 12px", color: "var(--color-heading)" }}>
+        Welcome to B2B Rocket
       </h1>
-      <p style={{ fontSize: 14, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 36px" }}>
-        Four quick sections. By the end, your research, infrastructure, connections, and outreach campaign are all set up and ready to launch.
+
+      <p style={{ fontSize: 15, color: "var(--color-body)", lineHeight: 1.6, margin: "0 auto 28px", maxWidth: 420 }}>
+        Answer a few quick questions and your AI agents get to work — prospecting, personalizing, and booking meetings for you.
       </p>
-      <div style={{ display: "flex", alignItems: "flex-start", margin: "0 0 32px" }}>
-        {OVERVIEW_STEPS.flatMap((s, i) => {
-          const node = (
-            <div key={`node-${s.label}`} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, flexShrink: 0, width: 76 }}>
-              <div style={{ width: 40, height: 40, borderRadius: "50%", background: "var(--color-brand-tint)", color: "var(--color-brand)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">{s.icon}</svg>
-              </div>
-              <span style={{ fontSize: 11, fontWeight: 600, color: "var(--color-heading)", lineHeight: 1.3 }}>{s.label}</span>
+
+      <div style={{ border: "1px solid var(--color-border)", borderRadius: 12, overflow: "hidden", marginBottom: 28, textAlign: "left" as const }}>
+        <div style={{ padding: "10px 20px", background: "var(--color-surface)", borderBottom: "1px solid var(--color-border)" }}>
+          <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.05em", textTransform: "uppercase" as const, color: "var(--color-muted)" }}>
+            Here&apos;s what you&apos;ll have
+          </span>
+        </div>
+        {WELCOME_ITEMS.map((item, i) => (
+          <div key={item.title} style={{ display: "flex", alignItems: "flex-start", gap: 14, padding: "16px 20px", borderBottom: i < WELCOME_ITEMS.length - 1 ? "1px solid var(--color-border)" : "none" }}>
+            <div style={{ width: 36, height: 36, borderRadius: 9, background: "var(--color-brand-tint)", color: "var(--color-brand)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">{item.icon}</svg>
             </div>
-          );
-          if (i === OVERVIEW_STEPS.length - 1) return [node];
-          return [node, <div key={`line-${i}`} style={{ flex: 1, height: 2, background: "var(--color-border)", marginTop: 19, minWidth: 8 }} />];
-        })}
+            <div>
+              <div style={{ fontSize: 14.5, fontWeight: 700, color: "var(--color-heading)", marginBottom: 2 }}>{item.title}</div>
+              <div style={{ fontSize: 13, color: "var(--color-body)", lineHeight: 1.5 }}>{item.desc}</div>
+            </div>
+          </div>
+        ))}
       </div>
+
       <button onClick={onNext} style={PRIMARY_BTN} className="ob-primary-btn">
-        Continue
+        Get started
+      </button>
+      <p style={{ fontSize: 12.5, color: "var(--color-muted)", margin: "14px 0 0" }}>
+        Takes about 10 minutes. Your progress saves as you go.
+      </p>
+      <button onClick={onSkip} style={{ ...GHOST_BTN, width: "auto", margin: "8px auto 0" }} className="ob-ghost-btn">
+        Skip to Knowledge Center (testing)
       </button>
     </div>
   );
@@ -3548,7 +3530,6 @@ function StepProductReview({ products, onNext }: { products: Product[]; onNext: 
 ══════════════════════════════════════════════════════════════════════ */
 type StepName =
   | "brand_welcome"
-  | "welcome"
   | "website" | "products" | "research_summary" | "starting_research"
   | "infra_intro"
   | "primary_domain" | "volume"
@@ -3562,7 +3543,7 @@ const STEP_ORDER: StepName[] = [
 
 /* ─── Resume draft ──────────────────────────────────────────────── */
 const ALL_STEPS: StepName[] = [
-  "brand_welcome", "welcome", "website", "products", "research_summary", "starting_research",
+  "brand_welcome", "website", "products", "research_summary", "starting_research",
   "infra_intro", "primary_domain", "volume", "senders", "infra_summary",
   "connections_intro", "connect", "connect_linkedin", "connect_calendar", "invite", "connections_summary",
   "review_intro", "review_order", "researching", "company_research",
@@ -3768,7 +3749,7 @@ export function OnboardingShell() {
   return (
     <div className="ob-shell" style={PAGE_STYLE}>
       <style>{STYLES}</style>
-      <PageChrome />
+      <PageChrome hideLogo={step === "brand_welcome"} />
       <div
         className="ob-shell-content"
         style={
@@ -3780,10 +3761,7 @@ export function OnboardingShell() {
         <PhaseStepper step={step} />
 
         {step === "brand_welcome" && (
-          <StepBrandWelcome onNext={() => advance("welcome")} onSkip={() => setEnteredApp(true)} />
-        )}
-        {step === "welcome" && (
-          <StepOnboardingOverview onNext={() => advance("website")} />
+          <StepBrandWelcome onNext={() => advance("website")} onSkip={() => setEnteredApp(true)} />
         )}
         {step === "website" && (
           <StepWebsite onNext={(w) => advance("products", { website: w })} />

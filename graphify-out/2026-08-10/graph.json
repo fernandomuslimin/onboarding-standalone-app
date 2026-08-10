@@ -1455,7 +1455,7 @@
       "label": "PHASES",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L320",
+      "source_location": "L318",
       "id": "src_onboarding_shell_phases",
       "community": 0,
       "norm_label": "phases"
@@ -1464,7 +1464,7 @@
       "label": "PhaseStepper()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L327",
+      "source_location": "L325",
       "id": "src_onboarding_shell_phasestepper",
       "community": 0,
       "norm_label": "phasestepper()"
@@ -1473,7 +1473,7 @@
       "label": "WELCOME_ITEMS",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L358",
+      "source_location": "L356",
       "id": "src_onboarding_shell_welcome_items",
       "community": 0,
       "norm_label": "welcome_items"
@@ -1482,7 +1482,7 @@
       "label": "StepBrandWelcome()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L381",
+      "source_location": "L379",
       "id": "src_onboarding_shell_stepbrandwelcome",
       "community": 0,
       "norm_label": "stepbrandwelcome()"
@@ -1491,7 +1491,7 @@
       "label": "INFRA_INTRO_BULLETS",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L430",
+      "source_location": "L428",
       "id": "src_onboarding_shell_infra_intro_bullets",
       "community": 0,
       "norm_label": "infra_intro_bullets"
@@ -1500,7 +1500,7 @@
       "label": "StepInfraIntro()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L436",
+      "source_location": "L434",
       "id": "src_onboarding_shell_stepinfraintro",
       "community": 0,
       "norm_label": "stepinfraintro()"
@@ -1509,7 +1509,7 @@
       "label": "StepWebsite()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L464",
+      "source_location": "L462",
       "id": "src_onboarding_shell_stepwebsite",
       "community": 4,
       "norm_label": "stepwebsite()"
@@ -1518,7 +1518,7 @@
       "label": "PRODUCTS_MODE_OPTIONS",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L552",
+      "source_location": "L550",
       "id": "src_onboarding_shell_products_mode_options",
       "community": 0,
       "norm_label": "products_mode_options"
@@ -1527,7 +1527,7 @@
       "label": "StepProducts()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L557",
+      "source_location": "L555",
       "id": "src_onboarding_shell_stepproducts",
       "community": 4,
       "norm_label": "stepproducts()"
@@ -1536,7 +1536,7 @@
       "label": "StepResearchSummary()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L790",
+      "source_location": "L788",
       "id": "src_onboarding_shell_stepresearchsummary",
       "community": 10,
       "norm_label": "stepresearchsummary()"
@@ -1545,7 +1545,7 @@
       "label": "StepStartingResearch()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L860",
+      "source_location": "L858",
       "id": "src_onboarding_shell_stepstartingresearch",
       "community": 0,
       "norm_label": "stepstartingresearch()"
@@ -1554,7 +1554,7 @@
       "label": "StepPrimaryDomain()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L899",
+      "source_location": "L897",
       "id": "src_onboarding_shell_stepprimarydomain",
       "community": 8,
       "norm_label": "stepprimarydomain()"
@@ -1563,7 +1563,7 @@
       "label": "StepVolume()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L990",
+      "source_location": "L988",
       "id": "src_onboarding_shell_stepvolume",
       "community": 0,
       "norm_label": "stepvolume()"
@@ -1572,7 +1572,7 @@
       "label": "StepSenders()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1024",
+      "source_location": "L1022",
       "id": "src_onboarding_shell_stepsenders",
       "community": 0,
       "norm_label": "stepsenders()"
@@ -1581,7 +1581,7 @@
       "label": "StepInfraSummary()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1166",
+      "source_location": "L1164",
       "id": "src_onboarding_shell_stepinfrasummary",
       "community": 0,
       "norm_label": "stepinfrasummary()"
@@ -1590,7 +1590,7 @@
       "label": "CONNECTIONS_INTRO_BULLETS",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1212",
+      "source_location": "L1210",
       "id": "src_onboarding_shell_connections_intro_bullets",
       "community": 0,
       "norm_label": "connections_intro_bullets"
@@ -1599,7 +1599,7 @@
       "label": "StepConnectionsIntro()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1219",
+      "source_location": "L1217",
       "id": "src_onboarding_shell_stepconnectionsintro",
       "community": 0,
       "norm_label": "stepconnectionsintro()"
@@ -1608,7 +1608,7 @@
       "label": "StepConnect()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1247",
+      "source_location": "L1245",
       "id": "src_onboarding_shell_stepconnect",
       "community": 4,
       "norm_label": "stepconnect()"
@@ -1617,7 +1617,7 @@
       "label": "StepConnectLinkedIn()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1310",
+      "source_location": "L1308",
       "id": "src_onboarding_shell_stepconnectlinkedin",
       "community": 0,
       "norm_label": "stepconnectlinkedin()"
@@ -1626,7 +1626,7 @@
       "label": "StepConnectCalendar()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1361",
+      "source_location": "L1359",
       "id": "src_onboarding_shell_stepconnectcalendar",
       "community": 0,
       "norm_label": "stepconnectcalendar()"
@@ -1635,7 +1635,7 @@
       "label": "INVITE_ROLES",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1430",
+      "source_location": "L1428",
       "id": "src_onboarding_shell_invite_roles",
       "community": 0,
       "norm_label": "invite_roles"
@@ -1644,7 +1644,7 @@
       "label": "StepInvite()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1436",
+      "source_location": "L1434",
       "id": "src_onboarding_shell_stepinvite",
       "community": 11,
       "norm_label": "stepinvite()"
@@ -1653,7 +1653,7 @@
       "label": "StepConnectionsSummary()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1539",
+      "source_location": "L1537",
       "id": "src_onboarding_shell_stepconnectionssummary",
       "community": 0,
       "norm_label": "stepconnectionssummary()"
@@ -1662,7 +1662,7 @@
       "label": "REVIEW_INTRO_BULLETS",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1583",
+      "source_location": "L1581",
       "id": "src_onboarding_shell_review_intro_bullets",
       "community": 0,
       "norm_label": "review_intro_bullets"
@@ -1671,7 +1671,7 @@
       "label": "StepReviewIntro()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1589",
+      "source_location": "L1587",
       "id": "src_onboarding_shell_stepreviewintro",
       "community": 0,
       "norm_label": "stepreviewintro()"
@@ -1680,7 +1680,7 @@
       "label": "StepReviewOrder()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1619",
+      "source_location": "L1617",
       "id": "src_onboarding_shell_steprevieworder",
       "community": 13,
       "norm_label": "steprevieworder()"
@@ -1689,7 +1689,7 @@
       "label": "RESEARCH_ITEMS",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1714",
+      "source_location": "L1712",
       "id": "src_onboarding_shell_research_items",
       "community": 0,
       "norm_label": "research_items"
@@ -1698,7 +1698,7 @@
       "label": "StepResearch()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1722",
+      "source_location": "L1720",
       "id": "src_onboarding_shell_stepresearch",
       "community": 4,
       "norm_label": "stepresearch()"
@@ -1707,7 +1707,7 @@
       "label": "RESEARCH_SECTION_LABEL",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1771",
+      "source_location": "L1769",
       "id": "src_onboarding_shell_research_section_label",
       "community": 0,
       "norm_label": "research_section_label"
@@ -1716,7 +1716,7 @@
       "label": "SectionLabel()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1777",
+      "source_location": "L1775",
       "id": "src_onboarding_shell_sectionlabel",
       "community": 0,
       "norm_label": "sectionlabel()"
@@ -1725,7 +1725,7 @@
       "label": "RiskLevel",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1786",
+      "source_location": "L1784",
       "id": "src_onboarding_shell_risklevel",
       "community": 0,
       "norm_label": "risklevel"
@@ -1734,7 +1734,7 @@
       "label": "Channel",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1787",
+      "source_location": "L1785",
       "id": "src_onboarding_shell_channel",
       "community": 0,
       "norm_label": "channel"
@@ -1743,7 +1743,7 @@
       "label": "CHANNEL_BADGE",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1788",
+      "source_location": "L1786",
       "id": "src_onboarding_shell_channel_badge",
       "community": 0,
       "norm_label": "channel_badge"
@@ -1752,7 +1752,7 @@
       "label": "BulletList()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1793",
+      "source_location": "L1791",
       "id": "src_onboarding_shell_bulletlist",
       "community": 0,
       "norm_label": "bulletlist()"
@@ -1761,7 +1761,7 @@
       "label": "EditableText()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1812",
+      "source_location": "L1810",
       "id": "src_onboarding_shell_editabletext",
       "community": 0,
       "norm_label": "editabletext()"
@@ -1770,7 +1770,7 @@
       "label": "EditableBulletList()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1909",
+      "source_location": "L1907",
       "id": "src_onboarding_shell_editablebulletlist",
       "community": 0,
       "norm_label": "editablebulletlist()"
@@ -1779,7 +1779,7 @@
       "label": "EditableChips()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1936",
+      "source_location": "L1934",
       "id": "src_onboarding_shell_editablechips",
       "community": 0,
       "norm_label": "editablechips()"
@@ -1788,7 +1788,7 @@
       "label": "AIRevise()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1969",
+      "source_location": "L1967",
       "id": "src_onboarding_shell_airevise",
       "community": 0,
       "norm_label": "airevise()"
@@ -1797,7 +1797,7 @@
       "label": "firstSentence()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2025",
+      "source_location": "L2023",
       "id": "src_onboarding_shell_firstsentence",
       "community": 5,
       "norm_label": "firstsentence()"
@@ -1806,7 +1806,7 @@
       "label": "reviseText()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2032",
+      "source_location": "L2030",
       "id": "src_onboarding_shell_revisetext",
       "community": 5,
       "norm_label": "revisetext()"
@@ -1815,7 +1815,7 @@
       "label": "RISK_ORDER",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2042",
+      "source_location": "L2040",
       "id": "src_onboarding_shell_risk_order",
       "community": 0,
       "norm_label": "risk_order"
@@ -1824,7 +1824,7 @@
       "label": "nextRisk()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2043",
+      "source_location": "L2041",
       "id": "src_onboarding_shell_nextrisk",
       "community": 0,
       "norm_label": "nextrisk()"
@@ -1833,7 +1833,7 @@
       "label": "CHANNEL_ORDER",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2044",
+      "source_location": "L2042",
       "id": "src_onboarding_shell_channel_order",
       "community": 0,
       "norm_label": "channel_order"
@@ -1842,7 +1842,7 @@
       "label": "nextChannel()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2045",
+      "source_location": "L2043",
       "id": "src_onboarding_shell_nextchannel",
       "community": 0,
       "norm_label": "nextchannel()"
@@ -1851,7 +1851,7 @@
       "label": "titleCase()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2047",
+      "source_location": "L2045",
       "id": "src_onboarding_shell_titlecase",
       "community": 5,
       "norm_label": "titlecase()"
@@ -1860,7 +1860,7 @@
       "label": "CompanyResearchOverview",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2053",
+      "source_location": "L2051",
       "id": "src_onboarding_shell_companyresearchoverview",
       "community": 0,
       "norm_label": "companyresearchoverview"
@@ -1869,7 +1869,7 @@
       "label": "reviseOverview()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2054",
+      "source_location": "L2052",
       "id": "src_onboarding_shell_reviseoverview",
       "community": 0,
       "norm_label": "reviseoverview()"
@@ -1878,7 +1878,7 @@
       "label": "ProductBundle",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2062",
+      "source_location": "L2060",
       "id": "src_onboarding_shell_productbundle",
       "community": 0,
       "norm_label": "productbundle"
@@ -1887,7 +1887,7 @@
       "label": "reviseProductBundle()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2063",
+      "source_location": "L2061",
       "id": "src_onboarding_shell_reviseproductbundle",
       "community": 5,
       "norm_label": "reviseproductbundle()"
@@ -1896,7 +1896,7 @@
       "label": "Competitive",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2071",
+      "source_location": "L2069",
       "id": "src_onboarding_shell_competitive",
       "community": 0,
       "norm_label": "competitive"
@@ -1905,7 +1905,7 @@
       "label": "reviseCompetitive()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2072",
+      "source_location": "L2070",
       "id": "src_onboarding_shell_revisecompetitive",
       "community": 5,
       "norm_label": "revisecompetitive()"
@@ -1914,7 +1914,7 @@
       "label": "ValueProps",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2094",
+      "source_location": "L2092",
       "id": "src_onboarding_shell_valueprops",
       "community": 0,
       "norm_label": "valueprops"
@@ -1923,7 +1923,7 @@
       "label": "reviseValueProps()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2095",
+      "source_location": "L2093",
       "id": "src_onboarding_shell_revisevalueprops",
       "community": 5,
       "norm_label": "revisevalueprops()"
@@ -1932,7 +1932,7 @@
       "label": "IcpHypotheses",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2104",
+      "source_location": "L2102",
       "id": "src_onboarding_shell_icphypotheses",
       "community": 0,
       "norm_label": "icphypotheses"
@@ -1941,7 +1941,7 @@
       "label": "reviseIcpHypotheses()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2105",
+      "source_location": "L2103",
       "id": "src_onboarding_shell_reviseicphypotheses",
       "community": 0,
       "norm_label": "reviseicphypotheses()"
@@ -1950,7 +1950,7 @@
       "label": "OutboundAngles",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2115",
+      "source_location": "L2113",
       "id": "src_onboarding_shell_outboundangles",
       "community": 0,
       "norm_label": "outboundangles"
@@ -1959,7 +1959,7 @@
       "label": "reviseOutboundAngles()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2116",
+      "source_location": "L2114",
       "id": "src_onboarding_shell_reviseoutboundangles",
       "community": 0,
       "norm_label": "reviseoutboundangles()"
@@ -1968,7 +1968,7 @@
       "label": "reviseCallPrepNotes()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2123",
+      "source_location": "L2121",
       "id": "src_onboarding_shell_revisecallprepnotes",
       "community": 5,
       "norm_label": "revisecallprepnotes()"
@@ -1977,7 +1977,7 @@
       "label": "CompanyResearchData",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2128",
+      "source_location": "L2126",
       "id": "src_onboarding_shell_companyresearchdata",
       "community": 0,
       "norm_label": "companyresearchdata"
@@ -1986,7 +1986,7 @@
       "label": "buildInitialCompanyResearch()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2140",
+      "source_location": "L2138",
       "id": "src_onboarding_shell_buildinitialcompanyresearch",
       "community": 0,
       "norm_label": "buildinitialcompanyresearch()"
@@ -1995,7 +1995,7 @@
       "label": "StepCompanyResearch()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2203",
+      "source_location": "L2201",
       "id": "src_onboarding_shell_stepcompanyresearch",
       "community": 4,
       "norm_label": "stepcompanyresearch()"
@@ -2004,7 +2004,7 @@
       "label": "PSContent",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2376",
+      "source_location": "L2374",
       "id": "src_onboarding_shell_pscontent",
       "community": 0,
       "norm_label": "pscontent"
@@ -2013,7 +2013,7 @@
       "label": "PSSection",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2377",
+      "source_location": "L2375",
       "id": "src_onboarding_shell_pssection",
       "community": 0,
       "norm_label": "pssection"
@@ -2022,7 +2022,7 @@
       "label": "PSField()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2379",
+      "source_location": "L2377",
       "id": "src_onboarding_shell_psfield",
       "community": 0,
       "norm_label": "psfield()"
@@ -2031,7 +2031,7 @@
       "label": "PSProductState",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2401",
+      "source_location": "L2399",
       "id": "src_onboarding_shell_psproductstate",
       "community": 0,
       "norm_label": "psproductstate"
@@ -2040,7 +2040,7 @@
       "label": "buildInitialPSProduct()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2403",
+      "source_location": "L2401",
       "id": "src_onboarding_shell_buildinitialpsproduct",
       "community": 28,
       "norm_label": "buildinitialpsproduct()"
@@ -2049,7 +2049,7 @@
       "label": "PersonaData",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2450",
+      "source_location": "L2448",
       "id": "src_onboarding_shell_personadata",
       "community": 0,
       "norm_label": "personadata"
@@ -2058,7 +2058,7 @@
       "label": "PERSONAS_DEFAULT",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2457",
+      "source_location": "L2455",
       "id": "src_onboarding_shell_personas_default",
       "community": 0,
       "norm_label": "personas_default"
@@ -2067,7 +2067,7 @@
       "label": "PERSONA_TAB_NAMES",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2571",
+      "source_location": "L2569",
       "id": "src_onboarding_shell_persona_tab_names",
       "community": 0,
       "norm_label": "persona_tab_names"
@@ -2076,7 +2076,7 @@
       "label": "CampaignStep",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2576",
+      "source_location": "L2574",
       "id": "src_onboarding_shell_campaignstep",
       "community": 0,
       "norm_label": "campaignstep"
@@ -2085,7 +2085,7 @@
       "label": "Campaign",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2577",
+      "source_location": "L2575",
       "id": "src_onboarding_shell_campaign",
       "community": 0,
       "norm_label": "campaign"
@@ -2094,7 +2094,7 @@
       "label": "CAMPAIGNS",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2579",
+      "source_location": "L2577",
       "id": "src_onboarding_shell_campaigns",
       "community": 0,
       "norm_label": "campaigns"
@@ -2103,7 +2103,7 @@
       "label": "ChannelIcon()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2624",
+      "source_location": "L2622",
       "id": "src_onboarding_shell_channelicon",
       "community": 0,
       "norm_label": "channelicon()"
@@ -2112,7 +2112,7 @@
       "label": "StepCardContent()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2639",
+      "source_location": "L2637",
       "id": "src_onboarding_shell_stepcardcontent",
       "community": 0,
       "norm_label": "stepcardcontent()"
@@ -2121,7 +2121,7 @@
       "label": "StepOutreachCampaign()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2653",
+      "source_location": "L2651",
       "id": "src_onboarding_shell_stepoutreachcampaign",
       "community": 4,
       "norm_label": "stepoutreachcampaign()"
@@ -2130,7 +2130,7 @@
       "label": "StepAllSet()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2880",
+      "source_location": "L2878",
       "id": "src_onboarding_shell_stepallset",
       "community": 0,
       "norm_label": "stepallset()"
@@ -2139,7 +2139,7 @@
       "label": "LaunchTimelineItem",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2901",
+      "source_location": "L2899",
       "id": "src_onboarding_shell_launchtimelineitem",
       "community": 0,
       "norm_label": "launchtimelineitem"
@@ -2148,7 +2148,7 @@
       "label": "LAUNCH_TIMELINE",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2903",
+      "source_location": "L2901",
       "id": "src_onboarding_shell_launch_timeline",
       "community": 0,
       "norm_label": "launch_timeline"
@@ -2157,7 +2157,7 @@
       "label": "StepClearedForLaunch()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2912",
+      "source_location": "L2910",
       "id": "src_onboarding_shell_stepclearedforlaunch",
       "community": 4,
       "norm_label": "stepclearedforlaunch()"
@@ -2166,7 +2166,7 @@
       "label": "SCORE_DIMENSIONS",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2953",
+      "source_location": "L2951",
       "id": "src_onboarding_shell_score_dimensions",
       "community": 0,
       "norm_label": "score_dimensions"
@@ -2175,7 +2175,7 @@
       "label": "ScoreDimension",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2954",
+      "source_location": "L2952",
       "id": "src_onboarding_shell_scoredimension",
       "community": 0,
       "norm_label": "scoredimension"
@@ -2184,7 +2184,7 @@
       "label": "Recommendation",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2956",
+      "source_location": "L2954",
       "id": "src_onboarding_shell_recommendation",
       "community": 0,
       "norm_label": "recommendation"
@@ -2193,7 +2193,7 @@
       "label": "RECOMMENDATION_BADGE",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2957",
+      "source_location": "L2955",
       "id": "src_onboarding_shell_recommendation_badge",
       "community": 0,
       "norm_label": "recommendation_badge"
@@ -2202,7 +2202,7 @@
       "label": "RECOMMENDATION_ORDER",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2962",
+      "source_location": "L2960",
       "id": "src_onboarding_shell_recommendation_order",
       "community": 0,
       "norm_label": "recommendation_order"
@@ -2211,7 +2211,7 @@
       "label": "nextRecommendation()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2963",
+      "source_location": "L2961",
       "id": "src_onboarding_shell_nextrecommendation",
       "community": 0,
       "norm_label": "nextrecommendation()"
@@ -2220,7 +2220,7 @@
       "label": "scoreTone()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2967",
+      "source_location": "L2965",
       "id": "src_onboarding_shell_scoretone",
       "community": 12,
       "norm_label": "scoretone()"
@@ -2229,7 +2229,7 @@
       "label": "overallScore()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2973",
+      "source_location": "L2971",
       "id": "src_onboarding_shell_overallscore",
       "community": 0,
       "norm_label": "overallscore()"
@@ -2238,7 +2238,7 @@
       "label": "MarketSegment",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2978",
+      "source_location": "L2976",
       "id": "src_onboarding_shell_marketsegment",
       "community": 0,
       "norm_label": "marketsegment"
@@ -2247,7 +2247,7 @@
       "label": "IcpScore",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2983",
+      "source_location": "L2981",
       "id": "src_onboarding_shell_icpscore",
       "community": 0,
       "norm_label": "icpscore"
@@ -2256,7 +2256,7 @@
       "label": "MARKET_SEGMENTS_DEFAULT",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2992",
+      "source_location": "L2990",
       "id": "src_onboarding_shell_market_segments_default",
       "community": 0,
       "norm_label": "market_segments_default"
@@ -2265,7 +2265,7 @@
       "label": "ICP_SCORES_DEFAULT",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2998",
+      "source_location": "L2996",
       "id": "src_onboarding_shell_icp_scores_default",
       "community": 0,
       "norm_label": "icp_scores_default"
@@ -2274,7 +2274,7 @@
       "label": "GRAPH_LEGEND",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3016",
+      "source_location": "L3014",
       "id": "src_onboarding_shell_graph_legend",
       "community": 0,
       "norm_label": "graph_legend"
@@ -2283,7 +2283,7 @@
       "label": "IcpGraph()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3022",
+      "source_location": "L3020",
       "id": "src_onboarding_shell_icpgraph",
       "community": 0,
       "norm_label": "icpgraph()"
@@ -2292,7 +2292,7 @@
       "label": "MATRIX_HEADER_CELL",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3057",
+      "source_location": "L3055",
       "id": "src_onboarding_shell_matrix_header_cell",
       "community": 0,
       "norm_label": "matrix_header_cell"
@@ -2301,7 +2301,7 @@
       "label": "EditableScoreCell()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3062",
+      "source_location": "L3060",
       "id": "src_onboarding_shell_editablescorecell",
       "community": 12,
       "norm_label": "editablescorecell()"
@@ -2310,7 +2310,7 @@
       "label": "IcpMatrix()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3085",
+      "source_location": "L3083",
       "id": "src_onboarding_shell_icpmatrix",
       "community": 0,
       "norm_label": "icpmatrix()"
@@ -2319,7 +2319,7 @@
       "label": "reviseMarketSegments()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3129",
+      "source_location": "L3127",
       "id": "src_onboarding_shell_revisemarketsegments",
       "community": 0,
       "norm_label": "revisemarketsegments()"
@@ -2328,7 +2328,7 @@
       "label": "CollapsibleReviewSection()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3149",
+      "source_location": "L3147",
       "id": "src_onboarding_shell_collapsiblereviewsection",
       "community": 0,
       "norm_label": "collapsiblereviewsection()"
@@ -2337,7 +2337,7 @@
       "label": "ProductServicesPanel()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3192",
+      "source_location": "L3190",
       "id": "src_onboarding_shell_productservicespanel",
       "community": 0,
       "norm_label": "productservicespanel()"
@@ -2346,7 +2346,7 @@
       "label": "IcpPanel()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3230",
+      "source_location": "L3228",
       "id": "src_onboarding_shell_icppanel",
       "community": 0,
       "norm_label": "icppanel()"
@@ -2355,7 +2355,7 @@
       "label": "PersonasPanel()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3326",
+      "source_location": "L3324",
       "id": "src_onboarding_shell_personaspanel",
       "community": 0,
       "norm_label": "personaspanel()"
@@ -2364,7 +2364,7 @@
       "label": "ReviewSectionKey",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3389",
+      "source_location": "L3387",
       "id": "src_onboarding_shell_reviewsectionkey",
       "community": 0,
       "norm_label": "reviewsectionkey"
@@ -2373,7 +2373,7 @@
       "label": "REVIEW_SECTION_ORDER",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3390",
+      "source_location": "L3388",
       "id": "src_onboarding_shell_review_section_order",
       "community": 0,
       "norm_label": "review_section_order"
@@ -2382,7 +2382,7 @@
       "label": "nextReviewSection()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3391",
+      "source_location": "L3389",
       "id": "src_onboarding_shell_nextreviewsection",
       "community": 0,
       "norm_label": "nextreviewsection()"
@@ -2391,7 +2391,7 @@
       "label": "ProductReviewState",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3396",
+      "source_location": "L3394",
       "id": "src_onboarding_shell_productreviewstate",
       "community": 0,
       "norm_label": "productreviewstate"
@@ -2400,7 +2400,7 @@
       "label": "buildInitialProductReview()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3406",
+      "source_location": "L3404",
       "id": "src_onboarding_shell_buildinitialproductreview",
       "community": 28,
       "norm_label": "buildinitialproductreview()"
@@ -2409,7 +2409,7 @@
       "label": "StepProductReview()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3418",
+      "source_location": "L3416",
       "id": "src_onboarding_shell_stepproductreview",
       "community": 0,
       "norm_label": "stepproductreview()"
@@ -2418,7 +2418,7 @@
       "label": "StepName",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3531",
+      "source_location": "L3529",
       "id": "src_onboarding_shell_stepname",
       "community": 0,
       "norm_label": "stepname"
@@ -2427,7 +2427,7 @@
       "label": "STEP_ORDER",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3538",
+      "source_location": "L3536",
       "id": "src_onboarding_shell_step_order",
       "community": 0,
       "norm_label": "step_order"
@@ -2436,7 +2436,7 @@
       "label": "ALL_STEPS",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3545",
+      "source_location": "L3543",
       "id": "src_onboarding_shell_all_steps",
       "community": 0,
       "norm_label": "all_steps"
@@ -2445,7 +2445,7 @@
       "label": "RESUME_THRESHOLD",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3557",
+      "source_location": "L3555",
       "id": "src_onboarding_shell_resume_threshold",
       "community": 0,
       "norm_label": "resume_threshold"
@@ -2454,7 +2454,7 @@
       "label": "OnboardingDraft",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3559",
+      "source_location": "L3557",
       "id": "src_onboarding_shell_onboardingdraft",
       "community": 0,
       "norm_label": "onboardingdraft"
@@ -2463,7 +2463,7 @@
       "label": "loadDraft()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3577",
+      "source_location": "L3575",
       "id": "src_onboarding_shell_loaddraft",
       "community": 0,
       "norm_label": "loaddraft()"
@@ -2472,7 +2472,7 @@
       "label": "saveDraft()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3586",
+      "source_location": "L3584",
       "id": "src_onboarding_shell_savedraft",
       "community": 0,
       "norm_label": "savedraft()"
@@ -2481,7 +2481,7 @@
       "label": "clearDraft()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3589",
+      "source_location": "L3587",
       "id": "src_onboarding_shell_cleardraft",
       "community": 0,
       "norm_label": "cleardraft()"
@@ -2490,7 +2490,7 @@
       "label": "lastPhaseLabel()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3594",
+      "source_location": "L3592",
       "id": "src_onboarding_shell_lastphaselabel",
       "community": 9,
       "norm_label": "lastphaselabel()"
@@ -2499,7 +2499,7 @@
       "label": "timeAgo()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3604",
+      "source_location": "L3602",
       "id": "src_onboarding_shell_timeago",
       "community": 9,
       "norm_label": "timeago()"
@@ -2508,7 +2508,7 @@
       "label": "StepResume()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3613",
+      "source_location": "L3611",
       "id": "src_onboarding_shell_stepresume",
       "community": 9,
       "norm_label": "stepresume()"
@@ -2517,7 +2517,7 @@
       "label": "OnboardingShell()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3632",
+      "source_location": "L3630",
       "id": "src_onboarding_shell_onboardingshell",
       "community": 4,
       "norm_label": "onboardingshell()"
@@ -5585,9 +5585,9 @@
       "source_file": "src/onboarding-shell.tsx",
       "source_location": "L3404",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "src_onboarding_shell_tsx",
-      "target": "src_onboarding_shell_buildinitialproductreview"
+      "target": "src_onboarding_shell_buildinitialproductreview",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -5705,9 +5705,9 @@
       "source_file": "src/onboarding-shell.tsx",
       "source_location": "L3147",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "src_onboarding_shell_tsx",
-      "target": "src_onboarding_shell_collapsiblereviewsection"
+      "target": "src_onboarding_shell_collapsiblereviewsection",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -5935,9 +5935,9 @@
       "source_file": "src/onboarding-shell.tsx",
       "source_location": "L3228",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "src_onboarding_shell_tsx",
-      "target": "src_onboarding_shell_icppanel"
+      "target": "src_onboarding_shell_icppanel",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -6135,9 +6135,9 @@
       "source_file": "src/onboarding-shell.tsx",
       "source_location": "L3389",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "src_onboarding_shell_tsx",
-      "target": "src_onboarding_shell_nextreviewsection"
+      "target": "src_onboarding_shell_nextreviewsection",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -6155,9 +6155,9 @@
       "source_file": "src/onboarding-shell.tsx",
       "source_location": "L168",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "src_onboarding_shell_tsx",
-      "target": "src_onboarding_shell_nogoingbacknotice"
+      "target": "src_onboarding_shell_nogoingbacknotice",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -6275,9 +6275,9 @@
       "source_file": "src/onboarding-shell.tsx",
       "source_location": "L3324",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "src_onboarding_shell_tsx",
-      "target": "src_onboarding_shell_personaspanel"
+      "target": "src_onboarding_shell_personaspanel",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -6335,9 +6335,9 @@
       "source_file": "src/onboarding-shell.tsx",
       "source_location": "L3394",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "src_onboarding_shell_tsx",
-      "target": "src_onboarding_shell_productreviewstate"
+      "target": "src_onboarding_shell_productreviewstate",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -6355,9 +6355,9 @@
       "source_file": "src/onboarding-shell.tsx",
       "source_location": "L3190",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "src_onboarding_shell_tsx",
-      "target": "src_onboarding_shell_productservicespanel"
+      "target": "src_onboarding_shell_productservicespanel",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -6485,9 +6485,9 @@
       "source_file": "src/onboarding-shell.tsx",
       "source_location": "L3388",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "src_onboarding_shell_tsx",
-      "target": "src_onboarding_shell_review_section_order"
+      "target": "src_onboarding_shell_review_section_order",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -6495,9 +6495,9 @@
       "source_file": "src/onboarding-shell.tsx",
       "source_location": "L3387",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "src_onboarding_shell_tsx",
-      "target": "src_onboarding_shell_reviewsectionkey"
+      "target": "src_onboarding_shell_reviewsectionkey",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -6895,9 +6895,9 @@
       "source_file": "src/onboarding-shell.tsx",
       "source_location": "L3416",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "src_onboarding_shell_tsx",
-      "target": "src_onboarding_shell_stepproductreview"
+      "target": "src_onboarding_shell_stepproductreview",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -7105,9 +7105,9 @@
       "source_file": "src/onboarding-shell.tsx",
       "source_location": "L356",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "src_onboarding_shell_tsx",
-      "target": "src_onboarding_shell_welcome_items"
+      "target": "src_onboarding_shell_welcome_items",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -7320,9 +7320,9 @@
       "source_file": "src/onboarding-shell.tsx",
       "source_location": "L3406",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "src_onboarding_shell_buildinitialproductreview",
-      "target": "src_onboarding_shell_buildinitialpsproduct"
+      "target": "src_onboarding_shell_buildinitialpsproduct",
+      "confidence_score": 1.0
     },
     {
       "relation": "references",
