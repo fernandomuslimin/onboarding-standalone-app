@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import { NAV_GROUPS, NAV_LABEL, REVIEWABLE_SECTIONS, NavKey, PRODUCTS, ICPS, PERSONAS, TreeNodeType } from "./data";
 import { Icon, IconName, KC_STYLES } from "./ui";
-import { CompanySection } from "./Company";
 import { Explorer } from "./Explorer";
 import { CampaignSection } from "./Campaign";
 import { ResourcesSection } from "./Resources";
@@ -21,7 +20,7 @@ function totalForNodeType(type: TreeNodeType): number {
 }
 
 export function KnowledgeCenter({ onExit }: { onExit: () => void }) {
-  const [section, setSection] = useState<NavKey>("company");
+  const [section, setSection] = useState<NavKey>("explorer");
   const [reviewed, setReviewed] = useState<Record<NavKey, Set<string>>>({
     company: new Set(), explorer: new Set(),
     campaign: new Set(), resources: new Set(),
@@ -50,7 +49,7 @@ export function KnowledgeCenter({ onExit }: { onExit: () => void }) {
   const showReviewedBadge = REVIEWABLE_SECTIONS.includes(section) && (section !== "explorer" || explorerNodeType !== null);
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh", width: "100%", background: "var(--color-surface)", fontFamily: "var(--font-sans)" }}>
+    <div style={{ display: "flex", height: "100vh", width: "100%", background: "var(--color-surface)", fontFamily: "var(--font-sans)", overflow: "hidden" }}>
       <style>{KC_STYLES}</style>
 
       {/* ─── Sidebar ─────────────────────────────────────────── */}
@@ -104,8 +103,8 @@ export function KnowledgeCenter({ onExit }: { onExit: () => void }) {
       </aside>
 
       {/* ─── Content ─────────────────────────────────────────── */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "18px 32px", borderBottom: "1px solid var(--color-border)", background: "var(--color-page)", position: "sticky", top: 0, zIndex: 2 }}>
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0, minHeight: 0 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "18px 32px", borderBottom: "1px solid var(--color-border)", background: "var(--color-page)", flexShrink: 0 }}>
           <h1 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>{NAV_LABEL[section]}</h1>
           {showReviewedBadge && (
             <span style={{ fontSize: 12.5, fontWeight: 600, color: "var(--color-muted)", fontVariantNumeric: "tabular-nums" }}>
@@ -114,13 +113,14 @@ export function KnowledgeCenter({ onExit }: { onExit: () => void }) {
           )}
         </div>
 
-        <div style={{ flex: 1, padding: "28px 32px 48px", minWidth: 0 }}>
-          {section === "company" && <CompanySection reviewed={reviewed.company.has("company")} onToggleReviewed={() => toggleReviewed("company", "company")} />}
+        <div style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: "28px 32px 48px", minWidth: 0, background: "var(--color-page)" }}>
           {section === "explorer" && (
             <Explorer
               reviewedKeys={reviewed.explorer}
               onToggleReviewed={(key) => toggleReviewed("explorer", key)}
               onNodeTypeChange={setExplorerNodeType}
+              companyReviewed={reviewed.company.has("company")}
+              onToggleCompanyReviewed={() => toggleReviewed("company", "company")}
             />
           )}
           {section === "campaign" && <CampaignSection />}

@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { COMPANY_SIZE_BUCKETS, FUNDING_STAGE_BUCKETS, IcpDetail, PersonaDetail } from "./data";
-import { CardSection, CheckboxPills, ChipList, EditableField, FieldLabel, Icon, IconButton, KC_DANGER_BTN, KC_PRIMARY_BTN, MatchBadge, ProgressBar } from "./ui";
+import { CardSection, CheckboxPills, ChipList, EditableField, FieldLabel, Icon, KC_DANGER_BTN, KC_PRIMARY_BTN } from "./ui";
 
 export function emptyIcp(id: string, productId: string): IcpDetail {
   return {
@@ -14,43 +14,24 @@ export function emptyIcp(id: string, productId: string): IcpDetail {
   };
 }
 
-function icpCompletion(icp: IcpDetail): number {
-  const checkFields: (string | string[])[] = [
-    icp.summary, icp.fitReasoning, icp.buyingTriggers, icp.exclusionCriteria,
-    icp.targetIndustries, icp.companySizes, icp.revenueRange, icp.geographies, icp.fundingStages,
-    icp.growthStage, icp.businessModel, icp.techStackSignals, icp.decisionMakingUnit,
-    icp.painPoints, icp.businessGoals, icp.operationalGoals, icp.useCases,
-    icp.exampleCompanies, icp.intentSignals, icp.incumbentTools, icp.departmentSize, icp.outreachAccessibility,
-  ];
-  const filled = checkFields.filter((v) => (Array.isArray(v) ? v.length > 0 : v.trim().length > 0)).length;
-  return Math.round((filled / checkFields.length) * 100);
-}
-
-function PercentStat({ label, value, onChange, confidence }: { label: string; value: number; onChange: (v: number) => void; confidence?: number }) {
+function PercentStat({ label, value, onChange }: { label: string; value: number; onChange: (v: number) => void }) {
   return (
     <div>
-      <FieldLabel confidence={confidence}>{label}</FieldLabel>
-      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-        <div style={{ flex: 1 }}><ProgressBar pct={value} /></div>
-        <input type="number" min={0} max={100} value={value} onChange={(e) => onChange(Math.max(0, Math.min(100, Number(e.target.value) || 0)))}
-          style={{ width: 52, fontSize: 12.5, fontWeight: 700, color: "var(--color-heading)", textAlign: "right", border: "1px solid var(--color-border)", borderRadius: 6, padding: "3px 5px", background: "var(--color-page)" }} />
-        <span style={{ fontSize: 12, color: "var(--color-muted)" }}>%</span>
-      </div>
+      <FieldLabel>{label}</FieldLabel>
+      <input type="number" min={0} max={100} value={value} onChange={(e) => onChange(Math.max(0, Math.min(100, Number(e.target.value) || 0)))}
+        style={{ width: "100%", fontSize: 12.5, fontWeight: 700, color: "var(--color-heading)", border: "1px solid var(--color-border)", borderRadius: 8, padding: "8px 10px", background: "var(--color-page)" }} />
     </div>
   );
 }
 
-export function IcpDetailPane({ icp, personas, reviewed, onToggleReviewed, onPatch, onDelete, onSelectPersona }: {
+export function IcpDetailPane({ icp, personas, onPatch, onDelete, onSelectPersona }: {
   icp: IcpDetail;
   personas: PersonaDetail[];
-  reviewed: boolean;
-  onToggleReviewed: () => void;
   onPatch: (fields: Partial<IcpDetail>) => void;
   onDelete: () => void;
   onSelectPersona: (personaId: string) => void;
 }) {
   const [savedAt, setSavedAt] = useState<string | null>(null);
-  const pct = useMemo(() => icpCompletion(icp), [icp]);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 20, maxWidth: 900 }}>
@@ -58,16 +39,11 @@ export function IcpDetailPane({ icp, personas, reviewed, onToggleReviewed, onPat
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 14, marginBottom: 12 }}>
           <EditableField value={icp.name} onChange={(v) => onPatch({ name: v })} />
           <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
-            <IconButton icon="check" title={reviewed ? "Reviewed" : "Mark reviewed"} tone={reviewed ? "brand" : "muted"} onClick={onToggleReviewed} />
             <button type="button" className="kc-primary-btn" style={KC_PRIMARY_BTN} onClick={() => setSavedAt(new Date().toLocaleTimeString())}>
               <Icon name="check" size={14} />
               Save
             </button>
           </div>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <div style={{ flex: 1, maxWidth: 320 }}><ProgressBar pct={pct} /></div>
-          <span style={{ fontSize: 12.5, fontWeight: 700, color: "var(--color-heading)" }}>{pct}% complete</span>
         </div>
         {savedAt && <div style={{ fontSize: 11.5, color: "var(--color-success)", marginTop: 8 }}>Saved at {savedAt}</div>}
       </div>
@@ -79,7 +55,7 @@ export function IcpDetailPane({ icp, personas, reviewed, onToggleReviewed, onPat
             <EditableField value={icp.summary} onChange={(v) => onPatch({ summary: v })} multiline rows={2} />
           </div>
           <div>
-            <FieldLabel confidence={icp.confidence?.fitReasoning}>Fit Reasoning</FieldLabel>
+            <FieldLabel>Fit Reasoning</FieldLabel>
             <EditableField value={icp.fitReasoning} onChange={(v) => onPatch({ fitReasoning: v })} multiline rows={2} />
           </div>
           <div>
@@ -164,9 +140,9 @@ export function IcpDetailPane({ icp, personas, reviewed, onToggleReviewed, onPat
             <ChipList items={icp.exampleCompanies} onChange={(v) => onPatch({ exampleCompanies: v })} />
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
-            <PercentStat label="Competitive Displacement Fit" value={icp.competitiveDisplacementFitPct} onChange={(v) => onPatch({ competitiveDisplacementFitPct: v })} confidence={icp.confidence?.competitiveDisplacementFitPct} />
+            <PercentStat label="Competitive Displacement Fit" value={icp.competitiveDisplacementFitPct} onChange={(v) => onPatch({ competitiveDisplacementFitPct: v })} />
             <PercentStat label="Maturity" value={icp.maturityPct} onChange={(v) => onPatch({ maturityPct: v })} />
-            <PercentStat label="Market Size" value={icp.marketSizePct} onChange={(v) => onPatch({ marketSizePct: v })} confidence={icp.confidence?.marketSizePct} />
+            <PercentStat label="Market Size" value={icp.marketSizePct} onChange={(v) => onPatch({ marketSizePct: v })} />
           </div>
           <div>
             <FieldLabel>Intent Signals</FieldLabel>

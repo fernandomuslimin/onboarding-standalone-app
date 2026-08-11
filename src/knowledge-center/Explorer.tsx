@@ -1,34 +1,39 @@
 import { useEffect, useRef, useState } from "react";
 import { ICPS, IcpDetail, PERSONAS, PRODUCTS, PersonaDetail, ProductDetail, TreeNodeType, personasForIcp, treeKey } from "./data";
-import { EmptyState, Icon, IconName } from "./ui";
-import { KnowledgeTree, TreeSelection } from "./Tree";
+import { Drawer, Icon, IconName } from "./ui";
+import { TreeSelection } from "./Tree";
+import { KnowledgeOverview } from "./Overview";
 import { KnowledgeDiagram } from "./Diagram";
-import { KnowledgeBrowse } from "./Browse";
 import { KnowledgeDashboard } from "./Dashboard";
 import { ProductDetailPane, emptyProduct } from "./ProductDetailPane";
 import { IcpDetailPane, emptyIcp } from "./IcpDetailPane";
 import { PersonaDetailPane, emptyPersona } from "./PersonaDetailPane";
 
-type ExplorerView = "diagram" | "tree" | "browse" | "performance";
+type ExplorerView = "overview" | "diagram" | "performance";
 
 const VIEWS: { key: ExplorerView; label: string; icon: IconName }[] = [
+  { key: "overview", label: "Overview", icon: "layers" },
   { key: "diagram", label: "Diagram", icon: "route" },
-  { key: "tree", label: "Tree", icon: "list" },
-  { key: "browse", label: "Browse", icon: "grid" },
   { key: "performance", label: "Performance", icon: "chart" },
 ];
 
-export function Explorer({ reviewedKeys, onToggleReviewed, onNodeTypeChange }: {
+export function Explorer({ reviewedKeys, onToggleReviewed, onNodeTypeChange, companyReviewed, onToggleCompanyReviewed }: {
   reviewedKeys: Set<string>;
   onToggleReviewed: (key: string) => void;
   onNodeTypeChange: (type: TreeNodeType | null) => void;
+  companyReviewed: boolean;
+  onToggleCompanyReviewed: () => void;
 }) {
   const [products, setProducts] = useState<ProductDetail[]>(PRODUCTS);
   const [icps, setIcps] = useState<IcpDetail[]>(ICPS);
   const [personas, setPersonas] = useState<PersonaDetail[]>(PERSONAS);
   const [selection, setSelection] = useState<TreeSelection | null>(null);
-  const [expanded, setExpanded] = useState<Set<string>>(new Set());
-  const [view, setView] = useState<ExplorerView>("diagram");
+  const [view, setView] = useState<ExplorerView>("overview");
+  // Closing the drawer/full-page view shouldn't un-select the node — the
+  // card it belongs to should keep reading as "currently selected" until
+  // something else is picked. This tracks "closed without changing
+  // selection" separately from `selection` itself.
+  const [dismissed, setDismissed] = useState(false);
   const paneRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -36,13 +41,9 @@ export function Explorer({ reviewedKeys, onToggleReviewed, onNodeTypeChange }: {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selection?.type]);
 
-  function toggleExpand(key: string) {
-    setExpanded((current) => {
-      const next = new Set(current);
-      if (next.has(key)) next.delete(key); else next.add(key);
-      return next;
-    });
-  }
+  useEffect(() => {
+    setDismissed(false);
+  }, [selection]);
 
   function addProduct() {
     const id = `product-${Date.now()}`;
@@ -52,18 +53,11 @@ export function Explorer({ reviewedKeys, onToggleReviewed, onNodeTypeChange }: {
   function addIcp(productId: string) {
     const id = `icp-${Date.now()}`;
     setIcps((current) => [...current, emptyIcp(id, productId)]);
-    setExpanded((current) => new Set(current).add(treeKey("product", productId)));
     setSelection({ type: "icp", id });
   }
   function addPersona(icpId: string) {
     const id = `persona-${Date.now()}`;
     setPersonas((current) => [...current, emptyPersona(id, icpId)]);
-    const parentProduct = icps.find((i) => i.id === icpId)?.productId;
-    setExpanded((current) => {
-      const next = new Set(current).add(treeKey("icp", icpId));
-      if (parentProduct) next.add(treeKey("product", parentProduct));
-      return next;
-    });
     setSelection({ type: "persona", id });
   }
 
@@ -118,8 +112,6 @@ export function Explorer({ reviewedKeys, onToggleReviewed, onNodeTypeChange }: {
       key={selectedIcp.id}
       icp={selectedIcp}
       personas={personasForIcp(selectedIcp.id, personas)}
-      reviewed={reviewedKeys.has(treeKey("icp", selectedIcp.id))}
-      onToggleReviewed={() => onToggleReviewed(treeKey("icp", selectedIcp.id))}
       onPatch={(fields) => patchIcp(selectedIcp.id, fields)}
       onDelete={() => deleteIcp(selectedIcp.id)}
       onSelectPersona={(personaId) => setSelection({ type: "persona", id: personaId })}
@@ -128,8 +120,6 @@ export function Explorer({ reviewedKeys, onToggleReviewed, onNodeTypeChange }: {
     <PersonaDetailPane
       key={selectedPersona.id}
       persona={selectedPersona}
-      reviewed={reviewedKeys.has(treeKey("persona", selectedPersona.id))}
-      onToggleReviewed={() => onToggleReviewed(treeKey("persona", selectedPersona.id))}
       onPatchName={(name) => patchPersonaName(selectedPersona.id, name)}
       onPatchField={(si, fi, v) => patchPersonaField(selectedPersona.id, si, fi, v)}
       onDelete={() => deletePersona(selectedPersona.id)}
@@ -149,11 +139,12 @@ export function Explorer({ reviewedKeys, onToggleReviewed, onNodeTypeChange }: {
   );
 
   // Clicking empty space clears the selection. Nodes, ghosts and the view
-  // toggle are all buttons, so those are left alone; the detail pane is
-  // excluded by ref since it holds inputs that aren't buttons.
+  // toggle are all buttons, so those are left alone; the detail pane and any
+  // open drawer are excluded by ref/class since they hold inputs that aren't
+  // buttons.
   function handleBackgroundClick(event: React.MouseEvent) {
     const target = event.target as HTMLElement;
-    if (target.closest("button") || paneRef.current?.contains(target)) return;
+    if (target.closest("button") || target.closest(".kc-drawer-panel") || paneRef.current?.contains(target)) return;
     setSelection(null);
   }
 
@@ -171,61 +162,70 @@ export function Explorer({ reviewedKeys, onToggleReviewed, onNodeTypeChange }: {
     );
   }
 
-  if (view === "diagram") {
+  // A persona's detail is too long to sit comfortably below the chart, so
+  // clicking one takes over the page instead of opening in a drawer.
+  if (selectedPersona && !dismissed) {
     return (
-      <div onClick={handleBackgroundClick} style={{ display: "flex", flexDirection: "column", gap: 20, minHeight: "70vh" }}>
-        {viewToggle}
-        <KnowledgeDiagram
-          products={products} icps={icps} personas={personas}
-          selection={selection} onSelect={setSelection}
-          reviewedKeys={reviewedKeys}
-          onAddProduct={addProduct} onAddIcp={addIcp} onAddPersona={addPersona}
-        />
-        {detailPane && <div ref={paneRef} style={{ maxWidth: 980 }}>{detailPane}</div>}
+      <div style={{ display: "flex", flexDirection: "column", gap: 16, minHeight: "70vh" }}>
+        <button type="button" onClick={() => setDismissed(true)}
+          style={{
+            display: "flex", alignItems: "center", gap: 6, alignSelf: "flex-start", fontFamily: "inherit",
+            fontSize: 12.5, fontWeight: 700, color: "var(--color-muted)", background: "transparent",
+            border: "none", cursor: "pointer", padding: "4px 2px",
+          }}>
+          <Icon name="chevron-left" size={13} />
+          Back to {view === "diagram" ? "Diagram" : "Overview"}
+        </button>
+        {detailPane}
       </div>
     );
   }
 
-  // Browse manages its own product/ICP/persona detail views inline (drawers
-  // for product & ICP, in-place swap for persona), so no detail pane is
-  // rendered at this level for the browse view.
-  if (view === "browse") {
+  if (view === "diagram") {
     return (
-      <div style={{ display: "flex", flexDirection: "column", gap: 20, minHeight: "70vh" }}>
+      <div onClick={handleBackgroundClick} style={{ display: "flex", flexDirection: "column", gap: 20, height: "100%", minHeight: 0 }}>
         {viewToggle}
-        <KnowledgeBrowse
-          products={products} icps={icps} personas={personas}
-          selection={selection} onSelect={setSelection}
-          reviewedKeys={reviewedKeys}
-          onAddProduct={addProduct} onAddIcp={addIcp} onAddPersona={addPersona}
-          onToggleReviewed={onToggleReviewed}
-          onPatchProductField={patchProductField}
-          onDeleteProduct={deleteProduct}
-          onPatchIcp={patchIcp}
-          onDeleteIcp={deleteIcp}
-          onPatchPersonaName={patchPersonaName}
-          onPatchPersonaField={patchPersonaField}
-          onDeletePersona={deletePersona}
-        />
+        <div style={{ flex: 1, minHeight: 0 }}>
+          <KnowledgeDiagram
+            products={products} icps={icps} personas={personas}
+            selection={selection} onSelect={setSelection}
+            reviewedKeys={reviewedKeys}
+            onAddProduct={addProduct} onAddIcp={addIcp} onAddPersona={addPersona}
+            companyReviewed={companyReviewed} onToggleCompanyReviewed={onToggleCompanyReviewed}
+          />
+        </div>
+        <Drawer
+          open={(!!selectedProduct || !!selectedIcp) && !dismissed}
+          onClose={() => setDismissed(true)}
+          title={selectedProduct ? "Product Details" : "ICP Details"}
+          width={720}
+        >
+          {detailPane}
+        </Drawer>
       </div>
     );
   }
 
   return (
-    <div onClick={handleBackgroundClick} style={{ display: "flex", flexDirection: "column", gap: 20, minHeight: "70vh" }}>
+    <div onClick={handleBackgroundClick} style={{ display: "flex", flexDirection: "column", gap: 20, height: "100%", minHeight: 0 }}>
       {viewToggle}
-      <div style={{ display: "flex", gap: 20, alignItems: "flex-start", maxWidth: 1280 }}>
-        <KnowledgeTree
+      <div style={{ flex: 1, minHeight: 0 }}>
+        <KnowledgeOverview
           products={products} icps={icps} personas={personas}
           selection={selection} onSelect={setSelection}
-          expanded={expanded} onToggleExpand={toggleExpand}
           reviewedKeys={reviewedKeys}
           onAddProduct={addProduct} onAddIcp={addIcp} onAddPersona={addPersona}
+          companyReviewed={companyReviewed} onToggleCompanyReviewed={onToggleCompanyReviewed}
         />
-        <div ref={paneRef} style={{ flex: 1, minWidth: 0 }}>
-          {detailPane ?? <EmptyState icon="layers" title="Select a node" subtitle="Choose a product, ICP, or persona from the tree to view its details." />}
-        </div>
       </div>
+      <Drawer
+        open={(!!selectedProduct || !!selectedIcp) && !dismissed}
+        onClose={() => setDismissed(true)}
+        title={selectedProduct ? "Product Details" : "ICP Details"}
+        width={720}
+      >
+        {detailPane}
+      </Drawer>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ProductDetail, ProductField } from "./data";
-import { ChipList, EditableField, FieldLabel, Icon, IconButton, KC_DANGER_BTN, KC_GHOST_BTN, KC_PRIMARY_BTN, ProgressBar } from "./ui";
+import { ChipList, EditableField, FieldLabel, Icon, IconButton, KC_DANGER_BTN, KC_GHOST_BTN, KC_PRIMARY_BTN } from "./ui";
 
 export function emptyProduct(id: string): ProductDetail {
   return { id, name: "Untitled product", subtitle: "", description: "", matchPct: 0, fields: [] };
@@ -9,7 +9,7 @@ export function emptyProduct(id: string): ProductDetail {
 function ProductCard({ field, editing, onChange }: { field: ProductField; editing: boolean; onChange: (v: string | string[]) => void }) {
   return (
     <div style={{ background: "var(--color-brand-faint)", border: "1px solid var(--color-border)", borderRadius: 12, padding: "14px 16px" }}>
-      <FieldLabel confidence={field.confidence}>{field.label}</FieldLabel>
+      <FieldLabel>{field.label}</FieldLabel>
       {editing ? (
         Array.isArray(field.value)
           ? <ChipList items={field.value} onChange={(v) => onChange(v)} />
@@ -53,11 +53,6 @@ export function ProductDetailPane({ product, reviewed, onToggleReviewed, onPatch
             Delete
           </button>
         </div>
-      </div>
-
-      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 22 }}>
-        <div style={{ flex: 1, maxWidth: 320 }}><ProgressBar pct={product.matchPct} /></div>
-        <span style={{ fontSize: 12.5, fontWeight: 700, color: "var(--color-heading)" }}>{product.matchPct}% overall match</span>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 14 }}>
