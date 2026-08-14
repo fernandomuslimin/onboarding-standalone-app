@@ -1783,13 +1783,6 @@ function SectionLabel({ children, ai }: { children: React.ReactNode; ai?: React.
   );
 }
 
-type RiskLevel = "HIGH" | "MEDIUM" | "LOW";
-type Channel = "LinkedIn" | "Email";
-const CHANNEL_BADGE: Record<Channel, React.CSSProperties> = {
-  LinkedIn: { color: "var(--color-info)", background: "rgba(41,112,255,0.1)", border: "1px solid rgba(41,112,255,0.3)" },
-  Email: { color: "var(--color-muted)", background: "var(--color-surface)", border: "1px solid var(--color-border)" },
-};
-
 function BulletList({ items, tone = "body" }: { items: string[]; tone?: "body" | "brand" }) {
   const textColor = tone === "brand" ? "var(--color-brand)" : "var(--color-body)";
   const dotColor = tone === "brand" ? "var(--color-brand)" : "var(--color-subtle)";
@@ -1933,35 +1926,6 @@ function EditableBulletList({ items, onChange, tone = "body" }: {
   );
 }
 
-function EditableChips({ items, onChange }: { items: string[]; onChange: (items: string[]) => void }) {
-  const [draft, setDraft] = useState("");
-  function add() {
-    const v = draft.trim();
-    if (v && !items.some((c) => c.toLowerCase() === v.toLowerCase())) onChange([...items, v]);
-    setDraft("");
-  }
-  const removeAt = (i: number) => onChange(items.filter((_, idx) => idx !== i));
-
-  return (
-    <div style={{ display: "flex", flexWrap: "wrap" as const, gap: 6, alignItems: "center" }}>
-      {items.map((c, i) => (
-        <span key={c + i} style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 11, padding: "3px 6px 3px 10px", borderRadius: 999, border: "1px solid var(--color-border)", background: "var(--color-surface)", color: "var(--color-muted)" }}>
-          {c}
-          <button type="button" onClick={() => removeAt(i)} title="Remove"
-            style={{ background: "none", border: "none", color: "var(--color-subtle)", cursor: "pointer", fontSize: 12, padding: 0, lineHeight: 1, fontFamily: "inherit" }}>×</button>
-        </span>
-      ))}
-      <input
-        value={draft} onChange={(e) => setDraft(e.target.value)}
-        onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); add(); } }}
-        onBlur={add}
-        placeholder="+ Add competitor"
-        style={{ fontSize: 11, border: "1px dashed var(--color-border-strong)", borderRadius: 999, padding: "3px 10px", background: "transparent", color: "var(--color-heading)", outline: "none", fontFamily: "inherit", width: 130 }}
-      />
-    </div>
-  );
-}
-
 /* ─── Inline "Ask AI" trigger — sits next to a field or a section
    header. No live model call in this demo (mirrors the rest of the
    app's mocked delays); `revise` is a pure heuristic transform scoped
@@ -2039,11 +2003,6 @@ function reviseText(text: string, instruction: string): string {
   return `${text.replace(/[.\s]+$/, "")} — ${instruction}`;
 }
 
-const RISK_ORDER: RiskLevel[] = ["HIGH", "MEDIUM", "LOW"];
-function nextRisk(r: RiskLevel): RiskLevel { return RISK_ORDER[(RISK_ORDER.indexOf(r) + 1) % RISK_ORDER.length]; }
-const CHANNEL_ORDER: Channel[] = ["Email", "LinkedIn"];
-function nextChannel(c: Channel): Channel { return CHANNEL_ORDER[(CHANNEL_ORDER.indexOf(c) + 1) % CHANNEL_ORDER.length]; }
-
 function titleCase(s: string): string { return s.charAt(0).toUpperCase() + s.slice(1); }
 
 // Section-scoped revisers — same "no live model" heuristic approach as
@@ -2068,61 +2027,13 @@ function reviseProductBundle(bundle: ProductBundle, instruction: string): Produc
   return { ...bundle, productBullets: [...bundle.productBullets, titleCase(instruction)] };
 }
 
-type Competitive = CompanyResearchData["competitive"];
-function reviseCompetitive(c: Competitive, instruction: string): Competitive {
-  const lower = instruction.toLowerCase();
-  const addCompetitor = instruction.match(/add\s+([a-z0-9][\w.& -]{1,30}?)\s+as\s+a\s+competitor/i)
-    ?? instruction.match(/add\s+competitor\s+([a-z0-9][\w.& -]{1,30})/i);
-  if (addCompetitor) {
-    const name = addCompetitor[1].trim();
-    if (name && !c.competitors.some((x) => x.toLowerCase() === name.toLowerCase())) {
-      return { ...c, competitors: [...c.competitors, name] };
-    }
-    return c;
-  }
-  const removeCompetitor = instruction.match(/remove\s+([a-z0-9][\w.& -]{1,30}?)\s+(?:as\s+a\s+competitor|from\s+competitors)/i);
-  if (removeCompetitor) {
-    const name = removeCompetitor[1].trim().toLowerCase();
-    return { ...c, competitors: c.competitors.filter((x) => x.toLowerCase() !== name) };
-  }
-  if (/shorter|concise|tighten|trim/.test(lower)) {
-    return { ...c, differentiators: c.differentiators.map(firstSentence) };
-  }
-  return { ...c, differentiators: [...c.differentiators, titleCase(instruction)] };
-}
-
-type ValueProps = CompanyResearchData["valueProps"];
-function reviseValueProps(vps: ValueProps, instruction: string): ValueProps {
+type Positioning = CompanyResearchData["positioning"];
+function revisePositioning(p: Positioning, instruction: string): Positioning {
   const lower = instruction.toLowerCase();
   if (/shorter|concise|tighten|trim/.test(lower)) {
-    return vps.map((vp) => ({ ...vp, body: firstSentence(vp.body) }));
+    return { ...p, differentiators: p.differentiators.map(firstSentence) };
   }
-  const title = instruction.length > 60 ? `${instruction.slice(0, 57)}…` : titleCase(instruction);
-  return [...vps, { title, body: titleCase(instruction), quantified: false }];
-}
-
-type IcpHypotheses = CompanyResearchData["icpHypotheses"];
-function reviseIcpHypotheses(icps: IcpHypotheses, instruction: string): IcpHypotheses {
-  const riskBump = instruction.match(/(?:raise|bump|increase)\s+(?:the\s+)?risk\s+(?:for|on)\s+(.+)/i);
-  if (riskBump) {
-    const needle = riskBump[1].trim().toLowerCase();
-    return icps.map((icp) => (icp.title.toLowerCase().includes(needle) ? { ...icp, risk: nextRisk(icp.risk) } : icp));
-  }
-  if (icps.length === 0) return icps;
-  return icps.map((icp, i) => (i === 0 ? { ...icp, bullets: [...icp.bullets, titleCase(instruction)] } : icp));
-}
-
-type OutboundAngles = CompanyResearchData["outboundAngles"];
-function reviseOutboundAngles(angles: OutboundAngles, instruction: string): OutboundAngles {
-  if (/more formal|formal tone/i.test(instruction)) {
-    return angles.map((a) => ({ ...a, quote: a.quote.replace(/—/g, ",") }));
-  }
-  return [...angles, { title: "New angle", channel: "Email", quote: instruction }];
-}
-
-function reviseCallPrepNotes(notes: string[], instruction: string): string[] {
-  if (/shorter|concise|tighten|trim/i.test(instruction)) return notes.map(firstSentence);
-  return [...notes, titleCase(instruction)];
+  return { ...p, differentiators: [...p.differentiators, titleCase(instruction)] };
 }
 
 interface CompanyResearchData {
@@ -2130,11 +2041,7 @@ interface CompanyResearchData {
   productName: string;
   productDescription: string;
   productBullets: string[];
-  competitive: { category: string; competitors: string[]; differentiators: string[] };
-  valueProps: { title: string; body: string; quantified: boolean }[];
-  icpHypotheses: { title: string; risk: RiskLevel; body: string; bullets: string[] }[];
-  outboundAngles: { title: string; channel: Channel; quote: string }[];
-  callPrepNotes: string[];
+  positioning: { category: string; differentiators: string[] };
 }
 
 function buildInitialCompanyResearch(products: Product[]): CompanyResearchData {
@@ -2152,51 +2059,14 @@ function buildInitialCompanyResearch(products: Product[]): CompanyResearchData {
       "AI-assisted personalization built into the core workflow",
       "Designed to scale across multiple senders and domains",
     ],
-    competitive: {
+    positioning: {
       category: "Sales & Marketing Outreach Software",
-      competitors: ["Outreach", "Apollo", "Instantly", "Smartlead"],
       differentiators: [
         "Positions itself as an outreach platform built for speed to first send",
         "Messaging leans on personalization and AI-assisted workflows",
         "Low setup friction compared to legacy sales tooling",
       ],
     },
-    valueProps: [
-      { title: "Cuts time spent on manual prospecting", body: "AI drafts and personalizes outreach at scale, freeing reps to focus on conversations.", quantified: true },
-      { title: "Faster time to first send", body: "No lengthy setup — connect a domain and start sending within the same day.", quantified: false },
-      { title: "Consistent brand voice across sequences", body: "Messaging stays on-brand even as volume scales across senders and domains.", quantified: false },
-    ],
-    icpHypotheses: [
-      {
-        title: "VP Sales / Head of RevOps at 50–500 Mid-Market B2B",
-        risk: "HIGH",
-        body: "Closest match to the core use case — teams running multi-sender outbound who need faster time-to-send without adding headcount.",
-        bullets: ["Owns outbound quota and rep productivity", "Actively evaluating tools to replace manual prospecting", "Budget authority for sales tooling"],
-      },
-      {
-        title: "Founder-led Sales at Early-Stage Startups",
-        risk: "MEDIUM",
-        body: "Small teams wearing multiple hats who need to move fast on outbound without a dedicated SDR function.",
-        bullets: ["Values low setup friction over deep customization", "Price-sensitive, favors usage-based plans"],
-      },
-      {
-        title: "Agency or Fractional SDR Teams Managing Multiple Clients",
-        risk: "LOW",
-        body: "Could adopt per-client, but requires multi-workspace support that may not be a priority yet.",
-        bullets: ["Needs to manage several domains and senders per client", "Longer sales cycle due to procurement across client accounts"],
-      },
-    ],
-    outboundAngles: [
-      { title: "Time-to-First-Send", channel: "LinkedIn", quote: "Most outreach tools take weeks to set up. We get teams sending personalized sequences the same day — want to see it on your own domain?" },
-      { title: "Personalization at Scale", channel: "Email", quote: "Your reps are copy-pasting the same three templates. AI-personalized sequences convert better without adding manual work — worth a 15-minute look?" },
-      { title: "Consolidate Your Stack", channel: "Email", quote: "If you're juggling separate tools for sending, personalization, and deliverability, this replaces all three — happy to show how teams like yours consolidated." },
-    ],
-    callPrepNotes: [
-      "Confirm current team size and who owns outbound today — the ICP hypotheses assume a dedicated sales function, which may not match smaller teams.",
-      "Validate which tools are currently used for sending, personalization, and deliverability so the consolidation angle lands correctly.",
-      "Ask about typical sequence volume and sender count — this shapes which package and domain split makes sense.",
-      "Confirm whether outbound is run in-house or through an agency, since this changes the buyer and the pitch.",
-    ],
   };
 }
 
@@ -2206,23 +2076,14 @@ function StepCompanyResearch({ products, onNext }: { products: Product[]; onNext
   function patch(fields: Partial<CompanyResearchData>) {
     setData((current) => ({ ...current, ...fields }));
   }
-  function patchCompetitive(fields: Partial<CompanyResearchData["competitive"]>) {
-    setData((current) => ({ ...current, competitive: { ...current.competitive, ...fields } }));
+  function patchPositioning(fields: Partial<CompanyResearchData["positioning"]>) {
+    setData((current) => ({ ...current, positioning: { ...current.positioning, ...fields } }));
   }
   function updateOverview(i: number, value: string) {
     setData((current) => ({ ...current, overview: current.overview.map((row, idx) => (idx === i ? { ...row, value } : row)) }));
   }
-  function updateValueProp(i: number, fields: Partial<CompanyResearchData["valueProps"][number]>) {
-    setData((current) => ({ ...current, valueProps: current.valueProps.map((vp, idx) => (idx === i ? { ...vp, ...fields } : vp)) }));
-  }
-  function updateIcp(i: number, fields: Partial<CompanyResearchData["icpHypotheses"][number]>) {
-    setData((current) => ({ ...current, icpHypotheses: current.icpHypotheses.map((icp, idx) => (idx === i ? { ...icp, ...fields } : icp)) }));
-  }
-  function updateAngle(i: number, fields: Partial<CompanyResearchData["outboundAngles"][number]>) {
-    setData((current) => ({ ...current, outboundAngles: current.outboundAngles.map((a, idx) => (idx === i ? { ...a, ...fields } : a)) }));
-  }
 
-  const { overview, productName, productDescription, productBullets, competitive, valueProps, icpHypotheses, outboundAngles, callPrepNotes } = data;
+  const { overview, productName, productDescription, productBullets, positioning } = data;
 
   return (
     <div className="ob-card" style={{ ...CARD, maxWidth: 560 }}>
@@ -2263,102 +2124,15 @@ function StepCompanyResearch({ products, onNext }: { products: Product[]; onNext
         </div>
 
         <div>
-          <SectionLabel ai={<AIRevise value={competitive} onChange={(v) => patch({ competitive: v })} revise={reviseCompetitive} scale="section" />}>
-            Competitive Position
+          <SectionLabel ai={<AIRevise value={positioning} onChange={(v) => patch({ positioning: v })} revise={revisePositioning} scale="section" />}>
+            Positioning
           </SectionLabel>
           <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 4 }}>Category</div>
           <div style={{ fontSize: 12.5, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 12px" }}>
-            <EditableText value={competitive.category} onChange={(v) => patchCompetitive({ category: v })} style={{ fontSize: 12.5 }} revise={reviseText} />
-          </div>
-          <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>Competitors</div>
-          <div style={{ marginBottom: 12 }}>
-            <EditableChips items={competitive.competitors} onChange={(v) => patchCompetitive({ competitors: v })} />
+            <EditableText value={positioning.category} onChange={(v) => patchPositioning({ category: v })} style={{ fontSize: 12.5 }} revise={reviseText} />
           </div>
           <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>Key Differentiators</div>
-          <EditableBulletList items={competitive.differentiators} onChange={(v) => patchCompetitive({ differentiators: v })} />
-        </div>
-
-        <div>
-          <SectionLabel ai={<AIRevise value={valueProps} onChange={(v) => patch({ valueProps: v })} revise={reviseValueProps} scale="section" />}>
-            Value Propositions
-          </SectionLabel>
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            {valueProps.map((vp, i) => (
-              <div key={i} style={{ padding: "10px 12px", borderRadius: 10, background: "var(--color-surface)" }}>
-                <div style={{ fontSize: 12.5, fontWeight: 600, color: "var(--color-heading)", marginBottom: 2 }}>
-                  <EditableText value={vp.title} onChange={(v) => updateValueProp(i, { title: v })} style={{ fontSize: 12.5, fontWeight: 600 }} revise={reviseText} />
-                </div>
-                <div style={{ fontSize: 12, color: "var(--color-muted)", lineHeight: 1.5 }}>
-                  <EditableText value={vp.body} onChange={(v) => updateValueProp(i, { body: v })} multiline rows={2} style={{ fontSize: 12, color: "var(--color-muted)" }} revise={reviseText} />
-                </div>
-                {vp.quantified && (
-                  <span style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 10.5, fontWeight: 600, color: "var(--color-success)", background: "rgba(7,188,12,0.1)", border: "1px solid rgba(7,188,12,0.3)", borderRadius: 999, padding: "2px 8px", marginTop: 6 }}>
-                    <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5" /></svg>
-                    Quantified
-                  </span>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <SectionLabel ai={<AIRevise value={icpHypotheses} onChange={(v) => patch({ icpHypotheses: v })} revise={reviseIcpHypotheses} scale="section" />}>
-            ICP Hypotheses
-          </SectionLabel>
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            {icpHypotheses.map((icp, i) => (
-              <div key={i} style={{ padding: "10px 12px", borderRadius: 10, border: "1px solid var(--color-border)" }}>
-                <div style={{ marginBottom: 4 }}>
-                  <span style={{ fontSize: 12.5, fontWeight: 600, color: "var(--color-heading)", lineHeight: 1.4 }}>
-                    <EditableText value={icp.title} onChange={(v) => updateIcp(i, { title: v })} style={{ fontSize: 12.5, fontWeight: 600 }} revise={reviseText} />
-                  </span>
-                </div>
-                <div style={{ fontSize: 12, color: "var(--color-muted)", lineHeight: 1.5, margin: "0 0 8px" }}>
-                  <EditableText value={icp.body} onChange={(v) => updateIcp(i, { body: v })} multiline rows={2} style={{ fontSize: 12, color: "var(--color-muted)" }} revise={reviseText} />
-                </div>
-                <EditableBulletList items={icp.bullets} onChange={(v) => updateIcp(i, { bullets: v })} />
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <SectionLabel ai={<AIRevise value={outboundAngles} onChange={(v) => patch({ outboundAngles: v })} revise={reviseOutboundAngles} scale="section" />}>
-            Recommended Outbound Angles
-          </SectionLabel>
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            {outboundAngles.map((angle, i) => (
-              <div key={i} style={{ padding: "10px 12px", borderRadius: 10, background: "var(--color-surface)" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                  <span style={{ flex: 1, fontSize: 12.5, fontWeight: 600, color: "var(--color-heading)" }}>
-                    <EditableText value={angle.title} onChange={(v) => updateAngle(i, { title: v })} style={{ fontSize: 12.5, fontWeight: 600 }} revise={reviseText} />
-                  </span>
-                  <button type="button" onClick={() => updateAngle(i, { channel: nextChannel(angle.channel) })} title="Click to change channel"
-                    style={{ flexShrink: 0, fontSize: 10, fontWeight: 600, padding: "2px 8px", borderRadius: 6, cursor: "pointer", fontFamily: "inherit", ...CHANNEL_BADGE[angle.channel] }}>
-                    {angle.channel}
-                  </button>
-                </div>
-                <div style={{ fontSize: 12, color: "var(--color-muted)", lineHeight: 1.5, fontStyle: "italic" as const }}>
-                  &ldquo;<EditableText value={angle.quote} onChange={(v) => updateAngle(i, { quote: v })} multiline rows={2} style={{ fontSize: 12, color: "var(--color-muted)", fontStyle: "italic" as const }} revise={reviseText} />&rdquo;
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <SectionLabel ai={<AIRevise value={callPrepNotes} onChange={(v) => patch({ callPrepNotes: v })} revise={reviseCallPrepNotes} scale="section" />}>
-            Call Prep Notes
-          </SectionLabel>
-          <div style={{ borderRadius: 10, border: "1px solid var(--color-border)", padding: "12px 14px" }}>
-            <div style={{ marginBottom: 12 }}>
-              <EditableBulletList items={callPrepNotes} onChange={(v) => patch({ callPrepNotes: v })} />
-            </div>
-            <p style={{ fontSize: 11, color: "var(--color-subtle)", fontStyle: "italic" as const, margin: 0, paddingTop: 10, borderTop: "1px solid var(--color-border)" }}>
-              Based on your website and the details you provided. Verify anything you&apos;re unsure about before it goes into outreach.
-            </p>
-          </div>
+          <EditableBulletList items={positioning.differentiators} onChange={(v) => patchPositioning({ differentiators: v })} />
         </div>
       </div>
 
@@ -2398,49 +2172,21 @@ function PSField({ section, onChange }: { section: PSSection; onChange?: (conten
   );
 }
 
-interface PSProductState { name: string; badge: string; tabs: Record<string, PSSection[]> }
+interface PSProductState { name: string; badge: string; sections: PSSection[] }
 
 function buildInitialPSProduct(product?: Product): PSProductState {
   const name = product?.name?.trim() || "Your core product";
   const badge = product?.variant?.trim() || "Core product";
   const description = product?.description?.trim() || "AI summarised your website to understand what you sell and who it's for.";
 
-  const tabs: Record<string, PSSection[]> = {
-    "Core Details": [
-      { label: "Description", content: description },
-      { label: "Use Cases", content: ["Outbound prospecting for sales teams without a dedicated SDR function", "Scaling personalized sequences across multiple senders and domains", "Replacing manual, template-based cold email workflows"] },
-      { label: "Key Features", content: ["AI-drafted, personalized outreach at scale", "Multi-domain, multi-sender sending infrastructure", "Same-day setup with no lengthy onboarding"] },
-      { label: "Problems It Solves", content: ["Reps spending hours manually personalizing emails", "Slow time-to-first-send with legacy sales tooling", "Inconsistent messaging across senders and sequences"] },
-      { label: "Value Proposition", content: "Cuts the time spent on manual prospecting by letting AI draft and personalize outreach at scale, while keeping messaging consistent across every sender and domain." },
-      { label: "Time to Value", content: "Same day — connect a domain and start sending without a lengthy setup process." },
-    ],
-    "Market Fit": [
-      { label: "Ideal Customer", content: "Sales leaders and founder-led teams at B2B companies who need to scale outbound without adding headcount." },
-      { label: "Market Maturity", content: "Replacing an existing behavior — manual, template-based outreach" },
-      { label: "Competitive Alternatives", content: ["Manual, template-based cold email workflows", "Legacy sales engagement platforms with slow setup", "Point tools that only handle sending, not personalization"] },
-      { label: "Buyer Objections", content: ["\"We already have a sales engagement tool\" — most don't personalize at this depth or scale", "\"Setup will take too long\" — same-day setup with no IT project required"] },
-      { label: "What Makes Them Switch", content: ["Outbound volume growing faster than headcount", "Reps spending too much time on manual personalization", "Deliverability issues from a single overused domain"] },
-    ],
-    "Commercials": [
-      { label: "Deal Type", content: "Recurring — subscription pricing" },
-      { label: "Typical Contract Length", content: "Month-to-month, with annual options" },
-      { label: "Average Deal Size", content: "Scales with sending volume and number of domains/mailboxes" },
-      { label: "Typical Stakeholders", content: ["Primary: Head of Sales or RevOps (evaluates and champions)", "Secondary: Founder or CRO (approves budget)"] },
-    ],
-    "Proof & Evidence": [
-      { label: "Best Proof Points", content: ["Faster time-to-first-send compared to legacy sales tooling", "Consistent brand voice maintained across scaled sending volume"] },
-      { label: "ROI Metrics", content: ["Hours saved per rep per week on manual personalization", "Increase in reply rate from personalized vs. templated sequences"] },
-      { label: "Objection Rebuttals", content: ["\"AI messaging sounds generic\" — sequences are drafted from real product and company research, not generic templates", "\"We're worried about deliverability\" — sending is split across multiple domains and senders by design"] },
-    ],
-    "Positioning & Messaging": [
-      { label: "Elevator Pitch", content: `${name} turns AI-researched company and product context into personalized outbound sequences — sent across multiple domains and senders, live the same day.` },
-      { label: "Positioning Statement", content: `For sales teams that need to scale outbound without scaling headcount, ${name} is the outreach platform that drafts personalized sequences from real research and sends them through infrastructure built for deliverability.` },
-      { label: "Messaging Do's", content: ["Lead with speed to first send and low setup friction", "Anchor on personalization quality, not just volume"] },
-      { label: "Messaging Don'ts", content: ["Don't position as a generic \"AI email\" tool — the research-backed personalization is the differentiator", "Don't oversell volume without mentioning deliverability safeguards"] },
-    ],
-  };
+  const sections: PSSection[] = [
+    { label: "Description", content: description },
+    { label: "Key Features", content: ["AI-drafted, personalized outreach at scale", "Multi-domain, multi-sender sending infrastructure", "Same-day setup with no lengthy onboarding"] },
+    { label: "Ideal Customer", content: "Sales leaders and founder-led teams at B2B companies who need to scale outbound without adding headcount." },
+    { label: "Value Proposition", content: "Cuts the time spent on manual prospecting by letting AI draft and personalize outreach at scale, while keeping messaging consistent across every sender and domain." },
+  ];
 
-  return { name, badge, tabs };
+  return { name, badge, sections };
 }
 
 /* ════════════════════════════════════════════════════════════════════
@@ -2451,7 +2197,7 @@ interface PersonaData {
   title: string;
   roleTag: string;
   subtitle: string;
-  tabs: Record<string, PSSection[]>;
+  sections: PSSection[];
 }
 
 const PERSONAS_DEFAULT: PersonaData[] = [
@@ -2459,116 +2205,30 @@ const PERSONAS_DEFAULT: PersonaData[] = [
     title: "VP Sales / Head of RevOps",
     roleTag: "Mid-Market B2B",
     subtitle: "Owns the outbound quota and is judged on pipeline generated, not activity — manual prospecting doesn't scale to their number.",
-    tabs: {
-      "Targeting": [
-        { label: "Target Industries", content: ["B2B SaaS", "Sales & marketing technology", "Professional services"] },
-        { label: "Company Size", content: "50–500 employees" },
-        { label: "Tech Stack Signals", content: ["Salesforce or HubSpot CRM", "LinkedIn Sales Navigator", "An existing sales engagement tool being outgrown"] },
-      ],
-      "Persona": [
-        { label: "Champion / Influencer", content: "VP Sales or Head of RevOps — owns the number, evaluates tools directly, and can approve budget without a lengthy procurement cycle." },
-        { label: "What They Care About Most", content: ["Hitting pipeline targets without adding headcount", "Consistent messaging across a growing rep team"] },
-        { label: "Objections They Raise", content: ["\"We already have a sales engagement platform\"", "\"Our reps won't adopt another tool\""] },
-      ],
-      "Pains & Triggers": [
-        { label: "Primary Pain", content: "Reps spend hours per week manually personalizing outreach, and quality drops as volume increases — pipeline generation stalls below quota." },
-        { label: "Trigger Events", content: ["Missed a quarterly pipeline target", "Just hired new reps who need to ramp fast", "Existing tool's reply rates have plateaued"] },
-      ],
-      "Messaging": [
-        { label: "Opening Hook", content: "Your reps are spending hours a week hand-personalizing emails and still missing quota. AI can draft it in seconds without sounding generic — worth a look?" },
-        { label: "CTA Style", content: "Request a 15-minute demo" },
-      ],
-      "Competitor Intel": [
-        { label: "What They Currently Use", content: ["Existing sales engagement platform (Outreach, Salesloft, or similar)", "Manual templates in Gmail or Outlook"] },
-        { label: "Switching Triggers", content: ["Reply rates plateau on the current tool", "Rep headcount grows faster than manual personalization can scale"] },
-      ],
-      "Channel Behavior": [
-        { label: "Best Outreach Channel", content: "Email primary, LinkedIn for warm-up" },
-        { label: "Best Time to Reach", content: "Tuesday–Thursday, 8–10am local time" },
-      ],
-      "Lead Scoring": [
-        { label: "Warm Lead", content: "Asked about pricing or replied requesting more detail on personalization quality." },
-        { label: "Meeting-Ready", content: "Explicitly asked for a demo and mentioned a specific pipeline target or rep count." },
-      ],
-    },
+    sections: [
+      { label: "Primary Pain", content: "Reps spend hours per week manually personalizing outreach, and quality drops as volume increases — pipeline generation stalls below quota." },
+      { label: "Opening Hook", content: "Your reps are spending hours a week hand-personalizing emails and still missing quota. AI can draft it in seconds without sounding generic — worth a look?" },
+    ],
   },
   {
     title: "Founder or First Sales Hire",
     roleTag: "Early-Stage Startup",
     subtitle: "Wearing multiple hats with no dedicated SDR — needs outbound running without the setup overhead of enterprise tooling.",
-    tabs: {
-      "Targeting": [
-        { label: "Target Industries", content: ["Early-stage B2B SaaS", "Technical founders selling to other businesses"] },
-        { label: "Company Size", content: "1–20 employees" },
-        { label: "Tech Stack Signals", content: ["Lightweight or no CRM yet", "Founder still doing outbound personally"] },
-      ],
-      "Persona": [
-        { label: "Champion / Influencer", content: "Founder or first sales hire — self-serve buyer, evaluates and decides without a committee." },
-        { label: "What They Care About Most", content: ["Getting outbound live fast with minimal setup", "Price that scales with a small early budget"] },
-        { label: "Objections They Raise", content: ["\"We don't have time to configure another tool\"", "\"Budget is tight pre-revenue\""] },
-      ],
-      "Pains & Triggers": [
-        { label: "Primary Pain", content: "Founder is personally writing every outbound email, which doesn't scale past a handful of prospects a day." },
-        { label: "Trigger Events", content: ["Just raised a seed round and needs to show pipeline", "Manual outbound isn't keeping up with target account list"] },
-      ],
-      "Messaging": [
-        { label: "Opening Hook", content: "Still writing every cold email yourself? Get AI-personalized sequences live today, no setup team required." },
-        { label: "CTA Style", content: "Easy yes/no reply" },
-      ],
-      "Competitor Intel": [
-        { label: "What They Currently Use", content: ["Manual emails from a personal inbox", "A spreadsheet-based prospect list"] },
-        { label: "Switching Triggers", content: ["Outbound volume finally exceeds what one person can personalize manually"] },
-      ],
-      "Channel Behavior": [
-        { label: "Best Outreach Channel", content: "Email and LinkedIn DM" },
-        { label: "Best Time to Reach", content: "Evenings or early morning — founders often check messages off-hours" },
-      ],
-      "Lead Scoring": [
-        { label: "Warm Lead", content: "Signed up for a trial or asked about self-serve pricing." },
-        { label: "Meeting-Ready", content: "Mentioned a specific launch or fundraising timeline driving urgency." },
-      ],
-    },
+    sections: [
+      { label: "Primary Pain", content: "Founder is personally writing every outbound email, which doesn't scale past a handful of prospects a day." },
+      { label: "Opening Hook", content: "Still writing every cold email yourself? Get AI-personalized sequences live today, no setup team required." },
+    ],
   },
   {
     title: "Agency Owner",
     roleTag: "Fractional SDR Team",
     subtitle: "Runs outbound for multiple clients and needs to standardize quality without a separate setup per account.",
-    tabs: {
-      "Targeting": [
-        { label: "Target Industries", content: ["B2B lead generation agencies", "Fractional SDR / outsourced sales teams"] },
-        { label: "Company Size", content: "2–50 employees, managing 5–20 client accounts" },
-        { label: "Tech Stack Signals", content: ["Multiple sending tools per client", "Client reporting spreadsheets or dashboards"] },
-      ],
-      "Persona": [
-        { label: "Champion / Influencer", content: "Agency owner or operations lead — manages the tool stack across every client account." },
-        { label: "What They Care About Most", content: ["Consistent quality across every client without per-client setup", "Margin protection on fixed-fee engagements"] },
-        { label: "Objections They Raise", content: ["\"Our clients are all on different tools already\"", "\"Cost has to work across our whole client roster\""] },
-      ],
-      "Pains & Triggers": [
-        { label: "Primary Pain", content: "Standing up outbound for each new client takes real setup time, and quality varies depending on which junior SDR is writing copy." },
-        { label: "Trigger Events", content: ["Onboarding a new client and need outbound live fast", "A client complained about inconsistent messaging quality"] },
-      ],
-      "Messaging": [
-        { label: "Opening Hook", content: "Standardize outbound quality across every client account — AI-personalized sequences without a per-client setup project." },
-        { label: "CTA Style", content: "Offer a no-prep trial run on one client" },
-      ],
-      "Competitor Intel": [
-        { label: "What They Currently Use", content: ["A mix of sending tools chosen per client", "Manual QA process for outbound copy quality"] },
-        { label: "Switching Triggers", content: ["Client roster grows past what manual QA can support", "A client churns over inconsistent messaging"] },
-      ],
-      "Channel Behavior": [
-        { label: "Best Outreach Channel", content: "Email and LinkedIn, multi-channel" },
-        { label: "Best Time to Reach", content: "Weekday mid-morning or early afternoon" },
-      ],
-      "Lead Scoring": [
-        { label: "Warm Lead", content: "Asked about multi-client or per-seat pricing." },
-        { label: "Meeting-Ready", content: "Confirmed active client count and a specific onboarding timeline." },
-      ],
-    },
+    sections: [
+      { label: "Primary Pain", content: "Standing up outbound for each new client takes real setup time, and quality varies depending on which junior SDR is writing copy." },
+      { label: "Opening Hook", content: "Standardize outbound quality across every client account — AI-personalized sequences without a per-client setup project." },
+    ],
   },
 ];
-
-const PERSONA_TAB_NAMES = Object.keys(PERSONAS_DEFAULT[0].tabs);
 
 /* ════════════════════════════════════════════════════════════════════
    STEP 15 — Outreach Campaign summary (AI-drafted result)
@@ -2950,9 +2610,6 @@ function StepClearedForLaunch({ onFinish }: { onFinish: () => void }) {
    (Product & Services, ICP, Personas) approved in sequence before the
    next product unlocks.
 ══════════════════════════════════════════════════════════════════════ */
-const SCORE_DIMENSIONS = ["Market Size", "Product Fit", "Pain Urgency", "Reachability", "Competition"] as const;
-type ScoreDimension = (typeof SCORE_DIMENSIONS)[number];
-
 type Recommendation = "Launch First" | "Test Small" | "Defer";
 const RECOMMENDATION_BADGE: Record<Recommendation, React.CSSProperties> = {
   "Launch First": { color: "var(--color-success)", background: "rgba(7,188,12,0.1)", border: "1px solid rgba(7,188,12,0.3)" },
@@ -2964,183 +2621,32 @@ function nextRecommendation(r: Recommendation): Recommendation { return RECOMMEN
 
 const MONO_FONT = "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace";
 
-function scoreTone(value: number): string {
-  if (value >= 8) return "var(--color-success)";
-  if (value >= 5) return "var(--color-warning)";
-  return "var(--color-error)";
-}
-
-function overallScore(icp: IcpScore): number {
-  const values = SCORE_DIMENSIONS.map((d) => icp.scores[d]);
-  return values.reduce((sum, v) => sum + v, 0) / values.length;
-}
-
-interface MarketSegment {
-  name: string;
-  size: string;
-}
-
 interface IcpScore {
   name: string;
-  scores: Record<ScoreDimension, number>;
+  reasoning: string;
   recommendation: Recommendation;
 }
 
 const TAM_DESCRIPTION_DEFAULT =
-  "The total addressable market centres on B2B companies running outbound sales motions who still personalize outreach manually or through generic templates. The core pain — reps hand-crafting sequences that convert at a fraction of what personalized, AI-assisted outreach could — is universal across any company running structured outbound. The serviceable market is bounded by company stage (teams big enough to run outbound at volume but not yet locked into enterprise sales-engagement contracts), function (dedicated outbound ownership, whether in-house or agency-run), and appetite for AI-assisted messaging. Rough combined TAM across the three segments is 175,000–230,000 companies and agencies actively running B2B outbound today.";
-
-const MARKET_SEGMENTS_DEFAULT: MarketSegment[] = [
-  { name: "Mid-Market B2B SaaS, Fintech & Professional Services (50–500 employees)", size: "~90,000–120,000 companies" },
-  { name: "Early-Stage Startups running founder-led sales", size: "~70,000–90,000 companies" },
-  { name: "Outbound Agencies & Fractional SDR Teams", size: "~15,000–20,000 practices managing 5–20 client accounts" },
-];
+  "Centres on B2B companies running outbound sales motions who still personalize manually or through generic templates — roughly 175,000–230,000 companies and agencies across mid-market, early-stage, and agency segments.";
 
 const ICP_SCORES_DEFAULT: IcpScore[] = [
   {
     name: "VP Sales / Head of RevOps — Mid-Market B2B",
-    scores: { "Market Size": 8, "Product Fit": 10, "Pain Urgency": 9, Reachability: 8, Competition: 6 },
+    reasoning: "Closest match to the core use case — owns outbound quota, actively evaluating tools to replace manual prospecting.",
     recommendation: "Launch First",
   },
   {
     name: "Founder-led Sales — Early-Stage Startups",
-    scores: { "Market Size": 9, "Product Fit": 6, "Pain Urgency": 6, Reachability: 6, Competition: 7 },
+    reasoning: "Values low setup friction over deep customization; price-sensitive and favors usage-based plans.",
     recommendation: "Test Small",
   },
   {
     name: "Agency / Fractional SDR Teams",
-    scores: { "Market Size": 3, "Product Fit": 6, "Pain Urgency": 4, Reachability: 3, Competition: 5 },
+    reasoning: "Needs multi-workspace support per client that may not be a priority yet.",
     recommendation: "Defer",
   },
 ];
-
-const GRAPH_LEGEND: { label: string; color: string }[] = [
-  { label: "Company", color: "var(--color-brand)" },
-  { label: "Product / service", color: "var(--color-success)" },
-  { label: "ICP", color: "var(--color-warning)" },
-];
-
-function IcpGraph({ productName, icps }: { productName: string; icps: IcpScore[] }) {
-  const companyPos = { x: 6, y: 50 };
-  const productPos = { x: 40, y: 50 };
-  const icpYs = icps.map((_, i) => (icps.length === 1 ? 50 : 15 + (i * 70) / (icps.length - 1)));
-
-  return (
-    <div style={{ position: "relative", width: "100%", height: 210, marginTop: 8 }}>
-      <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none" style={{ position: "absolute", inset: 0 }}>
-        <path d={`M ${companyPos.x} ${companyPos.y} L ${productPos.x} ${productPos.y}`} stroke="var(--color-border-strong)" strokeWidth="0.6" fill="none" vectorEffect="non-scaling-stroke" />
-        {icpYs.map((y, i) => (
-          <path key={i} d={`M ${productPos.x} ${productPos.y} C 58 ${productPos.y}, 58 ${y}, 70 ${y}`} stroke="var(--color-border-strong)" strokeWidth="0.6" fill="none" vectorEffect="non-scaling-stroke" />
-        ))}
-      </svg>
-
-      <div style={{ position: "absolute", left: `${companyPos.x}%`, top: `${companyPos.y}%`, transform: "translateY(-50%)", display: "flex", alignItems: "center", gap: 8 }}>
-        <span style={{ width: 14, height: 14, borderRadius: "50%", background: "var(--color-brand)", flexShrink: 0 }} />
-        <span style={{ fontSize: 12.5, fontWeight: 600, color: "var(--color-heading)", whiteSpace: "nowrap" as const }}>Company</span>
-      </div>
-
-      <div style={{ position: "absolute", left: `${productPos.x}%`, top: `${productPos.y}%`, transform: "translateY(-50%)", display: "flex", alignItems: "center", gap: 8 }}>
-        <span style={{ width: 12, height: 12, borderRadius: "50%", background: "var(--color-success)", flexShrink: 0 }} />
-        <span style={{ fontSize: 12.5, fontWeight: 600, color: "var(--color-heading)", whiteSpace: "nowrap" as const }}>{productName}</span>
-      </div>
-
-      {icps.map((icp, i) => (
-        <div key={icp.name} style={{ position: "absolute", left: "70%", top: `${icpYs[i]}%`, transform: "translateY(-50%)", display: "flex", alignItems: "center", gap: 8, maxWidth: "34%" }}>
-          <span style={{ width: 10, height: 10, borderRadius: "50%", background: "var(--color-warning)", flexShrink: 0 }} />
-          <span style={{ fontSize: 12, color: "var(--color-heading)", lineHeight: 1.3 }}>{icp.name}</span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-const MATRIX_GRID_COLUMNS = `28px 1.7fr repeat(${SCORE_DIMENSIONS.length}, 0.62fr) 0.62fr 0.7fr`;
-const MATRIX_HEADER_CELL: React.CSSProperties = {
-  fontSize: 10, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const,
-  fontFamily: MONO_FONT, whiteSpace: "nowrap" as const, overflow: "hidden", textOverflow: "ellipsis",
-};
-
-function EditableScoreCell({ value, onChange }: { value: number; onChange: (v: number) => void }) {
-  const [draft, setDraft] = useState(String(value));
-  useEffect(() => { setDraft(String(value)); }, [value]);
-
-  function commit() {
-    const n = Math.round(Number(draft));
-    if (!Number.isNaN(n)) onChange(Math.max(0, Math.min(10, n)));
-    else setDraft(String(value));
-  }
-
-  const tone = scoreTone(value);
-  return (
-    <input
-      className="ob-editable-field"
-      type="number" min={0} max={10} value={draft}
-      onChange={(e) => setDraft(e.target.value)}
-      onBlur={commit}
-      onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); commit(); } }}
-      style={{ width: 46, fontFamily: MONO_FONT, fontSize: 13, fontWeight: 700, border: "1px solid var(--color-border)", borderRadius: 6, padding: "2px 4px", outline: "none", background: "var(--color-surface)", color: tone }}
-    />
-  );
-}
-
-function IcpMatrix({ icps, onUpdateName, onUpdateScore, onCycleRecommendation }: {
-  icps: IcpScore[];
-  onUpdateName: (i: number, name: string) => void;
-  onUpdateScore: (i: number, dim: ScoreDimension, value: number) => void;
-  onCycleRecommendation: (i: number) => void;
-}) {
-  return (
-    <div style={{ overflowX: "auto" as const }}>
-      <div style={{ minWidth: 760, borderRadius: 14, border: "1px solid var(--color-border)", overflow: "hidden" }}>
-        <div style={{ display: "grid", gridTemplateColumns: MATRIX_GRID_COLUMNS, gap: 10, padding: "10px 14px", background: "var(--color-surface)", borderBottom: "1px solid var(--color-border)" }}>
-          <span style={MATRIX_HEADER_CELL}>#</span>
-          <span style={MATRIX_HEADER_CELL}>ICP</span>
-          {SCORE_DIMENSIONS.map((d) => <span key={d} style={MATRIX_HEADER_CELL} title={d}>{d}</span>)}
-          <span style={MATRIX_HEADER_CELL}>Score</span>
-          <span style={MATRIX_HEADER_CELL}>Action</span>
-        </div>
-        {icps.map((icp, i) => (
-          <div key={i} style={{ display: "grid", gridTemplateColumns: MATRIX_GRID_COLUMNS, gap: 10, alignItems: "center", padding: "18px 14px", borderBottom: i < icps.length - 1 ? "1px solid var(--color-border)" : "none" }}>
-            <span style={{ fontSize: i === 0 ? 15 : 12.5, fontWeight: 700, color: i === 0 ? "var(--color-warning)" : "var(--color-muted)" }}>
-              {i === 0 ? "★" : i + 1}
-            </span>
-            <div>
-              <div style={{ fontSize: 13.5, fontWeight: 700, color: "var(--color-heading)", lineHeight: 1.4, marginBottom: 8, paddingRight: 8 }}>
-                <EditableText value={icp.name} onChange={(v) => onUpdateName(i, v)} style={{ fontSize: 13.5, fontWeight: 700 }} revise={reviseText} />
-              </div>
-              <button type="button" onClick={() => onCycleRecommendation(i)} title="Click to change recommendation"
-                style={{ display: "inline-block", fontFamily: MONO_FONT, fontSize: 10.5, fontWeight: 700, padding: "3px 9px", borderRadius: 6, whiteSpace: "nowrap" as const, cursor: "pointer", ...RECOMMENDATION_BADGE[icp.recommendation] }}>
-                {icp.recommendation}
-              </button>
-            </div>
-            {SCORE_DIMENSIONS.map((d) => <EditableScoreCell key={d} value={icp.scores[d]} onChange={(v) => onUpdateScore(i, d, v)} />)}
-            <span style={{ fontFamily: MONO_FONT, fontSize: 17, fontWeight: 800, color: scoreTone(overallScore(icp)) }}>
-              {overallScore(icp).toFixed(1)}
-            </span>
-            <button type="button" className="ob-primary-btn" style={{ ...PRIMARY_BTN, width: "auto", padding: "7px 16px", fontSize: 12.5, justifySelf: "start" as const }}>
-              Plan
-            </button>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function reviseMarketSegments(segments: MarketSegment[], instruction: string): MarketSegment[] {
-  const lower = instruction.toLowerCase();
-  const addSeg = instruction.match(/add\s+([a-z0-9][\w.& -]{1,60}?)\s+as\s+a\s+(?:market\s+)?segment/i);
-  if (addSeg) {
-    const name = addSeg[1].trim();
-    if (name && !segments.some((s) => s.name.toLowerCase() === name.toLowerCase())) {
-      return [...segments, { name, size: "TBD" }];
-    }
-    return segments;
-  }
-  if (/shorter|concise|tighten|trim/.test(lower)) {
-    return segments.map((s) => ({ ...s, name: firstSentence(s.name) }));
-  }
-  return segments;
-}
 
 /* ─── Collapsible accordion primitive for the merged review step ───
    Header row (checkmark/lock + label + optional collapsed summary +
@@ -3190,19 +2696,16 @@ function CollapsibleReviewSection({ label, approved, active, locked, summary, on
 }
 
 function ProductServicesPanel({ state, onChange }: { state: PSProductState; onChange: (next: PSProductState) => void }) {
-  const tabNames = Object.keys(state.tabs);
-  const [activeTab, setActiveTab] = useState(tabNames[0]);
-
   function patch(fields: Partial<Pick<PSProductState, "name" | "badge">>) {
     onChange({ ...state, ...fields });
   }
   function updateSection(i: number, content: PSContent) {
-    onChange({ ...state, tabs: { ...state.tabs, [activeTab]: state.tabs[activeTab].map((s, si) => (si === i ? { ...s, content } : s)) } });
+    onChange({ ...state, sections: state.sections.map((s, si) => (si === i ? { ...s, content } : s)) });
   }
 
   return (
     <div>
-      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
         <span style={{ fontSize: 14, fontWeight: 600, color: "var(--color-heading)", minWidth: 0 }}>
           <EditableText value={state.name} onChange={(v) => patch({ name: v })} style={{ fontSize: 14, fontWeight: 600 }} revise={reviseText} />
         </span>
@@ -3210,43 +2713,24 @@ function ProductServicesPanel({ state, onChange }: { state: PSProductState; onCh
           {state.badge}
         </span>
       </div>
-      <div style={{ display: "flex", gap: 6, marginBottom: 14, overflowX: "auto" as const }}>
-        {tabNames.map((tab) => (
-          <button key={tab} type="button" onClick={() => setActiveTab(tab)}
-            style={{ flexShrink: 0, height: 28, padding: "0 12px", borderRadius: 999, fontSize: 12, fontWeight: 500, fontFamily: "inherit", cursor: "pointer", whiteSpace: "nowrap" as const, border: "none", transition: "all 150ms", ...(activeTab === tab ? { background: "var(--color-brand)", color: "#fff" } : { background: "transparent", color: "var(--color-muted)" }) }}>
-            {tab}
-          </button>
-        ))}
-      </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-        {state.tabs[activeTab].map((section, i) => (
-          <PSField key={`${activeTab}-${section.label}`} section={section} onChange={(content) => updateSection(i, content)} />
+        {state.sections.map((section, i) => (
+          <PSField key={section.label} section={section} onChange={(content) => updateSection(i, content)} />
         ))}
       </div>
     </div>
   );
 }
 
-function IcpPanel({ productName, tamDescription, segments, icps, onChangeTam, onChangeSegments, onChangeIcps }: {
-  productName: string; tamDescription: string; segments: MarketSegment[]; icps: IcpScore[];
-  onChangeTam: (v: string) => void; onChangeSegments: (v: MarketSegment[]) => void; onChangeIcps: (v: IcpScore[]) => void;
+function IcpPanel({ tamDescription, icps, onChangeTam, onChangeIcps }: {
+  tamDescription: string; icps: IcpScore[];
+  onChangeTam: (v: string) => void; onChangeIcps: (v: IcpScore[]) => void;
 }) {
-  const [view, setView] = useState<"Graph" | "Matrix">("Graph");
-
-  function updateSegment(i: number, fields: Partial<MarketSegment>) {
-    onChangeSegments(segments.map((s, idx) => (idx === i ? { ...s, ...fields } : s)));
-  }
-  function removeSegment(i: number) {
-    onChangeSegments(segments.filter((_, idx) => idx !== i));
-  }
-  function addSegment() {
-    onChangeSegments([...segments, { name: "New segment", size: "TBD" }]);
-  }
   function updateIcpName(i: number, name: string) {
     onChangeIcps(icps.map((icp, idx) => (idx === i ? { ...icp, name } : icp)));
   }
-  function updateIcpScore(i: number, dim: ScoreDimension, value: number) {
-    onChangeIcps(icps.map((icp, idx) => (idx === i ? { ...icp, scores: { ...icp.scores, [dim]: value } } : icp)));
+  function updateIcpReasoning(i: number, reasoning: string) {
+    onChangeIcps(icps.map((icp, idx) => (idx === i ? { ...icp, reasoning } : icp)));
   }
   function cycleRecommendation(i: number) {
     onChangeIcps(icps.map((icp, idx) => (idx === i ? { ...icp, recommendation: nextRecommendation(icp.recommendation) } : icp)));
@@ -3254,85 +2738,40 @@ function IcpPanel({ productName, tamDescription, segments, icps, onChangeTam, on
 
   return (
     <div>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", marginBottom: 14 }}>
-        <div style={{ display: "inline-flex", background: "var(--color-surface)", borderRadius: 999, padding: 3, gap: 2 }}>
-          {(["Graph", "Matrix"] as const).map((v) => (
-            <button key={v} type="button" onClick={() => setView(v)} style={{
-              border: "none", borderRadius: 999, padding: "6px 14px", fontSize: 12.5, fontWeight: 600, fontFamily: "inherit", cursor: "pointer", transition: "all 150ms",
-              background: view === v ? "var(--color-page)" : "transparent",
-              color: view === v ? "var(--color-brand)" : "var(--color-muted)",
-              boxShadow: view === v ? "var(--shadow-card)" : "none",
-            }}>
-              {v}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div style={{ borderRadius: 14, border: "1px solid var(--color-border)", padding: "20px 22px", marginBottom: 20 }}>
-        <p style={{ fontSize: 13.5, color: "var(--color-body)", lineHeight: 1.7, margin: "0 0 16px" }}>
-          <EditableText value={tamDescription} onChange={onChangeTam} multiline rows={4} style={{ fontSize: 13.5, lineHeight: 1.7 }} revise={reviseText} />
-        </p>
-        <SectionLabel ai={<AIRevise value={segments} onChange={onChangeSegments} revise={reviseMarketSegments} scale="section" />}>
-          Market Segments <span style={{ fontWeight: 400, textTransform: "none" as const, letterSpacing: "normal" }}>· sizes are rough estimates</span>
-        </SectionLabel>
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          {segments.map((seg, i) => (
-            <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8, padding: "10px 14px", borderRadius: 10, background: "var(--color-surface)", fontSize: 12.5, lineHeight: 1.5 }}>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <span style={{ fontWeight: 600, color: "var(--color-heading)" }}>
-                  <EditableText value={seg.name} onChange={(v) => updateSegment(i, { name: v })} style={{ fontSize: 12.5, fontWeight: 600 }} revise={reviseText} />
-                </span>
-                <span style={{ color: "var(--color-muted)" }}>
-                  {" · "}
-                  <EditableText value={seg.size} onChange={(v) => updateSegment(i, { size: v })} style={{ fontSize: 12.5, color: "var(--color-muted)" }} revise={reviseText} />
-                </span>
-              </div>
-              <button type="button" onClick={() => removeSegment(i)} title="Remove"
-                style={{ flexShrink: 0, background: "none", border: "none", color: "var(--color-subtle)", cursor: "pointer", fontSize: 14, padding: 0, lineHeight: 1.5, fontFamily: "inherit" }}>×</button>
+      <p style={{ fontSize: 13, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 18px" }}>
+        <EditableText value={tamDescription} onChange={onChangeTam} multiline rows={2} style={{ fontSize: 13 }} revise={reviseText} />
+      </p>
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        {icps.map((icp, i) => (
+          <div key={i} style={{ padding: "12px 14px", borderRadius: 10, border: "1px solid var(--color-border)" }}>
+            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10, marginBottom: 6 }}>
+              <span style={{ flex: 1, fontSize: 13.5, fontWeight: 700, color: "var(--color-heading)", lineHeight: 1.4 }}>
+                <EditableText value={icp.name} onChange={(v) => updateIcpName(i, v)} style={{ fontSize: 13.5, fontWeight: 700 }} revise={reviseText} />
+              </span>
+              <button type="button" onClick={() => cycleRecommendation(i)} title="Click to change recommendation"
+                style={{ flexShrink: 0, fontFamily: MONO_FONT, fontSize: 10.5, fontWeight: 700, padding: "3px 9px", borderRadius: 6, whiteSpace: "nowrap" as const, cursor: "pointer", border: "none", ...RECOMMENDATION_BADGE[icp.recommendation] }}>
+                {icp.recommendation}
+              </button>
             </div>
-          ))}
-          <button type="button" onClick={addSegment}
-            style={{ alignSelf: "flex-start", background: "none", border: "none", color: "var(--color-brand)", cursor: "pointer", fontSize: 11.5, fontWeight: 600, padding: "2px 0", fontFamily: "inherit" }}>
-            + Add segment
-          </button>
-        </div>
-      </div>
-
-      {view === "Graph" ? (
-        <div style={{ borderRadius: 14, border: "1px solid var(--color-border)", padding: 20 }}>
-          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
-            <div style={{ display: "flex", flexDirection: "column", gap: 8, padding: "10px 14px", border: "1px solid var(--color-border)", borderRadius: 10, background: "var(--color-page)" }}>
-              {GRAPH_LEGEND.map((l) => (
-                <div key={l.label} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <span style={{ width: 9, height: 9, borderRadius: "50%", background: l.color, flexShrink: 0 }} />
-                  <span style={{ fontSize: 12, color: "var(--color-muted)", whiteSpace: "nowrap" as const }}>{l.label}</span>
-                </div>
-              ))}
+            <div style={{ fontSize: 12.5, color: "var(--color-muted)", lineHeight: 1.5 }}>
+              <EditableText value={icp.reasoning} onChange={(v) => updateIcpReasoning(i, v)} multiline rows={2} style={{ fontSize: 12.5, color: "var(--color-muted)" }} revise={reviseText} />
             </div>
-            <button type="button" className="ob-ghost-btn" style={{ ...GHOST_BTN, width: "auto", padding: "6px 12px", fontSize: 12, border: "1px solid var(--color-border)", borderRadius: 8 }}>
-              Fit
-            </button>
           </div>
-          <IcpGraph productName={productName} icps={icps} />
-        </div>
-      ) : (
-        <IcpMatrix icps={icps} onUpdateName={updateIcpName} onUpdateScore={updateIcpScore} onCycleRecommendation={cycleRecommendation} />
-      )}
+        ))}
+      </div>
     </div>
   );
 }
 
 function PersonasPanel({ personas, onChange }: { personas: PersonaData[]; onChange: (next: PersonaData[]) => void }) {
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [activeTab, setActiveTab] = useState(PERSONA_TAB_NAMES[0]);
   const persona = personas[selectedIndex];
 
   function patchCurrent(fields: Partial<Pick<PersonaData, "title" | "roleTag" | "subtitle">>) {
     onChange(personas.map((p, i) => (i === selectedIndex ? { ...p, ...fields } : p)));
   }
   function updateSection(i: number, content: PSContent) {
-    onChange(personas.map((p, idx) => (idx === selectedIndex ? { ...p, tabs: { ...p.tabs, [activeTab]: p.tabs[activeTab].map((s, si) => (si === i ? { ...s, content } : s)) } } : p)));
+    onChange(personas.map((p, idx) => (idx === selectedIndex ? { ...p, sections: p.sections.map((s, si) => (si === i ? { ...s, content } : s)) } : p)));
   }
 
   return (
@@ -3368,18 +2807,9 @@ function PersonasPanel({ personas, onChange }: { personas: PersonaData[]; onChan
         )}
       </div>
 
-      <div style={{ display: "flex", gap: 6, marginBottom: 14, overflowX: "auto" as const }}>
-        {PERSONA_TAB_NAMES.map((tab) => (
-          <button key={tab} type="button" onClick={() => setActiveTab(tab)}
-            style={{ flexShrink: 0, height: 28, padding: "0 12px", borderRadius: 999, fontSize: 12, fontWeight: 500, fontFamily: "inherit", cursor: "pointer", whiteSpace: "nowrap" as const, border: "none", transition: "all 150ms", ...(activeTab === tab ? { background: "var(--color-brand)", color: "#fff" } : { background: "transparent", color: "var(--color-muted)" }) }}>
-            {tab}
-          </button>
-        ))}
-      </div>
-
       <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-        {persona.tabs[activeTab].map((section, i) => (
-          <PSField key={`${selectedIndex}-${activeTab}-${section.label}`} section={section} onChange={(content) => updateSection(i, content)} />
+        {persona.sections.map((section, i) => (
+          <PSField key={`${selectedIndex}-${section.label}`} section={section} onChange={(content) => updateSection(i, content)} />
         ))}
       </div>
     </div>
@@ -3396,7 +2826,6 @@ function nextReviewSection(s: ReviewSectionKey): ReviewSectionKey | null {
 interface ProductReviewState {
   product: PSProductState;
   tamDescription: string;
-  segments: MarketSegment[];
   icps: IcpScore[];
   personas: PersonaData[];
   approved: { product: boolean; icp: boolean; personas: boolean };
@@ -3407,9 +2836,8 @@ function buildInitialProductReview(product: Product): ProductReviewState {
   return {
     product: buildInitialPSProduct(product),
     tamDescription: TAM_DESCRIPTION_DEFAULT,
-    segments: MARKET_SEGMENTS_DEFAULT.map((s) => ({ ...s })),
-    icps: ICP_SCORES_DEFAULT.map((icp) => ({ ...icp, scores: { ...icp.scores } })),
-    personas: PERSONAS_DEFAULT.map((p) => ({ ...p, tabs: { ...p.tabs } })),
+    icps: ICP_SCORES_DEFAULT.map((icp) => ({ ...icp })),
+    personas: PERSONAS_DEFAULT.map((p) => ({ ...p, sections: p.sections.map((s) => ({ ...s })) })),
     approved: { product: false, icp: false, personas: false },
     activeSection: "product",
   };
@@ -3491,17 +2919,14 @@ function StepProductReview({ products, onNext }: { products: Product[]; onNext: 
         approved={current.approved.icp}
         active={current.activeSection === "icp"}
         locked={!current.approved.product}
-        summary={`${current.icps.length} ICPs scored`}
+        summary={`${current.icps.length} ICPs identified`}
         onToggle={() => toggleSection("icp")}
         onApprove={() => approveSection("icp")}
       >
         <IcpPanel
-          productName={current.product.name}
           tamDescription={current.tamDescription}
-          segments={current.segments}
           icps={current.icps}
           onChangeTam={(v) => patchCurrent({ tamDescription: v })}
-          onChangeSegments={(v) => patchCurrent({ segments: v })}
           onChangeIcps={(v) => patchCurrent({ icps: v })}
         />
       </CollapsibleReviewSection>

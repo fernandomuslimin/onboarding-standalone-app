@@ -1,7 +1,8 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { COMPANY_PROFILE, IcpDetail, PersonaDetail, ProductDetail, icpsForProduct, personaPerformance, personasForIcp, treeKey } from "./data";
-import { Icon, formatCurrencyShort } from "./ui";
+import { Drawer, Icon, IconName, formatCurrencyShort } from "./ui";
 import { TreeSelection } from "./Tree";
+import { CompanySection } from "./Company";
 
 const BRANCH_COLORS = ["#5761fe", "#16a34a", "#db2777", "#d97706"];
 
@@ -43,9 +44,14 @@ export const CHART_STYLES = `
   content: ""; position: absolute; top: 0; left: 50%; width: 0; height: 32px;
   border-left: 1.5px solid var(--branch-color, var(--color-border-strong));
 }
-.kc-chart-box { transition: box-shadow 150ms var(--ease-apple); }
-/* Boxes carry an inline box-shadow, which would otherwise win over this rule. */
-.kc-chart-box:hover { box-shadow: 0 0 0 2px var(--color-brand-tint), var(--shadow-card) !important; }
+.kc-chart-box {
+  transition: box-shadow 180ms var(--ease-apple), transform 180ms var(--ease-apple),
+    border-color 180ms var(--ease-apple), background-color 180ms var(--ease-apple);
+}
+/* Boxes carry an inline box-shadow, which would otherwise win over this rule.
+   Scoped to non-selected boxes so hovering a selected card doesn't dim its
+   stronger active glow down to the plain hover ring. */
+.kc-chart-box:not([data-active="true"]):hover { box-shadow: 0 0 0 2px var(--color-brand-tint), var(--shadow-card) !important; }
 `;
 
 /* Every box at a level is locked to one height so each generation lands on a
@@ -53,8 +59,17 @@ export const CHART_STYLES = `
    children below its siblings' and the hierarchy reads as ragged. */
 const ROW_HEIGHT = { product: 82, icp: 104, persona: 192 };
 
+// Selected cards lift off the canvas: the app-wide focus ring, plus a
+// colored elevation shadow so the card visibly floats above its neighbors
+// rather than just gaining a thin outline.
 function boxShadowFor(active: boolean): string {
-  return active ? "0 0 0 2px var(--color-brand), var(--shadow-card)" : "var(--shadow-card)";
+  return active
+    ? "var(--shadow-focus), 0 16px 32px -12px rgba(87, 97, 254, 0.45), var(--shadow-card)"
+    : "var(--shadow-card)";
+}
+
+function activeTransform(active: boolean): string {
+  return active ? "translateY(-3px)" : "none";
 }
 
 function Avatar({ name }: { name: string }) {
@@ -84,12 +99,13 @@ export function AddGhost({ label, onClick, width = 168, minHeight = 56 }: {
 
 function ProductBox({ product, active, reviewed, onSelect }: { product: ProductDetail; active: boolean; reviewed: boolean; onSelect: () => void }) {
   return (
-    <button type="button" onClick={onSelect} className="kc-chart-box" data-level="product"
+    <button type="button" onClick={onSelect} className="kc-chart-box" data-level="product" data-active={active}
       style={{
         width: 200, minHeight: ROW_HEIGHT.product, boxSizing: "border-box",
         textAlign: "left", fontFamily: "inherit", cursor: "pointer",
-        background: "var(--color-page)", border: "1px solid var(--color-border)",
-        borderRadius: 12, padding: "12px 14px", boxShadow: boxShadowFor(active),
+        background: active ? "var(--color-brand-faint)" : "var(--color-page)",
+        border: active ? "1.5px solid var(--color-brand)" : "1px solid var(--color-border)",
+        borderRadius: 12, padding: "12px 14px", boxShadow: boxShadowFor(active), transform: activeTransform(active),
       }}>
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 8 }}>
         <span style={{ fontSize: 13.5, fontWeight: 700, color: "var(--color-heading)", lineHeight: 1.3 }}>{product.name}</span>
@@ -102,12 +118,13 @@ function ProductBox({ product, active, reviewed, onSelect }: { product: ProductD
 
 function IcpBox({ icp, active, reviewed, onSelect }: { icp: IcpDetail; active: boolean; reviewed: boolean; onSelect: () => void }) {
   return (
-    <button type="button" onClick={onSelect} className="kc-chart-box" data-level="icp"
+    <button type="button" onClick={onSelect} className="kc-chart-box" data-level="icp" data-active={active}
       style={{
         width: 200, minHeight: ROW_HEIGHT.icp, boxSizing: "border-box",
         textAlign: "left", fontFamily: "inherit", cursor: "pointer",
-        background: "var(--color-page)", border: "1px solid var(--color-border)",
-        borderRadius: 12, padding: "12px 14px", boxShadow: boxShadowFor(active),
+        background: active ? "var(--color-brand-faint)" : "var(--color-page)",
+        border: active ? "1.5px solid var(--color-brand)" : "1px solid var(--color-border)",
+        borderRadius: 12, padding: "12px 14px", boxShadow: boxShadowFor(active), transform: activeTransform(active),
       }}>
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 8 }}>
         <span style={{ fontSize: 13, fontWeight: 700, color: "var(--color-heading)", lineHeight: 1.3 }}>{icp.name}</span>
@@ -142,13 +159,13 @@ export function PersonaCard({ persona, icp, active, reviewed, onSelect, tintInde
   ];
 
   return (
-    <button type="button" onClick={onSelect} className="kc-chart-box" data-level="persona"
+    <button type="button" onClick={onSelect} className="kc-chart-box" data-level="persona" data-active={active}
       style={{
         width, minHeight: ROW_HEIGHT.persona, boxSizing: "border-box",
         display: "flex", flexDirection: "column",
         textAlign: "left", fontFamily: "inherit", cursor: "pointer", overflow: "hidden",
-        background: tint.bg, border: `1px solid ${tint.border}`,
-        borderRadius: 12, boxShadow: boxShadowFor(active),
+        background: tint.bg, border: active ? "1.5px solid var(--color-brand)" : `1px solid ${tint.border}`,
+        borderRadius: 12, boxShadow: boxShadowFor(active), transform: activeTransform(active),
       }}>
       <div style={{ padding: "14px 14px 10px", flex: 1 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
@@ -179,85 +196,163 @@ export function PersonaCard({ persona, icp, active, reviewed, onSelect, tintInde
   );
 }
 
+function ProductNavRow({ label, icon, active, reviewed, onSelect }: {
+  label: string; icon?: IconName; active: boolean; reviewed?: boolean; onSelect: () => void;
+}) {
+  return (
+    <button type="button" onClick={onSelect}
+      style={{
+        display: "flex", alignItems: "center", gap: 8, width: "100%", minWidth: 0, textAlign: "left",
+        border: "none", cursor: "pointer", fontFamily: "inherit", borderRadius: 8, padding: "9px 10px",
+        background: active ? "var(--color-brand-tint)" : "transparent",
+      }}>
+      {icon && <Icon name={icon} size={13} color={active ? "var(--color-brand)" : "var(--color-muted)"} />}
+      <span style={{ flex: 1, minWidth: 0, fontSize: 12.5, fontWeight: active ? 700 : 600, color: active ? "var(--color-brand)" : "var(--color-heading)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+        {label}
+      </span>
+      {reviewed && <Icon name="check" size={11} color="var(--color-success)" />}
+    </button>
+  );
+}
+
+// Lets the diagram focus on one product's branch at a time instead of the
+// full org-chart, which gets wide fast once there are more than a couple
+// products. "All Products" restores the unfiltered view.
+function ProductNav({ products, activeId, onSelect, reviewedKeys }: {
+  products: ProductDetail[]; activeId: string | null; onSelect: (id: string | null) => void; reviewedKeys: Set<string>;
+}) {
+  return (
+    <div style={{ width: 220, flexShrink: 0, minHeight: 0, display: "flex", flexDirection: "column", background: "var(--color-page)", border: "1px solid var(--color-border)", borderRadius: 14, boxShadow: "var(--shadow-card)", overflow: "hidden" }}>
+      <div style={{ padding: 8, borderBottom: "1px solid var(--color-border)", flexShrink: 0 }}>
+        <ProductNavRow label="All Products" icon="layers" active={activeId === null} onSelect={() => onSelect(null)} />
+      </div>
+      <div className="kc-scrollbar" style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: 8 }}>
+        {products.length === 0 ? (
+          <div style={{ fontSize: 11.5, color: "var(--color-subtle)", padding: "6px 10px", fontStyle: "italic" }}>No products yet</div>
+        ) : (
+          products.map((product) => (
+            <ProductNavRow key={product.id} label={product.name} active={activeId === product.id}
+              reviewed={reviewedKeys.has(treeKey("product", product.id))} onSelect={() => onSelect(product.id)} />
+          ))
+        )}
+      </div>
+    </div>
+  );
+}
+
 export function KnowledgeDiagram({
   products, icps, personas, selection, onSelect, reviewedKeys, onAddProduct, onAddIcp, onAddPersona,
+  companyReviewed, onToggleCompanyReviewed,
 }: {
   products: ProductDetail[]; icps: IcpDetail[]; personas: PersonaDetail[];
   selection: TreeSelection | null; onSelect: (sel: TreeSelection) => void;
   reviewedKeys: Set<string>;
   onAddProduct: () => void; onAddIcp: (productId: string) => void; onAddPersona: (icpId: string) => void;
+  companyReviewed: boolean; onToggleCompanyReviewed: () => void;
 }) {
   const chartRef = useRef<HTMLDivElement>(null);
+  const [activeProductId, setActiveProductId] = useState<string | null>(null);
+  const [companyOpen, setCompanyOpen] = useState(false);
+  const visibleProducts = activeProductId ? products.filter((p) => p.id === activeProductId) : products;
 
-  // The tree is centred on the company node, so a wide chart would otherwise
-  // open scrolled hard left with the root off-screen.
+  // Re-centre whenever the product filter changes, since narrowing to one
+  // branch shifts where the content sits within the scroll area.
   const centred = useRef(false);
+  useEffect(() => {
+    centred.current = false;
+  }, [activeProductId]);
   useEffect(() => {
     const chart = chartRef.current;
     if (!chart || centred.current || chart.scrollWidth <= chart.clientWidth) return;
     chart.scrollLeft = (chart.scrollWidth - chart.clientWidth) / 2;
     centred.current = true;
-  }, [products, icps, personas]);
+  }, [visibleProducts, icps, personas]);
+
+  // The nav list only narrows which branch the chart shows — it shouldn't
+  // pop the details drawer open too. That only happens from clicking the
+  // node itself, via selectNode below.
+  function selectProductNav(id: string | null) {
+    setActiveProductId(id);
+  }
+
+  // Clicking a node in the chart itself (not just the nav list) keeps the
+  // sidebar in sync with whatever branch is now selected.
+  function selectNode(sel: TreeSelection, productId: string) {
+    setActiveProductId(productId);
+    onSelect(sel);
+  }
 
   return (
-    <div>
-      <style>{CHART_STYLES}</style>
+    <div style={{ display: "flex", gap: 20, alignItems: "stretch", height: "100%", minHeight: 0 }}>
+      <ProductNav products={products} activeId={activeProductId} onSelect={selectProductNav} reviewedKeys={reviewedKeys} />
 
-      <div ref={chartRef} className="kc-scrollbar" style={{ overflowX: "auto", paddingBottom: 24 }}>
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", minWidth: "max-content" }}>
-          <div className="kc-chart-box" data-level="company"
-            style={{ background: "var(--color-heading)", color: "#fff", borderRadius: 12, padding: "12px 22px", fontSize: 14, fontWeight: 800, boxShadow: "var(--shadow-card)" }}>
-            {COMPANY_PROFILE.companyName}
+      <div style={{ flex: 1, minWidth: 0, minHeight: 0, display: "flex", flexDirection: "column" }}>
+        <style>{CHART_STYLES}</style>
+
+        <div ref={chartRef} className="kc-scrollbar" style={{ flex: 1, minHeight: 0, overflow: "auto", paddingBottom: 24 }}>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", minWidth: "max-content" }}>
+            <button type="button" onClick={() => setCompanyOpen(true)} className="kc-chart-box" data-level="company" data-active={companyOpen}
+              style={{
+                fontFamily: "inherit", border: "none", cursor: "pointer",
+                background: "var(--color-heading)", color: "#fff", borderRadius: 12, padding: "12px 22px", fontSize: 14, fontWeight: 800,
+                boxShadow: boxShadowFor(companyOpen), transform: activeTransform(companyOpen),
+              }}>
+              {COMPANY_PROFILE.companyName}
+            </button>
+
+            <ul className="kc-chart-tree">
+              {visibleProducts.map((product, pi) => {
+                const productIcps = icpsForProduct(product.id, icps);
+                const branchColor = BRANCH_COLORS[pi % BRANCH_COLORS.length];
+                return (
+                  <li key={product.id} style={{ ["--branch-color" as string]: branchColor }}>
+                    <ProductBox
+                      product={product}
+                      active={selection?.type === "product" && selection.id === product.id}
+                      reviewed={reviewedKeys.has(treeKey("product", product.id))}
+                      onSelect={() => selectNode({ type: "product", id: product.id }, product.id)}
+                    />
+                    <ul>
+                      {productIcps.map((icp) => {
+                        const icpPersonas = personasForIcp(icp.id, personas);
+                        return (
+                          <li key={icp.id}>
+                            <IcpBox
+                              icp={icp}
+                              active={selection?.type === "icp" && selection.id === icp.id}
+                              reviewed={reviewedKeys.has(treeKey("icp", icp.id))}
+                              onSelect={() => selectNode({ type: "icp", id: icp.id }, product.id)}
+                            />
+                            <ul>
+                              {icpPersonas.map((persona, pji) => (
+                                <li key={persona.id}>
+                                  <PersonaCard
+                                    persona={persona} icp={icp} tintIndex={pji}
+                                    active={selection?.type === "persona" && selection.id === persona.id}
+                                    reviewed={reviewedKeys.has(treeKey("persona", persona.id))}
+                                    onSelect={() => selectNode({ type: "persona", id: persona.id }, product.id)}
+                                  />
+                                </li>
+                              ))}
+                              <li><AddGhost label="Add Persona" onClick={() => { setActiveProductId(product.id); onAddPersona(icp.id); }} /></li>
+                            </ul>
+                          </li>
+                        );
+                      })}
+                      <li><AddGhost label="Add ICP" onClick={() => { setActiveProductId(product.id); onAddIcp(product.id); }} /></li>
+                    </ul>
+                  </li>
+                );
+              })}
+              {!activeProductId && <li><AddGhost label="Add Product" onClick={onAddProduct} /></li>}
+            </ul>
           </div>
-
-          <ul className="kc-chart-tree">
-            {products.map((product, pi) => {
-              const productIcps = icpsForProduct(product.id, icps);
-              const branchColor = BRANCH_COLORS[pi % BRANCH_COLORS.length];
-              return (
-                <li key={product.id} style={{ ["--branch-color" as string]: branchColor }}>
-                  <ProductBox
-                    product={product}
-                    active={selection?.type === "product" && selection.id === product.id}
-                    reviewed={reviewedKeys.has(treeKey("product", product.id))}
-                    onSelect={() => onSelect({ type: "product", id: product.id })}
-                  />
-                  <ul>
-                    {productIcps.map((icp) => {
-                      const icpPersonas = personasForIcp(icp.id, personas);
-                      return (
-                        <li key={icp.id}>
-                          <IcpBox
-                            icp={icp}
-                            active={selection?.type === "icp" && selection.id === icp.id}
-                            reviewed={reviewedKeys.has(treeKey("icp", icp.id))}
-                            onSelect={() => onSelect({ type: "icp", id: icp.id })}
-                          />
-                          <ul>
-                            {icpPersonas.map((persona, pji) => (
-                              <li key={persona.id}>
-                                <PersonaCard
-                                  persona={persona} icp={icp} tintIndex={pji}
-                                  active={selection?.type === "persona" && selection.id === persona.id}
-                                  reviewed={reviewedKeys.has(treeKey("persona", persona.id))}
-                                  onSelect={() => onSelect({ type: "persona", id: persona.id })}
-                                />
-                              </li>
-                            ))}
-                            <li><AddGhost label="Add Persona" onClick={() => onAddPersona(icp.id)} /></li>
-                          </ul>
-                        </li>
-                      );
-                    })}
-                    <li><AddGhost label="Add ICP" onClick={() => onAddIcp(product.id)} /></li>
-                  </ul>
-                </li>
-              );
-            })}
-            <li><AddGhost label="Add Product" onClick={onAddProduct} /></li>
-          </ul>
         </div>
       </div>
+
+      <Drawer open={companyOpen} onClose={() => setCompanyOpen(false)} title="Company Profile" width={900}>
+        <CompanySection reviewed={companyReviewed} onToggleReviewed={onToggleCompanyReviewed} />
+      </Drawer>
     </div>
   );
 }

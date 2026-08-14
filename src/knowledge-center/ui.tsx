@@ -221,7 +221,7 @@ export function TagRow({ items }: { items: string[] }) {
   return (
     <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
       {items.map((item, i) => (
-        <span key={i} style={{ fontSize: 11.5, color: "var(--color-heading)", background: "var(--color-surface)", border: "1px solid var(--color-border)", borderRadius: 999, padding: "3px 10px" }}>{item}</span>
+        <span key={i} style={{ fontSize: 11.5, color: "var(--color-heading)", border: "1px solid var(--color-border)", borderRadius: 999, padding: "3px 10px" }}>{item}</span>
       ))}
     </div>
   );
@@ -327,7 +327,7 @@ export function Drawer({ open, onClose, title, children, width = 480 }: {
   if (!open) return null;
   return (
     <div style={{ position: "fixed", inset: 0, zIndex: 60, display: "flex", justifyContent: "flex-end" }}>
-      <div onClick={onClose} className="kc-drawer-backdrop" style={{ position: "absolute", inset: 0, background: "rgba(15, 18, 25, 0.4)" }} />
+      <div onClick={(e) => { e.stopPropagation(); onClose(); }} className="kc-drawer-backdrop" style={{ position: "absolute", inset: 0, background: "rgba(15, 18, 25, 0.4)" }} />
       <div className="kc-drawer-panel" style={{
         position: "relative", width, maxWidth: "92vw", height: "100%", background: "var(--color-page)",
         borderLeft: "1px solid var(--color-border)", boxShadow: "var(--shadow-card)", overflowY: "auto",

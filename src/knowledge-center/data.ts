@@ -15,7 +15,6 @@ export interface NavGroup { label: string; items: NavItem[] }
 
 export const NAV_GROUPS: NavGroup[] = [
   { label: "Research", items: [
-    { key: "company", label: "Company" },
     { key: "explorer", label: "Explorer" },
   ] },
   { label: "Planning", items: [
@@ -32,7 +31,9 @@ export const NAV_LABEL: Record<NavKey, string> = {
 };
 
 // Sections that show the "x/y reviewed" progress indicator in the top bar.
-export const REVIEWABLE_SECTIONS: NavKey[] = ["company", "explorer"];
+// Company no longer has its own section — it's reviewed from the diagram's
+// company-node drawer instead.
+export const REVIEWABLE_SECTIONS: NavKey[] = ["explorer"];
 
 /* ─── Company ───────────────────────────────────────────────────── */
 export interface CompanyProfile {

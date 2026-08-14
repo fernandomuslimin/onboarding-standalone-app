@@ -120,8 +120,8 @@
     "semantic_hash": ""
   },
   "/Users/fernandomuslimin/Projects/B2BROCKET.AI/Source Code/onboarding-standalone-app/src/knowledge-center/Explorer.tsx": {
-    "mtime": 1786456784.0117104,
-    "ast_hash": "9bcf8e41997ccd68159636060c17bdba",
+    "mtime": 1786453139.7754624,
+    "ast_hash": "8e9ef9c0c2c311dc321f3752af99d658",
     "semantic_hash": ""
   },
   "/Users/fernandomuslimin/Projects/B2BROCKET.AI/Source Code/onboarding-standalone-app/src/knowledge-center/ProductDetailPane.tsx": {
@@ -162,11 +162,6 @@
   "/Users/fernandomuslimin/Projects/B2BROCKET.AI/Source Code/onboarding-standalone-app/src/knowledge-center/CampaignSequenceView.tsx": {
     "mtime": 1786103220.3896105,
     "ast_hash": "52c194a1c66c8afa287b781cc3bbccdd",
-    "semantic_hash": ""
-  },
-  "/Users/fernandomuslimin/Projects/B2BROCKET.AI/Source Code/onboarding-standalone-app/src/knowledge-center/Overview.tsx": {
-    "mtime": 1786456744.1758893,
-    "ast_hash": "4a349bdcf840f59f315be599359b72b6",
     "semantic_hash": ""
   }
 }

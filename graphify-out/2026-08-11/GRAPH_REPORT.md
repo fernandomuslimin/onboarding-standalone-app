@@ -1,11 +1,11 @@
 # Graph Report - onboarding-standalone-app  (2026-08-11)
 
 ## Corpus Check
-- 29 files · ~55,296 words
+- 28 files · ~54,020 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 471 nodes · 806 edges · 24 communities (14 shown, 10 thin omitted)
+- 461 nodes · 769 edges · 24 communities (14 shown, 10 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 6 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
@@ -40,16 +40,16 @@
 - [[_COMMUNITY_Community 28|Community 28]]
 
 ## God Nodes (most connected - your core abstractions)
-1. `Icon()` - 21 edges
+1. `Icon()` - 20 edges
 2. `OnboardingShell()` - 17 edges
 3. `compilerOptions` - 13 edges
-4. `IcpDetail` - 13 edges
-5. `PersonaDetail` - 13 edges
-6. `ProductDetail` - 12 edges
-7. `KnowledgeCenter()` - 12 edges
-8. `treeKey()` - 11 edges
-9. `PRODUCTS` - 10 edges
-10. `CampaignCombo` - 10 edges
+4. `IcpDetail` - 12 edges
+5. `PersonaDetail` - 12 edges
+6. `KnowledgeCenter()` - 12 edges
+7. `ProductDetail` - 11 edges
+8. `PRODUCTS` - 10 edges
+9. `CampaignCombo` - 10 edges
+10. `formatCurrencyShort()` - 10 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `Next.js Decoupling Shim (design rationale for standalone export)` --rationale_for--> `OnboardingShell()`  [EXTRACTED]
@@ -60,8 +60,8 @@
   src/onboarding-shell.tsx → src/knowledge-center/KnowledgeCenter.tsx
 - `src/main.tsx (React entry point)` --references--> `OnboardingShell()`  [EXTRACTED]
   src/main.tsx → src/onboarding-shell.tsx
-- `Row()` --calls--> `formatCurrencyShort()`  [EXTRACTED]
-  src/knowledge-center/Dashboard.tsx → src/knowledge-center/ui.tsx
+- `overallScore()` --semantically_similar_to--> `overallFit()`  [INFERRED] [semantically similar]
+  src/knowledge-center/data.ts → src/knowledge-center/Campaign.tsx
 
 ## Hyperedges (group relationships)
 - **Onboarding Wizard Step Sequence** — src_onboarding_shell_onboardingshell, src_onboarding_shell_stepsplash, src_onboarding_shell_stepwelcome, src_onboarding_shell_stepwebsite, src_onboarding_shell_stepproducts, src_onboarding_shell_stepconnect, src_onboarding_shell_stepresearch, src_onboarding_shell_stepcompanyresearch, src_onboarding_shell_steptamicp, src_onboarding_shell_steppersonas, src_onboarding_shell_stepoutreachcampaign, src_onboarding_shell_stepclearedforlaunch, knowledge_center_knowledgecenter_knowledgecenter [EXTRACTED 1.00]
@@ -78,8 +78,8 @@ Cohesion: 0.02
 Nodes (69): ALL_STEPS, AvailStatus, BACK_BTN, BRAND_HIGHLIGHTS, Campaign, CAMPAIGNS, CampaignStep, CARD (+61 more)
 
 ### Community 2 - "Knowledge Center UI Components"
-Cohesion: 0.12
-Nodes (27): CHIP_FIELDS, CompanySection(), CompanySummary(), positioningStatement(), PROSE, TEXT_FIELDS, COMPANY_CONFIDENCE, COMPANY_PROFILE (+19 more)
+Cohesion: 0.09
+Nodes (37): CHIP_FIELDS, CompanySection(), CompanySummary(), positioningStatement(), PROSE, TEXT_FIELDS, campaignCombosForPersona(), COMPANY_CONFIDENCE (+29 more)
 
 ### Community 3 - "Build Tooling & Dependencies"
 Cohesion: 0.05
@@ -118,19 +118,19 @@ Cohesion: 0.12
 Nodes (14): index.html (dev entry HTML), Build, code:bash (npm install), code:bash (npm run build), code:bash (npm run build:single), code:bash (npm run build:single && cp dist-single/index.html onboarding), code:tsx (import { useRouter } from "next/navigation";), Onboarding — standalone (+6 more)
 
 ### Community 21 - "Community 21"
-Cohesion: 0.06
-Nodes (51): HEADER_CELL, KnowledgeDashboard(), NUM_CELL, PerformanceRow, Row(), Tier, TIER_META, TIER_ORDER (+43 more)
+Cohesion: 0.07
+Nodes (44): HEADER_CELL, KnowledgeDashboard(), NUM_CELL, PerformanceRow, Row(), Tier, TIER_META, TIER_ORDER (+36 more)
 
 ### Community 23 - "Community 23"
-Cohesion: 0.07
-Nodes (54): CampaignSection(), CHANNEL_ICON, ComboRow(), HEADER_CELL, overallFit(), STATUS_STYLE, tone(), CampaignSequenceView() (+46 more)
+Cohesion: 0.08
+Nodes (46): CampaignSection(), CHANNEL_ICON, ComboRow(), HEADER_CELL, overallFit(), STATUS_STYLE, tone(), CampaignSequenceView() (+38 more)
 
 ## Ambiguous Edges - Review These
 - `CAMPAIGN_COMBOS` → `RoadmapPhase`  [AMBIGUOUS]
   src/knowledge-center/data.ts · relation: references
 
 ## Knowledge Gaps
-- **189 isolated node(s):** `name`, `private`, `version`, `type`, `dev` (+184 more)
+- **187 isolated node(s):** `name`, `private`, `version`, `type`, `dev` (+182 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **10 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -140,14 +140,14 @@ _Questions this graph is uniquely positioned to answer:_
 - **What is the exact relationship between `CAMPAIGN_COMBOS` and `RoadmapPhase`?**
   _Edge tagged AMBIGUOUS (relation: references) - confidence is low._
 - **Why does `OnboardingShell()` connect `App Entry & Standalone Shim` to `Onboarding Step Data & Editing`, `Community 18`, `Community 23`?**
-  _High betweenness centrality (0.164) - this node is a cross-community bridge._
+  _High betweenness centrality (0.166) - this node is a cross-community bridge._
 - **Why does `KnowledgeCenter()` connect `Community 23` to `Onboarding Step Data & Editing`, `Knowledge Center UI Components`, `App Entry & Standalone Shim`?**
-  _High betweenness centrality (0.101) - this node is a cross-community bridge._
-- **Why does `Icon()` connect `Community 23` to `Knowledge Center UI Components`, `Community 21`?**
-  _High betweenness centrality (0.070) - this node is a cross-community bridge._
+  _High betweenness centrality (0.096) - this node is a cross-community bridge._
+- **Why does `Icon()` connect `Knowledge Center UI Components` to `Community 21`, `Community 23`?**
+  _High betweenness centrality (0.067) - this node is a cross-community bridge._
 - **What connects `name`, `private`, `version` to the rest of the system?**
-  _190 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _188 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Onboarding Step Data & Editing` be split into smaller, more focused modules?**
   _Cohesion score 0.016129032258064516 - nodes in this community are weakly interconnected._
 - **Should `Knowledge Center UI Components` be split into smaller, more focused modules?**
-  _Cohesion score 0.11596638655462185 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.08603145235892692 - nodes in this community are weakly interconnected._

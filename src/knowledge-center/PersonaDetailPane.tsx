@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { PRODUCTS, PersonaDetail, PersonaField, personaPerformance } from "./data";
-import { CardSection, ChipList, Drawer, EditableField, EmptyState, FieldLabel, Icon, IconButton, IconName, KC_DANGER_BTN, KC_PRIMARY_BTN, ProgressBar, StatTile, formatCurrencyShort } from "./ui";
+import { CardSection, ChipList, Drawer, EditableField, EmptyState, FieldLabel, Icon, IconName, KC_DANGER_BTN, KC_PRIMARY_BTN, StatTile, formatCurrencyShort } from "./ui";
 import { ComboRow, ComboTableHeader, overallFit } from "./ComboRow";
 import { CampaignSequenceView } from "./CampaignSequenceView";
 
@@ -26,17 +26,10 @@ export function emptyPersona(id: string, icpId: string): PersonaDetail {
   return { id, name: "Untitled persona", department: "—", matchPct: 0, icpId, subtitle: "", sections: [] };
 }
 
-function personaCompletion(persona: PersonaDetail): number {
-  const allFields = persona.sections.flatMap((s) => s.fields);
-  if (allFields.length === 0) return 0;
-  const filled = allFields.filter((f) => (Array.isArray(f.value) ? f.value.length > 0 : f.value.trim().length > 0)).length;
-  return Math.round((filled / allFields.length) * 100);
-}
-
 function PersonaFieldRow({ field, onChange }: { field: PersonaField; onChange: (v: string | string[]) => void }) {
   return (
     <div>
-      <FieldLabel confidence={field.confidence}>{field.label}</FieldLabel>
+      <FieldLabel>{field.label}</FieldLabel>
       {Array.isArray(field.value)
         ? <ChipList items={field.value} onChange={onChange} />
         : <EditableField value={field.value} onChange={onChange} multiline rows={2} />}
@@ -76,16 +69,13 @@ function PerformanceSection({ persona }: { persona: PersonaDetail }) {
   );
 }
 
-export function PersonaDetailPane({ persona, reviewed, onToggleReviewed, onPatchName, onPatchField, onDelete }: {
+export function PersonaDetailPane({ persona, onPatchName, onPatchField, onDelete }: {
   persona: PersonaDetail;
-  reviewed: boolean;
-  onToggleReviewed: () => void;
   onPatchName: (name: string) => void;
   onPatchField: (sectionIdx: number, fieldIdx: number, value: string | string[]) => void;
   onDelete: () => void;
 }) {
   const [savedAt, setSavedAt] = useState<string | null>(null);
-  const pct = useMemo(() => personaCompletion(persona), [persona]);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
@@ -93,18 +83,13 @@ export function PersonaDetailPane({ persona, reviewed, onToggleReviewed, onPatch
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 14, marginBottom: 8 }}>
           <EditableField value={persona.name} onChange={onPatchName} />
           <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
-            <IconButton icon="check" title={reviewed ? "Reviewed" : "Mark reviewed"} tone={reviewed ? "brand" : "muted"} onClick={onToggleReviewed} />
             <button type="button" className="kc-primary-btn" style={KC_PRIMARY_BTN} onClick={() => setSavedAt(new Date().toLocaleTimeString())}>
               <Icon name="check" size={14} />
               Save
             </button>
           </div>
         </div>
-        <p style={{ fontSize: 12.5, color: "var(--color-muted)", margin: "0 0 12px", lineHeight: 1.5 }}>{persona.subtitle}</p>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <div style={{ flex: 1, maxWidth: 320 }}><ProgressBar pct={pct} /></div>
-          <span style={{ fontSize: 12.5, fontWeight: 700, color: "var(--color-heading)" }}>{pct}% complete</span>
-        </div>
+        <p style={{ fontSize: 12.5, color: "var(--color-muted)", margin: 0, lineHeight: 1.5 }}>{persona.subtitle}</p>
         {savedAt && <div style={{ fontSize: 11.5, color: "var(--color-success)", marginTop: 8 }}>Saved at {savedAt}</div>}
       </div>
 
