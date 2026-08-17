@@ -44,6 +44,16 @@ const STYLES = `
 .ob-editable-field:focus { border-color: var(--color-brand) !important; box-shadow: var(--shadow-focus); }
 .ob-hero-title { font-size: clamp(32px, 5vw, 56px); }
 
+.ob-field-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); align-items: start; gap: 12px; }
+
+.ob-review-card { max-width: 660px !important; }
+@media (min-width: 860px) {
+  .ob-review-card { max-width: 780px !important; }
+}
+@media (min-width: 1080px) {
+  .ob-review-card { max-width: 920px !important; }
+}
+
 @media (max-width: 640px) {
   .ob-shell { align-items: flex-start !important; }
   .ob-shell-content { padding: 64px 16px 32px !important; }
@@ -1845,7 +1855,7 @@ function EditableText({ value, onChange, multiline = false, placeholder, style, 
           <input
             className="ob-editable-field" value={value} placeholder={placeholder}
             onChange={(e) => onChange(e.target.value)}
-            style={fieldStyle}
+            style={{ ...fieldStyle, textOverflow: "ellipsis" }}
           />
         )}
         {revise && (
@@ -1986,6 +1996,60 @@ function AIRevise<T>({ value, onChange, revise, scale = "field" }: {
   );
 }
 
+/* ─── Always-visible, whole-section "Ask AI" prompt — used by the
+   Product/ICP/Personas review panels below, where per-field editing
+   has been removed and this is the only way to change anything in a
+   section. Same busy → apply → undo state machine as AIRevise, but
+   rendered inline and always open instead of hidden behind a click,
+   since it's no longer a secondary affordance. Deliberately NOT built
+   on top of AIRevise so StepCompanyResearch's usage is untouched. */
+function SectionRevisePrompt<T>({ value, onChange, revise, placeholder = "Tell AI what to change across this section…" }: {
+  value: T; onChange: (next: T) => void; revise: (current: T, instruction: string) => T; placeholder?: string;
+}) {
+  const [instruction, setInstruction] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [undoValue, setUndoValue] = useState<T | null>(null);
+
+  function apply() {
+    const text = instruction.trim();
+    if (!text || busy) return;
+    setBusy(true);
+    setTimeout(() => {
+      setUndoValue(value);
+      onChange(revise(value, text));
+      setBusy(false);
+      setInstruction("");
+    }, 1200);
+  }
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 14 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, background: "var(--color-brand-faint)", border: "1px solid var(--color-border)", borderRadius: 12, padding: "8px 8px 8px 12px" }}>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+          <path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72Z" />
+          <path d="m14 7 3 3" /><path d="M5 6v4" /><path d="M19 14v4" />
+        </svg>
+        <input
+          value={instruction} onChange={(e) => setInstruction(e.target.value)}
+          onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); apply(); } }}
+          placeholder={placeholder} disabled={busy}
+          style={{ flex: 1, minWidth: 0, fontSize: 12.5, border: "none", outline: "none", background: "transparent", fontFamily: "inherit", color: "var(--color-heading)" }}
+        />
+        <button type="button" onClick={apply} disabled={busy || !instruction.trim()}
+          style={{ flexShrink: 0, fontSize: 11.5, fontWeight: 600, borderRadius: 8, border: "none", padding: "7px 14px", background: "var(--color-brand)", color: "#fff", cursor: busy || !instruction.trim() ? "default" : "pointer", opacity: busy || !instruction.trim() ? 0.6 : 1, display: "flex", alignItems: "center", fontFamily: "inherit" }}>
+          {busy ? <Spinner inverted /> : "Ask AI"}
+        </button>
+      </div>
+      {undoValue !== null && (
+        <button type="button" onClick={() => { onChange(undoValue); setUndoValue(null); }}
+          style={{ alignSelf: "flex-start", fontSize: 11, fontWeight: 600, color: "var(--color-brand)", background: "none", border: "none", cursor: "pointer", textDecoration: "underline", padding: 0, fontFamily: "inherit" }}>
+          Undo last AI revision
+        </button>
+      )}
+    </div>
+  );
+}
+
 function firstSentence(s: string): string {
   const m = s.match(/^.*?[.!?](?=\s|$)/);
   return m ? m[0] : s;
@@ -2034,6 +2098,84 @@ function revisePositioning(p: Positioning, instruction: string): Positioning {
     return { ...p, differentiators: p.differentiators.map(firstSentence) };
   }
   return { ...p, differentiators: [...p.differentiators, titleCase(instruction)] };
+}
+
+/* ─── Section-scoped revisers for the Product/ICP/Personas review step.
+   Unlike reviseText (one string) these operate on everything shown in
+   one accordion section at once, so a single instruction like "make
+   this more enterprise-focused" visibly touches every field in that
+   section instead of just whichever one had a pencil icon. */
+function reviseSectionContent(content: PSContent, instruction: string): PSContent {
+  const lower = instruction.toLowerCase();
+  if (/shorter|concise|tighten|trim/.test(lower)) {
+    return Array.isArray(content) ? content.map(firstSentence) : firstSentence(content);
+  }
+  if (/more formal|formal tone/.test(lower)) {
+    return Array.isArray(content) ? content.map((c) => c.replace(/—/g, ",")) : content.replace(/—/g, ",");
+  }
+  if (/casual|friendlier|informal/.test(lower)) {
+    return Array.isArray(content) ? content.map((c) => c.replace(/\.(\s|$)/g, "!$1")) : content.replace(/\.(\s|$)/g, "!$1");
+  }
+  return Array.isArray(content)
+    ? [...content, titleCase(instruction)]
+    : `${content.replace(/[.\s]+$/, "")} — ${instruction}`;
+}
+
+function reviseProductServicesBundle(bundle: PSProductState, instruction: string): PSProductState {
+  // "set <field> to <value>" — keep single-field precision when the
+  // instruction clearly names one field (mirrors reviseOverview).
+  const setTo = instruction.match(/(?:set|change|update|rewrite)\s+(.+?)\s+to\s+(.+)/i);
+  if (setTo) {
+    const label = setTo[1].trim().toLowerCase();
+    const value = setTo[2].trim();
+    if (label.includes("name")) return { ...bundle, name: value };
+    return {
+      ...bundle,
+      sections: bundle.sections.map((s) =>
+        s.label.toLowerCase().includes(label) ? { ...s, content: Array.isArray(s.content) ? [value] : value } : s
+      ),
+    };
+  }
+  // Everything else (shorter/formal/casual/fallback) applies across
+  // every section in the bundle in one pass.
+  return { ...bundle, sections: bundle.sections.map((s) => ({ ...s, content: reviseSectionContent(s.content, instruction) })) };
+}
+
+type IcpBundle = { tamDescription: string; icps: IcpScore[] };
+function reviseIcpBundle(bundle: IcpBundle, instruction: string): IcpBundle {
+  const lower = instruction.toLowerCase();
+
+  const setTo = instruction.match(/(?:set|change|update|rewrite)\s+(.+?)\s+to\s+(.+)/i);
+  if (setTo) {
+    const label = setTo[1].trim().toLowerCase();
+    const value = setTo[2].trim();
+    if (/tam|total addressable|market/.test(label)) return { ...bundle, tamDescription: value };
+    return { ...bundle, icps: bundle.icps.map((icp) => (icp.name.toLowerCase().includes(label) ? { ...icp, reasoning: value } : icp)) };
+  }
+  if (/shorter|concise|tighten|trim/.test(lower)) {
+    return { tamDescription: firstSentence(bundle.tamDescription), icps: bundle.icps.map((icp) => ({ ...icp, reasoning: firstSentence(icp.reasoning) })) };
+  }
+  if (/more formal|formal tone/.test(lower)) {
+    return { tamDescription: bundle.tamDescription.replace(/—/g, ","), icps: bundle.icps.map((icp) => ({ ...icp, reasoning: icp.reasoning.replace(/—/g, ",") })) };
+  }
+  if (/casual|friendlier|informal/.test(lower)) {
+    return { tamDescription: bundle.tamDescription.replace(/\.(\s|$)/g, "!$1"), icps: bundle.icps.map((icp) => ({ ...icp, reasoning: icp.reasoning.replace(/\.(\s|$)/g, "!$1") })) };
+  }
+  // Fallback: same raw instruction appended to TAM *and* every ICP's
+  // reasoning — the whole point is it's no longer just one card.
+  return {
+    tamDescription: `${bundle.tamDescription.replace(/[.\s]+$/, "")} — ${instruction}`,
+    icps: bundle.icps.map((icp) => ({ ...icp, reasoning: `${icp.reasoning.replace(/[.\s]+$/, "")} — ${instruction}` })),
+  };
+}
+
+function revisePersonasBundle(personas: PersonaData[], instruction: string): PersonaData[] {
+  const shrink = /shorter|concise|tighten|trim/.test(instruction.toLowerCase());
+  return personas.map((p) => ({
+    ...p,
+    subtitle: shrink ? firstSentence(p.subtitle) : p.subtitle,
+    sections: p.sections.map((s) => ({ ...s, content: reviseSectionContent(s.content, instruction) })),
+  }));
 }
 
 interface CompanyResearchData {
@@ -2150,23 +2292,15 @@ function StepCompanyResearch({ products, onNext }: { products: Product[]; onNext
 type PSContent = string | string[];
 interface PSSection { label: string; content: PSContent }
 
-function PSField({ section, onChange }: { section: PSSection; onChange?: (content: PSContent) => void }) {
+function PSField({ section }: { section: PSSection }) {
   const isList = Array.isArray(section.content);
   return (
-    <div>
-      <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>{section.label}</div>
-      {onChange ? (
-        isList ? (
-          <EditableBulletList items={section.content as string[]} onChange={(items) => onChange(items)} />
-        ) : (
-          <div style={{ fontSize: 12.5, color: "var(--color-body)", lineHeight: 1.6 }}>
-            <EditableText value={section.content as string} onChange={onChange} multiline rows={2} style={{ fontSize: 12.5 }} revise={reviseText} />
-          </div>
-        )
-      ) : isList ? (
+    <div style={{ background: "var(--color-page)", border: "1px solid var(--color-border)", borderRadius: 12, padding: "14px 16px" }}>
+      <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-brand)", letterSpacing: "0.05em", textTransform: "uppercase" as const, marginBottom: 8 }}>{section.label}</div>
+      {isList ? (
         <BulletList items={section.content as string[]} />
       ) : (
-        <p style={{ fontSize: 12.5, color: "var(--color-body)", lineHeight: 1.6, margin: 0 }}>{section.content as string}</p>
+        <p style={{ fontSize: 13, color: "var(--color-body)", lineHeight: 1.6, margin: 0 }}>{section.content as string}</p>
       )}
     </div>
   );
@@ -2649,46 +2783,104 @@ const ICP_SCORES_DEFAULT: IcpScore[] = [
 ];
 
 /* ─── Collapsible accordion primitive for the merged review step ───
-   Header row (checkmark/lock + label + optional collapsed summary +
-   chevron) toggles the body open; approving marks it done and lets the
-   parent decide what opens next. */
-function CollapsibleReviewSection({ label, approved, active, locked, summary, onToggle, onApprove, children }: {
-  label: string; approved: boolean; active: boolean; locked: boolean; summary?: string;
-  onToggle: () => void; onApprove: () => void; children: React.ReactNode;
-}) {
+   Header row (checkmark/lock/section icon + label + optional collapsed
+   summary + chevron) toggles the body open; approving marks it done
+   and lets the parent decide what opens next. */
+const SECTION_ICON_PATH: Record<ReviewSectionKey, React.ReactNode> = {
+  product: (
+    <>
+      <path d="M3 8l2-5h14l2 5" />
+      <rect x="3" y="8" width="18" height="12" rx="2" />
+      <path d="M9 12.5h6" />
+    </>
+  ),
+  icp: (
+    <>
+      <circle cx="12" cy="12" r="7.5" />
+      <circle cx="12" cy="12" r="2.5" />
+      <path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3" />
+    </>
+  ),
+  personas: (
+    <>
+      <circle cx="12" cy="8" r="3.5" />
+      <path d="M4.5 20.5c0-3.6 3.3-6.5 7.5-6.5s7.5 2.9 7.5 6.5" />
+    </>
+  ),
+};
+
+function SectionIcon({ section }: { section: ReviewSectionKey }) {
   return (
-    <div style={{ borderRadius: 14, border: "1px solid var(--color-border)", overflow: "hidden", marginBottom: 14 }}>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      {SECTION_ICON_PATH[section]}
+    </svg>
+  );
+}
+
+function CollapsibleReviewSection({ section, label, approved, active, locked, summary, onToggle, onApprove, hideApproveButton, children }: {
+  section: ReviewSectionKey; label: string; approved: boolean; active: boolean; locked: boolean; summary?: string;
+  onToggle: () => void; onApprove: () => void; hideApproveButton?: boolean; children: React.ReactNode;
+}) {
+  const iconColor = approved ? "var(--color-success)" : active ? "var(--color-brand)" : "var(--color-subtle)";
+  const iconBg = approved ? "rgba(7,188,12,0.12)" : active ? "var(--color-brand-tint)" : "var(--color-surface)";
+  return (
+    <div
+      style={{
+        borderRadius: 16, border: `1px solid ${active ? "var(--color-brand)" : "var(--color-border)"}`,
+        overflow: "hidden", marginBottom: 14, background: "var(--color-page)",
+        boxShadow: active ? "var(--shadow-elevated)" : "none", transition: "border-color 150ms, box-shadow 150ms",
+      }}
+    >
       <button
         type="button"
         onClick={onToggle}
         disabled={locked}
         style={{
-          width: "100%", display: "flex", alignItems: "center", gap: 12, padding: "14px 16px",
-          background: active ? "var(--color-surface)" : "transparent", border: "none", cursor: locked ? "not-allowed" : "pointer",
-          fontFamily: "inherit", textAlign: "left" as const, opacity: locked ? 0.5 : 1,
+          width: "100%", display: "flex", alignItems: "center", gap: 14, padding: "16px 18px",
+          background: "transparent", border: "none", cursor: locked ? "not-allowed" : "pointer",
+          fontFamily: "inherit", textAlign: "left" as const, opacity: locked ? 0.55 : 1,
         }}
       >
-        <span style={{ width: 24, height: 24, borderRadius: "50%", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: approved ? "var(--color-success)" : "var(--color-page)", border: approved ? "none" : "1.5px solid var(--color-border-strong)" }}>
+        <span
+          style={{
+            width: 34, height: 34, borderRadius: 10, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center",
+            background: iconBg, color: iconColor, transition: "background-color 150ms, color 150ms",
+          }}
+        >
           {approved ? (
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5" /></svg>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5" /></svg>
           ) : locked ? (
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--color-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
-          ) : null}
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-subtle)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>
+          ) : (
+            <SectionIcon section={section} />
+          )}
         </span>
-        <span style={{ flex: 1, fontSize: 14, fontWeight: 600, color: "var(--color-heading)" }}>{label}</span>
-        {!active && approved && summary && (
-          <span style={{ fontSize: 12, color: "var(--color-muted)", flexShrink: 0, maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" as const }}>{summary}</span>
+        <span style={{ flex: 1, minWidth: 0 }}>
+          <span style={{ display: "block", fontSize: 14.5, fontWeight: 700, color: "var(--color-heading)" }}>{label}</span>
+          {!active && summary && (
+            <span style={{ display: "block", fontSize: 12, color: "var(--color-muted)", marginTop: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" as const }}>{summary}</span>
+          )}
+        </span>
+        {approved && !active && (
+          <span style={{ flexShrink: 0, fontSize: 11, fontWeight: 700, color: "var(--color-success)", background: "rgba(7,188,12,0.1)", borderRadius: 999, padding: "4px 10px" }}>Approved</span>
         )}
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-muted)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, transform: active ? "rotate(90deg)" : "none", transition: "transform 150ms" }}>
           <polyline points="9 6 15 12 9 18" />
         </svg>
       </button>
       {active && (
-        <div style={{ padding: "16px", borderTop: "1px solid var(--color-border)" }}>
-          {children}
-          <button type="button" onClick={onApprove} className="ob-primary-btn" style={{ ...PRIMARY_BTN, width: "auto", padding: "10px 22px", fontSize: 13, marginTop: 16 }}>
-            {approved ? "Save" : "Approve"}
-          </button>
+        <div style={{ padding: "6px 18px 20px", borderTop: "1px solid var(--color-border)", background: "var(--color-surface)" }}>
+          <div style={{ paddingTop: 16, display: "flex", flexDirection: "column", gap: 12 }}>{children}</div>
+          {!hideApproveButton && (
+            <button type="button" onClick={onApprove} className="ob-primary-btn" style={{ ...PRIMARY_BTN, width: "auto", padding: "10px 24px", fontSize: 13, marginTop: 18, borderRadius: 999, gap: 6 }}>
+              {approved ? "Save changes" : (
+                <>
+                  Approve
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5" /></svg>
+                </>
+              )}
+            </button>
+          )}
         </div>
       )}
     </div>
@@ -2696,26 +2888,21 @@ function CollapsibleReviewSection({ label, approved, active, locked, summary, on
 }
 
 function ProductServicesPanel({ state, onChange }: { state: PSProductState; onChange: (next: PSProductState) => void }) {
-  function patch(fields: Partial<Pick<PSProductState, "name" | "badge">>) {
-    onChange({ ...state, ...fields });
-  }
-  function updateSection(i: number, content: PSContent) {
-    onChange({ ...state, sections: state.sections.map((s, si) => (si === i ? { ...s, content } : s)) });
-  }
-
   return (
     <div>
-      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
-        <span style={{ fontSize: 14, fontWeight: 600, color: "var(--color-heading)", minWidth: 0 }}>
-          <EditableText value={state.name} onChange={(v) => patch({ name: v })} style={{ fontSize: 14, fontWeight: 600 }} revise={reviseText} />
-        </span>
-        <span style={{ fontSize: 12, fontWeight: 500, color: "var(--color-muted)", flexShrink: 0 }}>
+      <SectionRevisePrompt
+        value={state} onChange={onChange} revise={reviseProductServicesBundle}
+        placeholder="Tell AI what to change about the product, description, features, ideal customer, or value prop…"
+      />
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+        <span style={{ flex: "1 1 auto", minWidth: 0, fontSize: 15, fontWeight: 700, color: "var(--color-heading)" }}>{state.name}</span>
+        <span style={{ fontSize: 11.5, fontWeight: 600, color: "var(--color-brand)", background: "var(--color-brand-tint)", borderRadius: 999, padding: "3px 10px", flexShrink: 0 }}>
           {state.badge}
         </span>
       </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-        {state.sections.map((section, i) => (
-          <PSField key={section.label} section={section} onChange={(content) => updateSection(i, content)} />
+      <div className="ob-field-grid">
+        {state.sections.map((section) => (
+          <PSField key={section.label} section={section} />
         ))}
       </div>
     </div>
@@ -2726,36 +2913,35 @@ function IcpPanel({ tamDescription, icps, onChangeTam, onChangeIcps }: {
   tamDescription: string; icps: IcpScore[];
   onChangeTam: (v: string) => void; onChangeIcps: (v: IcpScore[]) => void;
 }) {
-  function updateIcpName(i: number, name: string) {
-    onChangeIcps(icps.map((icp, idx) => (idx === i ? { ...icp, name } : icp)));
-  }
-  function updateIcpReasoning(i: number, reasoning: string) {
-    onChangeIcps(icps.map((icp, idx) => (idx === i ? { ...icp, reasoning } : icp)));
-  }
   function cycleRecommendation(i: number) {
     onChangeIcps(icps.map((icp, idx) => (idx === i ? { ...icp, recommendation: nextRecommendation(icp.recommendation) } : icp)));
   }
 
   return (
     <div>
-      <p style={{ fontSize: 13, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 18px" }}>
-        <EditableText value={tamDescription} onChange={onChangeTam} multiline rows={2} style={{ fontSize: 13 }} revise={reviseText} />
-      </p>
+      <SectionRevisePrompt
+        value={{ tamDescription, icps }}
+        onChange={(next) => { onChangeTam(next.tamDescription); onChangeIcps(next.icps); }}
+        revise={reviseIcpBundle}
+        placeholder="Tell AI what to change about the market size or any ICP…"
+      />
+      <div style={{ display: "flex", gap: 10, alignItems: "flex-start", background: "var(--color-brand-faint)", border: "1px solid var(--color-border)", borderRadius: 12, padding: "14px 16px", marginBottom: 14 }}>
+        <span style={{ flexShrink: 0, width: 26, height: 26, borderRadius: 8, background: "var(--color-brand-tint)", color: "var(--color-brand)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 8v4l3 2" /></svg>
+        </span>
+        <p style={{ flex: 1, fontSize: 13, color: "var(--color-body)", lineHeight: 1.6, margin: 0 }}>{tamDescription}</p>
+      </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
         {icps.map((icp, i) => (
-          <div key={i} style={{ padding: "12px 14px", borderRadius: 10, border: "1px solid var(--color-border)" }}>
+          <div key={i} style={{ padding: "14px 16px", borderRadius: 12, border: "1px solid var(--color-border)", background: "var(--color-page)" }}>
             <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10, marginBottom: 6 }}>
-              <span style={{ flex: 1, fontSize: 13.5, fontWeight: 700, color: "var(--color-heading)", lineHeight: 1.4 }}>
-                <EditableText value={icp.name} onChange={(v) => updateIcpName(i, v)} style={{ fontSize: 13.5, fontWeight: 700 }} revise={reviseText} />
-              </span>
+              <span style={{ flex: 1, fontSize: 13.5, fontWeight: 700, color: "var(--color-heading)", lineHeight: 1.4 }}>{icp.name}</span>
               <button type="button" onClick={() => cycleRecommendation(i)} title="Click to change recommendation"
-                style={{ flexShrink: 0, fontFamily: MONO_FONT, fontSize: 10.5, fontWeight: 700, padding: "3px 9px", borderRadius: 6, whiteSpace: "nowrap" as const, cursor: "pointer", border: "none", ...RECOMMENDATION_BADGE[icp.recommendation] }}>
+                style={{ flexShrink: 0, fontFamily: MONO_FONT, fontSize: 10.5, fontWeight: 700, padding: "4px 10px", borderRadius: 999, whiteSpace: "nowrap" as const, cursor: "pointer", border: "none", ...RECOMMENDATION_BADGE[icp.recommendation] }}>
                 {icp.recommendation}
               </button>
             </div>
-            <div style={{ fontSize: 12.5, color: "var(--color-muted)", lineHeight: 1.5 }}>
-              <EditableText value={icp.reasoning} onChange={(v) => updateIcpReasoning(i, v)} multiline rows={2} style={{ fontSize: 12.5, color: "var(--color-muted)" }} revise={reviseText} />
-            </div>
+            <div style={{ fontSize: 12.5, color: "var(--color-muted)", lineHeight: 1.5 }}>{icp.reasoning}</div>
           </div>
         ))}
       </div>
@@ -2763,55 +2949,87 @@ function IcpPanel({ tamDescription, icps, onChangeTam, onChangeIcps }: {
   );
 }
 
-function PersonasPanel({ personas, onChange }: { personas: PersonaData[]; onChange: (next: PersonaData[]) => void }) {
+function PersonasPanel({ personas, onChange, approvedList, onApprovePersona }: {
+  personas: PersonaData[]; onChange: (next: PersonaData[]) => void;
+  approvedList: boolean[]; onApprovePersona: (i: number) => void;
+}) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const persona = personas[selectedIndex];
+  const firstIncompleteIndex = approvedList.findIndex((a) => !a);
+  const unlockedUpTo = firstIncompleteIndex === -1 ? personas.length - 1 : firstIncompleteIndex;
+  const personaApproved = approvedList[selectedIndex];
 
-  function patchCurrent(fields: Partial<Pick<PersonaData, "title" | "roleTag" | "subtitle">>) {
-    onChange(personas.map((p, i) => (i === selectedIndex ? { ...p, ...fields } : p)));
-  }
-  function updateSection(i: number, content: PSContent) {
-    onChange(personas.map((p, idx) => (idx === selectedIndex ? { ...p, sections: p.sections.map((s, si) => (si === i ? { ...s, content } : s)) } : p)));
+  function approveCurrent() {
+    onApprovePersona(selectedIndex);
+    if (selectedIndex < personas.length - 1) setSelectedIndex(selectedIndex + 1);
   }
 
   return (
     <div>
-      <div style={{ display: "flex", alignItems: "flex-start", gap: 10, marginBottom: 14 }}>
-        {personas.length > 1 ? (
-          <div style={{ display: "flex", gap: 6, flexShrink: 0, marginTop: 1 }}>
-            {personas.map((p, i) => (
-              <button key={i} type="button" onClick={() => setSelectedIndex(i)} title={p.title}
-                style={{ width: 24, height: 24, borderRadius: "50%", fontSize: 11, fontWeight: 700, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", border: "none", cursor: "pointer", fontFamily: "inherit", transition: "all 150ms", background: i === selectedIndex ? "var(--color-brand)" : "var(--color-surface)", color: i === selectedIndex ? "#fff" : "var(--color-muted)" }}>
-                {i + 1}
+      <SectionRevisePrompt
+        value={personas} onChange={onChange} revise={revisePersonasBundle}
+        placeholder="Tell AI what to change across all personas…"
+      />
+      {personas.length > 1 && (
+        <div style={{ display: "flex", gap: 8, marginBottom: 14, overflowX: "auto" as const, paddingBottom: 2 }}>
+          {personas.map((p, i) => {
+            const isCurrent = i === selectedIndex;
+            const done = approvedList[i];
+            const locked = i > unlockedUpTo;
+            return (
+              <button key={i} type="button" onClick={() => !locked && setSelectedIndex(i)} disabled={locked} title={p.title}
+                style={{
+                  display: "flex", alignItems: "center", gap: 7, flexShrink: 0, padding: "6px 12px 6px 6px", borderRadius: 999,
+                  border: "none", cursor: locked ? "not-allowed" : "pointer", fontFamily: "inherit", transition: "all 150ms",
+                  background: isCurrent ? "var(--color-brand)" : "var(--color-surface)", opacity: locked ? 0.5 : 1,
+                }}
+              >
+                <span style={{
+                  width: 22, height: 22, borderRadius: "50%", fontSize: 10.5, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center",
+                  background: done ? "var(--color-success)" : isCurrent ? "rgba(255,255,255,0.25)" : "var(--color-page)",
+                  color: done || isCurrent ? "#fff" : "var(--color-muted)",
+                }}>
+                  {done ? (
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5" /></svg>
+                  ) : i + 1}
+                </span>
+                <span style={{ fontSize: 12, fontWeight: 600, color: isCurrent ? "#fff" : "var(--color-body)", whiteSpace: "nowrap" as const }}>{p.title}</span>
               </button>
-            ))}
-          </div>
-        ) : (
-          <div style={{ width: 24, height: 24, borderRadius: "50%", background: "var(--color-brand)", color: "#fff", fontSize: 11, fontWeight: 700, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", marginTop: 1 }}>1</div>
-        )}
+            );
+          })}
+        </div>
+      )}
+
+      <div style={{ display: "flex", alignItems: "flex-start", gap: 12, marginBottom: 14, background: "var(--color-page)", border: "1px solid var(--color-border)", borderRadius: 12, padding: "14px 16px" }}>
+        <div style={{ width: 34, height: 34, borderRadius: "50%", background: "var(--color-brand)", color: "#fff", fontSize: 13, fontWeight: 700, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          {selectedIndex + 1}
+        </div>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" as const }}>
-            <span style={{ fontSize: 14, fontWeight: 600, color: "var(--color-heading)" }}>
-              <EditableText key={`title-${selectedIndex}`} value={persona.title} onChange={(v) => patchCurrent({ title: v })} style={{ fontSize: 14, fontWeight: 600 }} revise={reviseText} />
-            </span>
-            <span style={{ fontSize: 11, fontWeight: 500, color: "var(--color-brand)", border: "1px solid var(--color-border)", background: "var(--color-brand-tint)", borderRadius: 999, padding: "2px 10px" }}>
-              <EditableText key={`roleTag-${selectedIndex}`} value={persona.roleTag} onChange={(v) => patchCurrent({ roleTag: v })} style={{ fontSize: 11, fontWeight: 500, color: "var(--color-brand)" }} revise={reviseText} />
-            </span>
+            <span style={{ flex: "1 1 160px", minWidth: 0, fontSize: 14.5, fontWeight: 700, color: "var(--color-heading)" }}>{persona.title}</span>
+            <span style={{ flexShrink: 0, fontSize: 11, fontWeight: 600, color: "var(--color-brand)", border: "1px solid var(--color-border)", background: "var(--color-brand-tint)", borderRadius: 999, padding: "2px 10px" }}>{persona.roleTag}</span>
+            {personas.length > 1 && (
+              <span style={{ flexShrink: 0, fontSize: 11, color: "var(--color-subtle)", marginLeft: "auto" }}>{selectedIndex + 1} / {personas.length}</span>
+            )}
           </div>
-          <p style={{ fontSize: 12, color: "var(--color-muted)", lineHeight: 1.5, margin: "4px 0 0" }}>
-            <EditableText key={`subtitle-${selectedIndex}`} value={persona.subtitle} onChange={(v) => patchCurrent({ subtitle: v })} multiline rows={2} style={{ fontSize: 12, color: "var(--color-muted)" }} revise={reviseText} />
-          </p>
+          <p style={{ fontSize: 12.5, color: "var(--color-muted)", lineHeight: 1.5, margin: "5px 0 0" }}>{persona.subtitle}</p>
         </div>
-        {personas.length > 1 && (
-          <span style={{ fontSize: 11, color: "var(--color-muted)", flexShrink: 0, marginTop: 1 }}>{selectedIndex + 1} / {personas.length}</span>
-        )}
       </div>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-        {persona.sections.map((section, i) => (
-          <PSField key={`${selectedIndex}-${section.label}`} section={section} onChange={(content) => updateSection(i, content)} />
+      <div className="ob-field-grid">
+        {persona.sections.map((section) => (
+          <PSField key={`${selectedIndex}-${section.label}`} section={section} />
         ))}
       </div>
+
+      <button type="button" onClick={approveCurrent} className="ob-primary-btn" style={{ ...PRIMARY_BTN, width: "auto", padding: "10px 24px", fontSize: 13, marginTop: 14, borderRadius: 999, gap: 6 }}>
+        {personaApproved ? "Save changes" : (
+          <>
+            Approve this persona
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5" /></svg>
+          </>
+        )}
+      </button>
     </div>
   );
 }
@@ -2828,6 +3046,7 @@ interface ProductReviewState {
   tamDescription: string;
   icps: IcpScore[];
   personas: PersonaData[];
+  personaApproved: boolean[];
   approved: { product: boolean; icp: boolean; personas: boolean };
   activeSection: ReviewSectionKey | null;
 }
@@ -2838,9 +3057,32 @@ function buildInitialProductReview(product: Product): ProductReviewState {
     tamDescription: TAM_DESCRIPTION_DEFAULT,
     icps: ICP_SCORES_DEFAULT.map((icp) => ({ ...icp })),
     personas: PERSONAS_DEFAULT.map((p) => ({ ...p, sections: p.sections.map((s) => ({ ...s })) })),
+    personaApproved: PERSONAS_DEFAULT.map(() => false),
     approved: { product: false, icp: false, personas: false },
     activeSection: "product",
   };
+}
+
+const REVIEW_SECTION_LABEL: Record<ReviewSectionKey, string> = { product: "Product", icp: "ICP", personas: "Personas" };
+
+function SectionProgressBar({ approved, active }: { approved: ProductReviewState["approved"]; active: ReviewSectionKey | null }) {
+  return (
+    <div style={{ display: "flex", gap: 6, marginBottom: 20 }}>
+      {REVIEW_SECTION_ORDER.map((key) => {
+        const done = approved[key];
+        const isActive = active === key;
+        const color = done ? "var(--color-success)" : isActive ? "var(--color-brand)" : "var(--color-subtle)";
+        return (
+          <div key={key} style={{ flex: 1, display: "flex", flexDirection: "column", gap: 6 }}>
+            <div style={{ height: 4, borderRadius: 999, background: done || isActive ? color : "var(--color-border)" }} />
+            <span style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: "0.03em", textTransform: "uppercase" as const, color }}>
+              {REVIEW_SECTION_LABEL[key]}
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
 }
 
 function StepProductReview({ products, onNext }: { products: Product[]; onNext: () => void }) {
@@ -2858,11 +3100,21 @@ function StepProductReview({ products, onNext }: { products: Product[]; onNext: 
   function approveSection(section: ReviewSectionKey) {
     patchCurrent({ approved: { ...current.approved, [section]: true }, activeSection: nextReviewSection(section) });
   }
+  function approvePersona(i: number) {
+    const nextPersonaApproved = current.personaApproved.map((a, idx) => (idx === i ? true : a));
+    const allPersonasDone = nextPersonaApproved.every(Boolean);
+    patchCurrent({
+      personaApproved: nextPersonaApproved,
+      approved: allPersonasDone ? { ...current.approved, personas: true } : current.approved,
+      activeSection: allPersonasDone ? nextReviewSection("personas") : current.activeSection,
+    });
+  }
 
   const allApproved = (s: ProductReviewState) => s.approved.product && s.approved.icp && s.approved.personas;
   const firstIncompleteIndex = reviewStates.findIndex((s) => !allApproved(s));
   const unlockedUpTo = firstIncompleteIndex === -1 ? reviewStates.length - 1 : firstIncompleteIndex;
   const currentDone = allApproved(current);
+  const approvedCount = REVIEW_SECTION_ORDER.filter((key) => current.approved[key]).length;
 
   function handleContinue() {
     if (selectedIndex < products.length - 1) setSelectedIndex(selectedIndex + 1);
@@ -2870,17 +3122,22 @@ function StepProductReview({ products, onNext }: { products: Product[]; onNext: 
   }
 
   return (
-    <div className="ob-card" style={{ ...CARD, maxWidth: 640 }}>
-      <span style={{ fontSize: 12, fontWeight: 700, color: "var(--color-brand)", letterSpacing: "0.05em", textTransform: "uppercase" as const }}>Product, ICP &amp; Personas</span>
-      <h1 style={{ fontSize: 24, margin: "8px 0 8px" }}>
+    <div className="ob-card ob-review-card" style={{ ...CARD, maxWidth: 660 }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, marginBottom: 8 }}>
+        <span style={{ fontSize: 12, fontWeight: 700, color: "var(--color-brand)", letterSpacing: "0.05em", textTransform: "uppercase" as const }}>Product, ICP &amp; Personas</span>
+        <span style={{ fontSize: 11.5, fontWeight: 700, color: "var(--color-muted)", background: "var(--color-surface)", borderRadius: 999, padding: "4px 10px", flexShrink: 0 }}>
+          {approvedCount}/3 approved
+        </span>
+      </div>
+      <h1 style={{ fontSize: 24, margin: "0 0 8px" }}>
         {products.length > 1 ? `Product ${n} of ${products.length} — ${current.product.name}` : "Review your product, ICP & personas"}
       </h1>
       <p style={{ fontSize: 14, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 20px" }}>
-        Review each section below and approve it to unlock the next. Edit any field directly, or hit <span style={{ color: "var(--color-brand)" }}>🪄</span> to ask AI to revise it.
+        Review each section below and approve it to unlock the next. Each section has one AI prompt — describe what to change and every field in that section updates together (e.g. &ldquo;make this more enterprise-focused&rdquo; revises the description, ideal customer, and value prop at once).
       </p>
 
       {products.length > 1 && (
-        <div style={{ display: "flex", gap: 6, marginBottom: 20 }}>
+        <div style={{ display: "flex", gap: 8, marginBottom: 20, overflowX: "auto" as const, paddingBottom: 2 }}>
           {reviewStates.map((s, i) => {
             const done = allApproved(s);
             const isCurrent = i === selectedIndex;
@@ -2888,21 +3145,30 @@ function StepProductReview({ products, onNext }: { products: Product[]; onNext: 
             return (
               <button key={i} type="button" onClick={() => !locked && setSelectedIndex(i)} disabled={locked} title={s.product.name}
                 style={{
-                  width: 26, height: 26, borderRadius: "50%", fontSize: 11, fontWeight: 700, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center",
+                  display: "flex", alignItems: "center", gap: 7, flexShrink: 0, padding: "6px 12px 6px 6px", borderRadius: 999,
                   border: "none", cursor: locked ? "not-allowed" : "pointer", fontFamily: "inherit", transition: "all 150ms",
-                  background: done ? "var(--color-success)" : isCurrent ? "var(--color-brand)" : "var(--color-surface)",
-                  color: done || isCurrent ? "#fff" : "var(--color-muted)", opacity: locked ? 0.5 : 1,
+                  background: isCurrent ? "var(--color-brand)" : "var(--color-surface)", opacity: locked ? 0.5 : 1,
                 }}>
-                {done ? (
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5" /></svg>
-                ) : i + 1}
+                <span style={{
+                  width: 22, height: 22, borderRadius: "50%", fontSize: 10.5, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center",
+                  background: done ? "var(--color-success)" : isCurrent ? "rgba(255,255,255,0.25)" : "var(--color-page)",
+                  color: done || isCurrent ? "#fff" : "var(--color-muted)",
+                }}>
+                  {done ? (
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5" /></svg>
+                  ) : i + 1}
+                </span>
+                <span style={{ fontSize: 12, fontWeight: 600, color: isCurrent ? "#fff" : "var(--color-body)", whiteSpace: "nowrap" as const }}>{s.product.name}</span>
               </button>
             );
           })}
         </div>
       )}
 
+      <SectionProgressBar approved={current.approved} active={current.activeSection} />
+
       <CollapsibleReviewSection
+        section="product"
         label={`${n}. Product & Services`}
         approved={current.approved.product}
         active={current.activeSection === "product"}
@@ -2915,6 +3181,7 @@ function StepProductReview({ products, onNext }: { products: Product[]; onNext: 
       </CollapsibleReviewSection>
 
       <CollapsibleReviewSection
+        section="icp"
         label={`${n}A. Ideal Customer Profile`}
         approved={current.approved.icp}
         active={current.activeSection === "icp"}
@@ -2932,20 +3199,33 @@ function StepProductReview({ products, onNext }: { products: Product[]; onNext: 
       </CollapsibleReviewSection>
 
       <CollapsibleReviewSection
+        section="personas"
         label={`${n}B. Personas`}
         approved={current.approved.personas}
         active={current.activeSection === "personas"}
         locked={!current.approved.icp}
-        summary={`${current.personas.length} persona${current.personas.length > 1 ? "s" : ""}`}
+        summary={`${current.personaApproved.filter(Boolean).length}/${current.personas.length} personas approved`}
         onToggle={() => toggleSection("personas")}
         onApprove={() => approveSection("personas")}
+        hideApproveButton
       >
-        <PersonasPanel personas={current.personas} onChange={(v) => patchCurrent({ personas: v })} />
+        <PersonasPanel
+          personas={current.personas}
+          onChange={(v) => patchCurrent({ personas: v })}
+          approvedList={current.personaApproved}
+          onApprovePersona={approvePersona}
+        />
       </CollapsibleReviewSection>
 
-      <button onClick={handleContinue} disabled={!currentDone} className="ob-primary-btn" style={{ ...PRIMARY_BTN, marginTop: 10, opacity: currentDone ? 1 : 0.5, cursor: currentDone ? "pointer" : "not-allowed" }}>
+      <button onClick={handleContinue} disabled={!currentDone} className="ob-primary-btn" style={{ ...PRIMARY_BTN, marginTop: 12, opacity: currentDone ? 1 : 0.5, cursor: currentDone ? "pointer" : "not-allowed" }}>
         Approve &amp; Continue
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
       </button>
+      {!currentDone && (
+        <p style={{ fontSize: 12, color: "var(--color-muted)", textAlign: "center" as const, margin: "10px 0 0" }}>
+          Approve all three sections above to continue.
+        </p>
+      )}
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { ICPS, IcpDetail, PERSONAS, PRODUCTS, PersonaDetail, ProductDetail, TreeNodeType, personasForIcp, treeKey } from "./data";
 import { Drawer, Icon, IconName } from "./ui";
 import { TreeSelection } from "./Tree";
@@ -34,7 +34,6 @@ export function Explorer({ reviewedKeys, onToggleReviewed, onNodeTypeChange, com
   // something else is picked. This tracks "closed without changing
   // selection" separately from `selection` itself.
   const [dismissed, setDismissed] = useState(false);
-  const paneRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     onNodeTypeChange(selection?.type ?? null);
@@ -139,13 +138,35 @@ export function Explorer({ reviewedKeys, onToggleReviewed, onNodeTypeChange, com
   );
 
   // Clicking empty space clears the selection. Nodes, ghosts and the view
-  // toggle are all buttons, so those are left alone; the detail pane and any
-  // open drawer are excluded by ref/class since they hold inputs that aren't
-  // buttons.
+  // toggle are all buttons, so those are left alone; any open drawer is
+  // excluded by class since it holds inputs that aren't buttons.
   function handleBackgroundClick(event: React.MouseEvent) {
     const target = event.target as HTMLElement;
-    if (target.closest("button") || target.closest(".kc-drawer-panel") || paneRef.current?.contains(target)) return;
+    if (target.closest("button") || target.closest(".kc-drawer-panel")) return;
     setSelection(null);
+  }
+
+  // A persona's detail is too long to sit comfortably below the chart, so
+  // clicking one takes over the page instead of opening in a drawer or
+  // sitting under the dashboard. This applies across every view — the back
+  // button returns to whichever view the persona was opened from, so the
+  // user can pick another persona's detail from there.
+  if (selectedPersona && !dismissed) {
+    const backLabel = view === "diagram" ? "Diagram" : view === "performance" ? "Performance" : "Overview";
+    return (
+      <div style={{ display: "flex", flexDirection: "column", gap: 16, minHeight: "70vh" }}>
+        <button type="button" onClick={() => setDismissed(true)}
+          style={{
+            display: "flex", alignItems: "center", gap: 6, alignSelf: "flex-start", fontFamily: "inherit",
+            fontSize: 12.5, fontWeight: 700, color: "var(--color-muted)", background: "transparent",
+            border: "none", cursor: "pointer", padding: "4px 2px",
+          }}>
+          <Icon name="chevron-left" size={13} />
+          Back to {backLabel}
+        </button>
+        {detailPane}
+      </div>
+    );
   }
 
   if (view === "performance") {
@@ -157,26 +178,6 @@ export function Explorer({ reviewedKeys, onToggleReviewed, onNodeTypeChange, com
           selection={selection} onSelect={setSelection}
           reviewedKeys={reviewedKeys}
         />
-        {detailPane && <div ref={paneRef} style={{ maxWidth: 980 }}>{detailPane}</div>}
-      </div>
-    );
-  }
-
-  // A persona's detail is too long to sit comfortably below the chart, so
-  // clicking one takes over the page instead of opening in a drawer.
-  if (selectedPersona && !dismissed) {
-    return (
-      <div style={{ display: "flex", flexDirection: "column", gap: 16, minHeight: "70vh" }}>
-        <button type="button" onClick={() => setDismissed(true)}
-          style={{
-            display: "flex", alignItems: "center", gap: 6, alignSelf: "flex-start", fontFamily: "inherit",
-            fontSize: 12.5, fontWeight: 700, color: "var(--color-muted)", background: "transparent",
-            border: "none", cursor: "pointer", padding: "4px 2px",
-          }}>
-          <Icon name="chevron-left" size={13} />
-          Back to {view === "diagram" ? "Diagram" : "Overview"}
-        </button>
-        {detailPane}
       </div>
     );
   }

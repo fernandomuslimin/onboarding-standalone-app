@@ -2895,7 +2895,7 @@
       "label": "KnowledgeDashboard()",
       "file_type": "code",
       "source_file": "src/knowledge-center/Dashboard.tsx",
-      "source_location": "L90",
+      "source_location": "L87",
       "id": "knowledge_center_dashboard_knowledgedashboard",
       "community": 21,
       "norm_label": "knowledgedashboard()"
@@ -6094,9 +6094,9 @@
       "source_file": "src/onboarding-shell.tsx",
       "source_location": "L2144",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "src_onboarding_shell_tsx",
-      "target": "src_onboarding_shell_icpbundle"
+      "target": "src_onboarding_shell_icpbundle",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -6504,9 +6504,9 @@
       "source_file": "src/onboarding-shell.tsx",
       "source_location": "L2094",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "src_onboarding_shell_tsx",
-      "target": "src_onboarding_shell_positioning"
+      "target": "src_onboarding_shell_positioning",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -6694,9 +6694,9 @@
       "source_file": "src/onboarding-shell.tsx",
       "source_location": "L3066",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "src_onboarding_shell_tsx",
-      "target": "src_onboarding_shell_review_section_label"
+      "target": "src_onboarding_shell_review_section_label",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -6744,9 +6744,9 @@
       "source_file": "src/onboarding-shell.tsx",
       "source_location": "L2145",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "src_onboarding_shell_tsx",
-      "target": "src_onboarding_shell_reviseicpbundle"
+      "target": "src_onboarding_shell_reviseicpbundle",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -6794,9 +6794,9 @@
       "source_file": "src/onboarding-shell.tsx",
       "source_location": "L2172",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "src_onboarding_shell_tsx",
-      "target": "src_onboarding_shell_revisepersonasbundle"
+      "target": "src_onboarding_shell_revisepersonasbundle",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -6804,9 +6804,9 @@
       "source_file": "src/onboarding-shell.tsx",
       "source_location": "L2095",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "src_onboarding_shell_tsx",
-      "target": "src_onboarding_shell_revisepositioning"
+      "target": "src_onboarding_shell_revisepositioning",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -6824,9 +6824,9 @@
       "source_file": "src/onboarding-shell.tsx",
       "source_location": "L2124",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "src_onboarding_shell_tsx",
-      "target": "src_onboarding_shell_reviseproductservicesbundle"
+      "target": "src_onboarding_shell_reviseproductservicesbundle",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -6834,9 +6834,9 @@
       "source_file": "src/onboarding-shell.tsx",
       "source_location": "L2108",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "src_onboarding_shell_tsx",
-      "target": "src_onboarding_shell_revisesectioncontent"
+      "target": "src_onboarding_shell_revisesectioncontent",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -6934,9 +6934,9 @@
       "source_file": "src/onboarding-shell.tsx",
       "source_location": "L2789",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "src_onboarding_shell_tsx",
-      "target": "src_onboarding_shell_section_icon_path"
+      "target": "src_onboarding_shell_section_icon_path",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -6944,9 +6944,9 @@
       "source_file": "src/onboarding-shell.tsx",
       "source_location": "L2812",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "src_onboarding_shell_tsx",
-      "target": "src_onboarding_shell_sectionicon"
+      "target": "src_onboarding_shell_sectionicon",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -6964,9 +6964,9 @@
       "source_file": "src/onboarding-shell.tsx",
       "source_location": "L3068",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "src_onboarding_shell_tsx",
-      "target": "src_onboarding_shell_sectionprogressbar"
+      "target": "src_onboarding_shell_sectionprogressbar",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -6974,9 +6974,9 @@
       "source_file": "src/onboarding-shell.tsx",
       "source_location": "L2006",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "src_onboarding_shell_tsx",
-      "target": "src_onboarding_shell_sectionreviseprompt"
+      "target": "src_onboarding_shell_sectionreviseprompt",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -7553,9 +7553,9 @@
       "source_file": "src/onboarding-shell.tsx",
       "source_location": "L2156",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "src_onboarding_shell_reviseicpbundle",
-      "target": "src_onboarding_shell_firstsentence"
+      "target": "src_onboarding_shell_firstsentence",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -7575,9 +7575,9 @@
       "source_file": "src/onboarding-shell.tsx",
       "source_location": "L2111",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "src_onboarding_shell_revisesectioncontent",
-      "target": "src_onboarding_shell_firstsentence"
+      "target": "src_onboarding_shell_firstsentence",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -7619,9 +7619,9 @@
       "source_file": "src/onboarding-shell.tsx",
       "source_location": "L2100",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "src_onboarding_shell_revisepositioning",
-      "target": "src_onboarding_shell_titlecase"
+      "target": "src_onboarding_shell_titlecase",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -7641,9 +7641,9 @@
       "source_file": "src/onboarding-shell.tsx",
       "source_location": "L2120",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "src_onboarding_shell_revisesectioncontent",
-      "target": "src_onboarding_shell_titlecase"
+      "target": "src_onboarding_shell_titlecase",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -11118,9 +11118,9 @@
       "source_file": "src/knowledge-center/Overview.tsx",
       "source_location": "L18",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "src_knowledge_center_overview_tsx",
-      "target": "knowledge_center_overview_persona_summary_fields"
+      "target": "knowledge_center_overview_persona_summary_fields",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -11128,9 +11128,9 @@
       "source_file": "src/knowledge-center/Overview.tsx",
       "source_location": "L14",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "src_knowledge_center_overview_tsx",
-      "target": "knowledge_center_overview_personafield"
+      "target": "knowledge_center_overview_personafield",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -11148,9 +11148,9 @@
       "source_file": "src/knowledge-center/Overview.tsx",
       "source_location": "L105",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "src_knowledge_center_overview_tsx",
-      "target": "knowledge_center_overview_personasummary"
+      "target": "knowledge_center_overview_personasummary",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",

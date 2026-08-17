@@ -218,15 +218,22 @@ function ProductNavRow({ label, icon, active, reviewed, onSelect }: {
 // Lets the diagram focus on one product's branch at a time instead of the
 // full org-chart, which gets wide fast once there are more than a couple
 // products. "All Products" restores the unfiltered view.
+// Floats over the top-left corner of the diagram canvas rather than sitting
+// in normal flow, so its height tracks the product list instead of being
+// stretched to match the canvas's full height.
 function ProductNav({ products, activeId, onSelect, reviewedKeys }: {
   products: ProductDetail[]; activeId: string | null; onSelect: (id: string | null) => void; reviewedKeys: Set<string>;
 }) {
   return (
-    <div style={{ width: 220, flexShrink: 0, minHeight: 0, display: "flex", flexDirection: "column", background: "var(--color-page)", border: "1px solid var(--color-border)", borderRadius: 14, boxShadow: "var(--shadow-card)", overflow: "hidden" }}>
+    <div style={{
+      position: "absolute", top: 16, left: 16, zIndex: 5, width: 220, maxHeight: "calc(100% - 32px)",
+      display: "flex", flexDirection: "column", background: "var(--color-page)", border: "1px solid var(--color-border)",
+      borderRadius: 14, boxShadow: "var(--shadow-card)", overflow: "hidden",
+    }}>
       <div style={{ padding: 8, borderBottom: "1px solid var(--color-border)", flexShrink: 0 }}>
         <ProductNavRow label="All Products" icon="layers" active={activeId === null} onSelect={() => onSelect(null)} />
       </div>
-      <div className="kc-scrollbar" style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: 8 }}>
+      <div className="kc-scrollbar" style={{ flex: "0 1 auto", minHeight: 0, overflowY: "auto", padding: 8 }}>
         {products.length === 0 ? (
           <div style={{ fontSize: 11.5, color: "var(--color-subtle)", padding: "6px 10px", fontStyle: "italic" }}>No products yet</div>
         ) : (
@@ -283,10 +290,10 @@ export function KnowledgeDiagram({
   }
 
   return (
-    <div style={{ display: "flex", gap: 20, alignItems: "stretch", height: "100%", minHeight: 0 }}>
+    <div style={{ position: "relative", height: "100%", minHeight: 0 }}>
       <ProductNav products={products} activeId={activeProductId} onSelect={selectProductNav} reviewedKeys={reviewedKeys} />
 
-      <div style={{ flex: 1, minWidth: 0, minHeight: 0, display: "flex", flexDirection: "column" }}>
+      <div style={{ height: "100%", minHeight: 0, display: "flex", flexDirection: "column" }}>
         <style>{CHART_STYLES}</style>
 
         <div ref={chartRef} className="kc-scrollbar" style={{ flex: 1, minHeight: 0, overflow: "auto", paddingBottom: 24 }}>

@@ -73,7 +73,10 @@ function PerformanceCard({ row, active, reviewed, onSelect }: {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 6, width: 240 }}>
-      <div style={{ fontSize: 11, color: "var(--color-muted)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+      {/* Wraps instead of truncating — an ellipsis here was cutting the
+          product name entirely on longer icp/product pairs, losing the
+          context it exists to show. */}
+      <div style={{ fontSize: 11, color: "var(--color-muted)", lineHeight: 1.4 }}>
         {context || "Unassigned"}
       </div>
       <PersonaCard
@@ -126,12 +129,12 @@ export function KnowledgeDashboard({ products, icps, personas, selection, onSele
       {TIER_ORDER.map((tier) => {
         const tierRows = byTier[tier];
         return (
-          <div key={tier}>
-            <div style={{ marginBottom: 10 }}>
+          <div key={tier} style={{ background: "var(--color-page)", border: "1px solid var(--color-border)", borderRadius: 14, padding: "16px 18px 18px" }}>
+            <div style={{ marginBottom: 14 }}>
               <TierChip tier={tier} count={tierRows.length} />
             </div>
             {tierRows.length === 0 ? (
-              <div style={{ padding: "16px", fontSize: 12.5, color: "var(--color-subtle)", fontStyle: "italic", background: "var(--color-page)", border: "1px solid var(--color-border)", borderRadius: 14 }}>
+              <div style={{ fontSize: 12.5, color: "var(--color-subtle)", fontStyle: "italic" }}>
                 No personas in this tier.
               </div>
             ) : (
@@ -151,10 +154,12 @@ export function KnowledgeDashboard({ products, icps, personas, selection, onSele
         );
       })}
 
-      <p style={{ margin: 0, fontSize: 11.5, color: "var(--color-subtle)", lineHeight: 1.6 }}>
-        <Icon name="chart" size={11} /> Tiers are relative to the leading persona&apos;s pipeline
-        ({formatCurrencyShort(leader)}), so they re-balance as campaign results change.
-      </p>
+      <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11.5, color: "var(--color-subtle)" }}>
+        <Icon name="chart" size={11} />
+        <span>
+          Tiers are relative to the leading persona&apos;s pipeline ({formatCurrencyShort(leader)}), so they re-balance as campaign results change.
+        </span>
+      </div>
     </div>
   );
 }
