@@ -2411,7 +2411,7 @@
       "source_file": "src/knowledge-center/data.ts",
       "source_location": "L16",
       "id": "knowledge_center_data_nav_groups",
-      "community": 1,
+      "community": 23,
       "norm_label": "nav_groups"
     },
     {
@@ -2420,7 +2420,7 @@
       "source_file": "src/knowledge-center/data.ts",
       "source_location": "L28",
       "id": "knowledge_center_data_nav_label",
-      "community": 1,
+      "community": 23,
       "norm_label": "nav_label"
     },
     {
@@ -2429,7 +2429,7 @@
       "source_file": "src/knowledge-center/data.ts",
       "source_location": "L36",
       "id": "knowledge_center_data_reviewable_sections",
-      "community": 1,
+      "community": 23,
       "norm_label": "reviewable_sections"
     },
     {
@@ -2438,7 +2438,7 @@
       "source_file": "src/knowledge-center/data.ts",
       "source_location": "L39",
       "id": "knowledge_center_data_companyprofile",
-      "community": 2,
+      "community": 21,
       "norm_label": "companyprofile"
     },
     {
@@ -2447,7 +2447,7 @@
       "source_file": "src/knowledge-center/data.ts",
       "source_location": "L67",
       "id": "knowledge_center_data_company_confidence",
-      "community": 2,
+      "community": 21,
       "norm_label": "company_confidence"
     },
     {
@@ -2456,7 +2456,7 @@
       "source_file": "src/knowledge-center/data.ts",
       "source_location": "L73",
       "id": "knowledge_center_data_company_profile",
-      "community": 2,
+      "community": 21,
       "norm_label": "company_profile"
     },
     {
@@ -2465,7 +2465,7 @@
       "source_file": "src/knowledge-center/data.ts",
       "source_location": "L102",
       "id": "knowledge_center_data_productfield",
-      "community": 2,
+      "community": 23,
       "norm_label": "productfield"
     },
     {
@@ -2492,7 +2492,7 @@
       "source_file": "src/knowledge-center/data.ts",
       "source_location": "L230",
       "id": "knowledge_center_data_company_size_buckets",
-      "community": 2,
+      "community": 23,
       "norm_label": "company_size_buckets"
     },
     {
@@ -2501,7 +2501,7 @@
       "source_file": "src/knowledge-center/data.ts",
       "source_location": "L231",
       "id": "knowledge_center_data_funding_stage_buckets",
-      "community": 2,
+      "community": 23,
       "norm_label": "funding_stage_buckets"
     },
     {
@@ -2541,10 +2541,28 @@
       "norm_label": "treekey()"
     },
     {
+      "label": "HistorySource",
+      "file_type": "code",
+      "source_file": "src/knowledge-center/data.ts",
+      "source_location": "L375",
+      "id": "knowledge_center_data_historysource",
+      "community": 21,
+      "norm_label": "historysource"
+    },
+    {
+      "label": "HistoryEntry",
+      "file_type": "code",
+      "source_file": "src/knowledge-center/data.ts",
+      "source_location": "L377",
+      "id": "knowledge_center_data_historyentry",
+      "community": 23,
+      "norm_label": "historyentry"
+    },
+    {
       "label": "icpsForProduct()",
       "file_type": "code",
       "source_file": "src/knowledge-center/data.ts",
-      "source_location": "L374",
+      "source_location": "L390",
       "id": "knowledge_center_data_icpsforproduct",
       "community": 2,
       "norm_label": "icpsforproduct()"
@@ -2553,7 +2571,7 @@
       "label": "personasForIcp()",
       "file_type": "code",
       "source_file": "src/knowledge-center/data.ts",
-      "source_location": "L378",
+      "source_location": "L394",
       "id": "knowledge_center_data_personasforicp",
       "community": 2,
       "norm_label": "personasforicp()"
@@ -2562,7 +2580,7 @@
       "label": "PersonaField",
       "file_type": "code",
       "source_file": "src/knowledge-center/data.ts",
-      "source_location": "L383",
+      "source_location": "L399",
       "id": "knowledge_center_data_personafield",
       "community": 23,
       "norm_label": "personafield"
@@ -2571,7 +2589,7 @@
       "label": "PersonaSection",
       "file_type": "code",
       "source_file": "src/knowledge-center/data.ts",
-      "source_location": "L384",
+      "source_location": "L400",
       "id": "knowledge_center_data_personasection",
       "community": 23,
       "norm_label": "personasection"
@@ -2580,7 +2598,7 @@
       "label": "PersonaDetail",
       "file_type": "code",
       "source_file": "src/knowledge-center/data.ts",
-      "source_location": "L385",
+      "source_location": "L401",
       "id": "knowledge_center_data_personadetail",
       "community": 23,
       "norm_label": "personadetail"
@@ -2589,7 +2607,7 @@
       "label": "PERSONAS",
       "file_type": "code",
       "source_file": "src/knowledge-center/data.ts",
-      "source_location": "L395",
+      "source_location": "L411",
       "id": "knowledge_center_data_personas",
       "community": 23,
       "norm_label": "personas"
@@ -2598,7 +2616,7 @@
       "label": "SequenceStep",
       "file_type": "code",
       "source_file": "src/knowledge-center/data.ts",
-      "source_location": "L840",
+      "source_location": "L856",
       "id": "knowledge_center_data_sequencestep",
       "community": 23,
       "norm_label": "sequencestep"
@@ -2607,7 +2625,7 @@
       "label": "CampaignCombo",
       "file_type": "code",
       "source_file": "src/knowledge-center/data.ts",
-      "source_location": "L847",
+      "source_location": "L863",
       "id": "knowledge_center_data_campaigncombo",
       "community": 23,
       "norm_label": "campaigncombo"
@@ -2616,7 +2634,7 @@
       "label": "CAMPAIGN_COMBOS",
       "file_type": "code",
       "source_file": "src/knowledge-center/data.ts",
-      "source_location": "L864",
+      "source_location": "L880",
       "id": "knowledge_center_data_campaign_combos",
       "community": 23,
       "norm_label": "campaign_combos"
@@ -2625,25 +2643,25 @@
       "label": "campaignCombosForPersona()",
       "file_type": "code",
       "source_file": "src/knowledge-center/data.ts",
-      "source_location": "L964",
+      "source_location": "L980",
       "id": "knowledge_center_data_campaigncombosforpersona",
-      "community": 21,
+      "community": 2,
       "norm_label": "campaigncombosforpersona()"
     },
     {
       "label": "personaPerformance()",
       "file_type": "code",
       "source_file": "src/knowledge-center/data.ts",
-      "source_location": "L968",
+      "source_location": "L984",
       "id": "knowledge_center_data_personaperformance",
-      "community": 21,
+      "community": 2,
       "norm_label": "personaperformance()"
     },
     {
       "label": "ResourcePage",
       "file_type": "code",
       "source_file": "src/knowledge-center/data.ts",
-      "source_location": "L979",
+      "source_location": "L995",
       "id": "knowledge_center_data_resourcepage",
       "community": 23,
       "norm_label": "resourcepage"
@@ -2652,18 +2670,18 @@
       "label": "ResourceRun",
       "file_type": "code",
       "source_file": "src/knowledge-center/data.ts",
-      "source_location": "L984",
+      "source_location": "L1000",
       "id": "knowledge_center_data_resourcerun",
-      "community": 1,
+      "community": 21,
       "norm_label": "resourcerun"
     },
     {
       "label": "RESOURCE_RUNS",
       "file_type": "code",
       "source_file": "src/knowledge-center/data.ts",
-      "source_location": "L993",
+      "source_location": "L1009",
       "id": "knowledge_center_data_resource_runs",
-      "community": 1,
+      "community": 21,
       "norm_label": "resource_runs"
     },
     {
@@ -2681,7 +2699,7 @@
       "source_file": "src/knowledge-center/Campaign.tsx",
       "source_location": "L7",
       "id": "knowledge_center_campaign_campaignsection",
-      "community": 1,
+      "community": 23,
       "norm_label": "campaignsection()"
     },
     {
@@ -2780,7 +2798,7 @@
       "source_file": "src/knowledge-center/Explorer.tsx",
       "source_location": "L1",
       "id": "src_knowledge_center_explorer_tsx",
-      "community": 2,
+      "community": 23,
       "norm_label": "explorer.tsx"
     },
     {
@@ -2789,7 +2807,7 @@
       "source_file": "src/knowledge-center/Explorer.tsx",
       "source_location": "L12",
       "id": "knowledge_center_explorer_explorerview",
-      "community": 2,
+      "community": 23,
       "norm_label": "explorerview"
     },
     {
@@ -2798,7 +2816,7 @@
       "source_file": "src/knowledge-center/Explorer.tsx",
       "source_location": "L14",
       "id": "knowledge_center_explorer_views",
-      "community": 2,
+      "community": 23,
       "norm_label": "views"
     },
     {
@@ -2816,7 +2834,7 @@
       "source_file": "src/knowledge-center/Dashboard.tsx",
       "source_location": "L1",
       "id": "src_knowledge_center_dashboard_tsx",
-      "community": 21,
+      "community": 2,
       "norm_label": "dashboard.tsx"
     },
     {
@@ -2825,7 +2843,7 @@
       "source_file": "src/knowledge-center/Dashboard.tsx",
       "source_location": "L11",
       "id": "knowledge_center_dashboard_tier",
-      "community": 21,
+      "community": 2,
       "norm_label": "tier"
     },
     {
@@ -2834,7 +2852,7 @@
       "source_file": "src/knowledge-center/Dashboard.tsx",
       "source_location": "L16",
       "id": "knowledge_center_dashboard_tier_share",
-      "community": 21,
+      "community": 2,
       "norm_label": "tier_share"
     },
     {
@@ -2843,7 +2861,7 @@
       "source_file": "src/knowledge-center/Dashboard.tsx",
       "source_location": "L23",
       "id": "knowledge_center_dashboard_tier_meta",
-      "community": 21,
+      "community": 2,
       "norm_label": "tier_meta"
     },
     {
@@ -2852,7 +2870,7 @@
       "source_file": "src/knowledge-center/Dashboard.tsx",
       "source_location": "L29",
       "id": "knowledge_center_dashboard_tier_order",
-      "community": 21,
+      "community": 2,
       "norm_label": "tier_order"
     },
     {
@@ -2861,7 +2879,7 @@
       "source_file": "src/knowledge-center/Dashboard.tsx",
       "source_location": "L31",
       "id": "knowledge_center_dashboard_tierfor",
-      "community": 21,
+      "community": 2,
       "norm_label": "tierfor()"
     },
     {
@@ -2879,7 +2897,7 @@
       "source_file": "src/knowledge-center/Dashboard.tsx",
       "source_location": "L48",
       "id": "knowledge_center_dashboard_tierchip",
-      "community": 21,
+      "community": 2,
       "norm_label": "tierchip()"
     },
     {
@@ -2888,16 +2906,16 @@
       "source_file": "src/knowledge-center/Dashboard.tsx",
       "source_location": "L64",
       "id": "knowledge_center_dashboard_performancecard",
-      "community": 21,
+      "community": 2,
       "norm_label": "performancecard()"
     },
     {
       "label": "KnowledgeDashboard()",
       "file_type": "code",
       "source_file": "src/knowledge-center/Dashboard.tsx",
-      "source_location": "L87",
+      "source_location": "L90",
       "id": "knowledge_center_dashboard_knowledgedashboard",
-      "community": 21,
+      "community": 2,
       "norm_label": "knowledgedashboard()"
     },
     {
@@ -2906,7 +2924,7 @@
       "source_file": "src/knowledge-center/ProductDetailPane.tsx",
       "source_location": "L1",
       "id": "src_knowledge_center_productdetailpane_tsx",
-      "community": 2,
+      "community": 21,
       "norm_label": "productdetailpane.tsx"
     },
     {
@@ -2915,25 +2933,34 @@
       "source_file": "src/knowledge-center/ProductDetailPane.tsx",
       "source_location": "L5",
       "id": "knowledge_center_productdetailpane_emptyproduct",
-      "community": 2,
+      "community": 21,
       "norm_label": "emptyproduct()"
+    },
+    {
+      "label": "LogField",
+      "file_type": "code",
+      "source_file": "src/knowledge-center/ProductDetailPane.tsx",
+      "source_location": "L9",
+      "id": "knowledge_center_productdetailpane_logfield",
+      "community": 21,
+      "norm_label": "logfield"
     },
     {
       "label": "ProductCard()",
       "file_type": "code",
       "source_file": "src/knowledge-center/ProductDetailPane.tsx",
-      "source_location": "L9",
+      "source_location": "L11",
       "id": "knowledge_center_productdetailpane_productcard",
-      "community": 2,
+      "community": 21,
       "norm_label": "productcard()"
     },
     {
       "label": "ProductDetailPane()",
       "file_type": "code",
       "source_file": "src/knowledge-center/ProductDetailPane.tsx",
-      "source_location": "L28",
+      "source_location": "L42",
       "id": "knowledge_center_productdetailpane_productdetailpane",
-      "community": 2,
+      "community": 23,
       "norm_label": "productdetailpane()"
     },
     {
@@ -2942,23 +2969,23 @@
       "source_file": "src/knowledge-center/KnowledgeCenter.tsx",
       "source_location": "L1",
       "id": "src_knowledge_center_knowledgecenter_tsx",
-      "community": 1,
+      "community": 23,
       "norm_label": "knowledgecenter.tsx"
     },
     {
       "label": "NAV_ICON",
       "file_type": "code",
       "source_file": "src/knowledge-center/KnowledgeCenter.tsx",
-      "source_location": "L8",
+      "source_location": "L9",
       "id": "knowledge_center_knowledgecenter_nav_icon",
-      "community": 1,
+      "community": 23,
       "norm_label": "nav_icon"
     },
     {
       "label": "totalForSection()",
       "file_type": "code",
       "source_file": "src/knowledge-center/KnowledgeCenter.tsx",
-      "source_location": "L13",
+      "source_location": "L14",
       "id": "knowledge_center_knowledgecenter_totalforsection",
       "community": 23,
       "norm_label": "totalforsection()"
@@ -2967,18 +2994,18 @@
       "label": "totalForNodeType()",
       "file_type": "code",
       "source_file": "src/knowledge-center/KnowledgeCenter.tsx",
-      "source_location": "L18",
+      "source_location": "L19",
       "id": "knowledge_center_knowledgecenter_totalfornodetype",
-      "community": 1,
+      "community": 23,
       "norm_label": "totalfornodetype()"
     },
     {
       "label": "KnowledgeCenter()",
       "file_type": "code",
       "source_file": "src/knowledge-center/KnowledgeCenter.tsx",
-      "source_location": "L22",
+      "source_location": "L23",
       "id": "knowledge_center_knowledgecenter_knowledgecenter",
-      "community": 1,
+      "community": 23,
       "norm_label": "knowledgecenter()"
     },
     {
@@ -3104,7 +3131,7 @@
       "source_file": "src/knowledge-center/IcpDetailPane.tsx",
       "source_location": "L1",
       "id": "src_knowledge_center_icpdetailpane_tsx",
-      "community": 2,
+      "community": 21,
       "norm_label": "icpdetailpane.tsx"
     },
     {
@@ -3113,25 +3140,34 @@
       "source_file": "src/knowledge-center/IcpDetailPane.tsx",
       "source_location": "L5",
       "id": "knowledge_center_icpdetailpane_emptyicp",
-      "community": 2,
+      "community": 21,
       "norm_label": "emptyicp()"
+    },
+    {
+      "label": "LogField",
+      "file_type": "code",
+      "source_file": "src/knowledge-center/IcpDetailPane.tsx",
+      "source_location": "L17",
+      "id": "knowledge_center_icpdetailpane_logfield",
+      "community": 21,
+      "norm_label": "logfield"
     },
     {
       "label": "PercentStat()",
       "file_type": "code",
       "source_file": "src/knowledge-center/IcpDetailPane.tsx",
-      "source_location": "L17",
+      "source_location": "L19",
       "id": "knowledge_center_icpdetailpane_percentstat",
-      "community": 2,
+      "community": 21,
       "norm_label": "percentstat()"
     },
     {
       "label": "IcpDetailPane()",
       "file_type": "code",
       "source_file": "src/knowledge-center/IcpDetailPane.tsx",
-      "source_location": "L27",
+      "source_location": "L34",
       "id": "knowledge_center_icpdetailpane_icpdetailpane",
-      "community": 2,
+      "community": 21,
       "norm_label": "icpdetailpane()"
     },
     {
@@ -3158,7 +3194,7 @@
       "source_file": "src/knowledge-center/Resources.tsx",
       "source_location": "L1",
       "id": "src_knowledge_center_resources_tsx",
-      "community": 1,
+      "community": 21,
       "norm_label": "resources.tsx"
     },
     {
@@ -3167,8 +3203,53 @@
       "source_file": "src/knowledge-center/Resources.tsx",
       "source_location": "L7",
       "id": "knowledge_center_resources_resourcessection",
-      "community": 1,
+      "community": 21,
       "norm_label": "resourcessection()"
+    },
+    {
+      "label": "HistoryDrawer.tsx",
+      "file_type": "code",
+      "source_file": "src/knowledge-center/HistoryDrawer.tsx",
+      "source_location": "L1",
+      "id": "src_knowledge_center_historydrawer_tsx",
+      "community": 23,
+      "norm_label": "historydrawer.tsx"
+    },
+    {
+      "label": "ENTITY_LABEL",
+      "file_type": "code",
+      "source_file": "src/knowledge-center/HistoryDrawer.tsx",
+      "source_location": "L4",
+      "id": "knowledge_center_historydrawer_entity_label",
+      "community": 23,
+      "norm_label": "entity_label"
+    },
+    {
+      "label": "displayValue()",
+      "file_type": "code",
+      "source_file": "src/knowledge-center/HistoryDrawer.tsx",
+      "source_location": "L6",
+      "id": "knowledge_center_historydrawer_displayvalue",
+      "community": 23,
+      "norm_label": "displayvalue()"
+    },
+    {
+      "label": "HistoryRow()",
+      "file_type": "code",
+      "source_file": "src/knowledge-center/HistoryDrawer.tsx",
+      "source_location": "L10",
+      "id": "knowledge_center_historydrawer_historyrow",
+      "community": 23,
+      "norm_label": "historyrow()"
+    },
+    {
+      "label": "HistoryDrawer()",
+      "file_type": "code",
+      "source_file": "src/knowledge-center/HistoryDrawer.tsx",
+      "source_location": "L46",
+      "id": "knowledge_center_historydrawer_historydrawer",
+      "community": 23,
+      "norm_label": "historydrawer()"
     },
     {
       "label": "PersonaDetailPane.tsx",
@@ -3176,7 +3257,7 @@
       "source_file": "src/knowledge-center/PersonaDetailPane.tsx",
       "source_location": "L1",
       "id": "src_knowledge_center_personadetailpane_tsx",
-      "community": 23,
+      "community": 21,
       "norm_label": "personadetailpane.tsx"
     },
     {
@@ -3185,7 +3266,7 @@
       "source_file": "src/knowledge-center/PersonaDetailPane.tsx",
       "source_location": "L7",
       "id": "knowledge_center_personadetailpane_section_icon",
-      "community": 23,
+      "community": 21,
       "norm_label": "section_icon"
     },
     {
@@ -3198,28 +3279,37 @@
       "norm_label": "emptypersona()"
     },
     {
-      "label": "PersonaFieldRow()",
+      "label": "LogField",
       "file_type": "code",
       "source_file": "src/knowledge-center/PersonaDetailPane.tsx",
       "source_location": "L29",
+      "id": "knowledge_center_personadetailpane_logfield",
+      "community": 21,
+      "norm_label": "logfield"
+    },
+    {
+      "label": "PersonaFieldRow()",
+      "file_type": "code",
+      "source_file": "src/knowledge-center/PersonaDetailPane.tsx",
+      "source_location": "L31",
       "id": "knowledge_center_personadetailpane_personafieldrow",
-      "community": 23,
+      "community": 21,
       "norm_label": "personafieldrow()"
     },
     {
       "label": "PerformanceSection()",
       "file_type": "code",
       "source_file": "src/knowledge-center/PersonaDetailPane.tsx",
-      "source_location": "L40",
+      "source_location": "L50",
       "id": "knowledge_center_personadetailpane_performancesection",
-      "community": 21,
+      "community": 2,
       "norm_label": "performancesection()"
     },
     {
       "label": "PersonaDetailPane()",
       "file_type": "code",
       "source_file": "src/knowledge-center/PersonaDetailPane.tsx",
-      "source_location": "L72",
+      "source_location": "L82",
       "id": "knowledge_center_personadetailpane_personadetailpane",
       "community": 23,
       "norm_label": "personadetailpane()"
@@ -3230,70 +3320,115 @@
       "source_file": "src/knowledge-center/Company.tsx",
       "source_location": "L1",
       "id": "src_knowledge_center_company_tsx",
-      "community": 2,
+      "community": 21,
       "norm_label": "company.tsx"
     },
     {
-      "label": "TEXT_FIELDS",
+      "label": "TextFieldSpec",
       "file_type": "code",
       "source_file": "src/knowledge-center/Company.tsx",
       "source_location": "L5",
-      "id": "knowledge_center_company_text_fields",
-      "community": 2,
-      "norm_label": "text_fields"
+      "id": "knowledge_center_company_textfieldspec",
+      "community": 21,
+      "norm_label": "textfieldspec"
+    },
+    {
+      "label": "BASIC_FIELDS",
+      "file_type": "code",
+      "source_file": "src/knowledge-center/Company.tsx",
+      "source_location": "L8",
+      "id": "knowledge_center_company_basic_fields",
+      "community": 21,
+      "norm_label": "basic_fields"
+    },
+    {
+      "label": "PITCH_FIELDS",
+      "file_type": "code",
+      "source_file": "src/knowledge-center/Company.tsx",
+      "source_location": "L17",
+      "id": "knowledge_center_company_pitch_fields",
+      "community": 21,
+      "norm_label": "pitch_fields"
+    },
+    {
+      "label": "POSITIONING_FIELDS",
+      "file_type": "code",
+      "source_file": "src/knowledge-center/Company.tsx",
+      "source_location": "L25",
+      "id": "knowledge_center_company_positioning_fields",
+      "community": 21,
+      "norm_label": "positioning_fields"
+    },
+    {
+      "label": "DEEP_DIVE_FIELDS",
+      "file_type": "code",
+      "source_file": "src/knowledge-center/Company.tsx",
+      "source_location": "L33",
+      "id": "knowledge_center_company_deep_dive_fields",
+      "community": 21,
+      "norm_label": "deep_dive_fields"
+    },
+    {
+      "label": "ProfileTextField()",
+      "file_type": "code",
+      "source_file": "src/knowledge-center/Company.tsx",
+      "source_location": "L41",
+      "id": "knowledge_center_company_profiletextfield",
+      "community": 21,
+      "norm_label": "profiletextfield()"
     },
     {
       "label": "CHIP_FIELDS",
       "file_type": "code",
       "source_file": "src/knowledge-center/Company.tsx",
-      "source_location": "L25",
+      "source_location": "L52",
       "id": "knowledge_center_company_chip_fields",
-      "community": 2,
+      "community": 21,
       "norm_label": "chip_fields"
     },
     {
       "label": "PROSE",
       "file_type": "code",
       "source_file": "src/knowledge-center/Company.tsx",
-      "source_location": "L34",
+      "source_location": "L61",
       "id": "knowledge_center_company_prose",
-      "community": 2,
+      "community": 21,
       "norm_label": "prose"
     },
     {
       "label": "computeCompletion()",
       "file_type": "code",
       "source_file": "src/knowledge-center/Company.tsx",
-      "source_location": "L36",
+      "source_location": "L63",
       "id": "knowledge_center_company_computecompletion",
-      "community": 2,
+      "community": 21,
       "norm_label": "computecompletion()"
     },
     {
       "label": "positioningStatement()",
       "file_type": "code",
       "source_file": "src/knowledge-center/Company.tsx",
-      "source_location": "L42",
+      "source_location": "L69",
       "id": "knowledge_center_company_positioningstatement",
-      "community": 2,
+      "community": 21,
       "norm_label": "positioningstatement()"
     },
     {
       "label": "CompanySection()",
       "file_type": "code",
       "source_file": "src/knowledge-center/Company.tsx",
-      "source_location": "L46",
+      "source_location": "L73",
       "id": "knowledge_center_company_companysection",
-      "community": 2,
+      "community": 21,
       "norm_label": "companysection()"
     },
     {
       "label": "CompanySummary()",
       "file_type": "code",
       "source_file": "src/knowledge-center/Company.tsx",
-      "source_location": "L144",
+      "source_location": "L183",
       "id": "knowledge_center_company_companysummary",
-      "community": 2,
+      "community": 21,
       "norm_label": "companysummary()"
     },
     {
@@ -3302,7 +3437,7 @@
       "source_file": "src/knowledge-center/Diagram.tsx",
       "source_location": "L1",
       "id": "src_knowledge_center_diagram_tsx",
-      "community": 21,
+      "community": 2,
       "norm_label": "diagram.tsx"
     },
     {
@@ -3311,7 +3446,7 @@
       "source_file": "src/knowledge-center/Diagram.tsx",
       "source_location": "L7",
       "id": "knowledge_center_diagram_branch_colors",
-      "community": 21,
+      "community": 2,
       "norm_label": "branch_colors"
     },
     {
@@ -3320,7 +3455,7 @@
       "source_file": "src/knowledge-center/Diagram.tsx",
       "source_location": "L60",
       "id": "knowledge_center_diagram_row_height",
-      "community": 21,
+      "community": 2,
       "norm_label": "row_height"
     },
     {
@@ -3329,7 +3464,7 @@
       "source_file": "src/knowledge-center/Diagram.tsx",
       "source_location": "L65",
       "id": "knowledge_center_diagram_boxshadowfor",
-      "community": 21,
+      "community": 2,
       "norm_label": "boxshadowfor()"
     },
     {
@@ -3338,7 +3473,7 @@
       "source_file": "src/knowledge-center/Diagram.tsx",
       "source_location": "L71",
       "id": "knowledge_center_diagram_activetransform",
-      "community": 21,
+      "community": 2,
       "norm_label": "activetransform()"
     },
     {
@@ -3347,7 +3482,7 @@
       "source_file": "src/knowledge-center/Diagram.tsx",
       "source_location": "L75",
       "id": "knowledge_center_diagram_avatar",
-      "community": 21,
+      "community": 2,
       "norm_label": "avatar()"
     },
     {
@@ -3356,7 +3491,7 @@
       "source_file": "src/knowledge-center/Diagram.tsx",
       "source_location": "L84",
       "id": "knowledge_center_diagram_addghost",
-      "community": 21,
+      "community": 2,
       "norm_label": "addghost()"
     },
     {
@@ -3365,7 +3500,7 @@
       "source_file": "src/knowledge-center/Diagram.tsx",
       "source_location": "L100",
       "id": "knowledge_center_diagram_productbox",
-      "community": 21,
+      "community": 2,
       "norm_label": "productbox()"
     },
     {
@@ -3374,7 +3509,7 @@
       "source_file": "src/knowledge-center/Diagram.tsx",
       "source_location": "L119",
       "id": "knowledge_center_diagram_icpbox",
-      "community": 21,
+      "community": 2,
       "norm_label": "icpbox()"
     },
     {
@@ -3383,7 +3518,7 @@
       "source_file": "src/knowledge-center/Diagram.tsx",
       "source_location": "L138",
       "id": "knowledge_center_diagram_card_tints",
-      "community": 21,
+      "community": 2,
       "norm_label": "card_tints"
     },
     {
@@ -3392,7 +3527,7 @@
       "source_file": "src/knowledge-center/Diagram.tsx",
       "source_location": "L143",
       "id": "knowledge_center_diagram_personacard",
-      "community": 21,
+      "community": 2,
       "norm_label": "personacard()"
     },
     {
@@ -3401,7 +3536,7 @@
       "source_file": "src/knowledge-center/Diagram.tsx",
       "source_location": "L199",
       "id": "knowledge_center_diagram_productnavrow",
-      "community": 21,
+      "community": 2,
       "norm_label": "productnavrow()"
     },
     {
@@ -3410,16 +3545,25 @@
       "source_file": "src/knowledge-center/Diagram.tsx",
       "source_location": "L224",
       "id": "knowledge_center_diagram_productnav",
-      "community": 21,
+      "community": 2,
       "norm_label": "productnav()"
+    },
+    {
+      "label": "ZoomControls()",
+      "file_type": "code",
+      "source_file": "src/knowledge-center/Diagram.tsx",
+      "source_location": "L256",
+      "id": "knowledge_center_diagram_zoomcontrols",
+      "community": 2,
+      "norm_label": "zoomcontrols()"
     },
     {
       "label": "KnowledgeDiagram()",
       "file_type": "code",
       "source_file": "src/knowledge-center/Diagram.tsx",
-      "source_location": "L250",
+      "source_location": "L283",
       "id": "knowledge_center_diagram_knowledgediagram",
-      "community": 21,
+      "community": 2,
       "norm_label": "knowledgediagram()"
     },
     {
@@ -3428,14 +3572,14 @@
       "source_file": "src/knowledge-center/ui.tsx",
       "source_location": "L1",
       "id": "src_knowledge_center_ui_tsx",
-      "community": 2,
+      "community": 21,
       "norm_label": "ui.tsx"
     },
     {
       "label": "IconName",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L12",
+      "source_location": "L13",
       "id": "knowledge_center_ui_iconname",
       "community": 23,
       "norm_label": "iconname"
@@ -3444,97 +3588,97 @@
       "label": "ICON_PATHS",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L19",
+      "source_location": "L20",
       "id": "knowledge_center_ui_icon_paths",
-      "community": 2,
+      "community": 21,
       "norm_label": "icon_paths"
     },
     {
       "label": "FILLED_ICONS",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L58",
+      "source_location": "L60",
       "id": "knowledge_center_ui_filled_icons",
-      "community": 2,
+      "community": 21,
       "norm_label": "filled_icons"
     },
     {
       "label": "Icon()",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L60",
+      "source_location": "L62",
       "id": "knowledge_center_ui_icon",
-      "community": 1,
+      "community": 21,
       "norm_label": "icon()"
     },
     {
       "label": "ConfidenceBadge()",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L76",
+      "source_location": "L78",
       "id": "knowledge_center_ui_confidencebadge",
-      "community": 2,
+      "community": 21,
       "norm_label": "confidencebadge()"
     },
     {
       "label": "MatchBadge()",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L88",
+      "source_location": "L90",
       "id": "knowledge_center_ui_matchbadge",
-      "community": 2,
+      "community": 21,
       "norm_label": "matchbadge()"
     },
     {
       "label": "ProgressBar()",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L96",
+      "source_location": "L98",
       "id": "knowledge_center_ui_progressbar",
-      "community": 2,
+      "community": 21,
       "norm_label": "progressbar()"
     },
     {
       "label": "CardSection()",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L106",
+      "source_location": "L108",
       "id": "knowledge_center_ui_cardsection",
-      "community": 2,
+      "community": 21,
       "norm_label": "cardsection()"
     },
     {
       "label": "formatCurrencyShort()",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L124",
+      "source_location": "L126",
       "id": "knowledge_center_ui_formatcurrencyshort",
-      "community": 21,
+      "community": 2,
       "norm_label": "formatcurrencyshort()"
     },
     {
       "label": "StatTile()",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L131",
+      "source_location": "L133",
       "id": "knowledge_center_ui_stattile",
-      "community": 23,
+      "community": 21,
       "norm_label": "stattile()"
     },
     {
       "label": "FieldLabel()",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L146",
+      "source_location": "L148",
       "id": "knowledge_center_ui_fieldlabel",
-      "community": 2,
+      "community": 21,
       "norm_label": "fieldlabel()"
     },
     {
       "label": "FieldValue()",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L156",
+      "source_location": "L159",
       "id": "knowledge_center_ui_fieldvalue",
       "community": 2,
       "norm_label": "fieldvalue()"
@@ -3543,25 +3687,61 @@
       "label": "EditableField()",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L170",
+      "source_location": "L177",
       "id": "knowledge_center_ui_editablefield",
-      "community": 2,
+      "community": 21,
       "norm_label": "editablefield()"
+    },
+    {
+      "label": "firstSentence()",
+      "file_type": "code",
+      "source_file": "src/knowledge-center/ui.tsx",
+      "source_location": "L204",
+      "id": "knowledge_center_ui_firstsentence",
+      "community": 21,
+      "norm_label": "firstsentence()"
+    },
+    {
+      "label": "reviseText()",
+      "file_type": "code",
+      "source_file": "src/knowledge-center/ui.tsx",
+      "source_location": "L208",
+      "id": "knowledge_center_ui_revisetext",
+      "community": 21,
+      "norm_label": "revisetext()"
+    },
+    {
+      "label": "AskAI()",
+      "file_type": "code",
+      "source_file": "src/knowledge-center/ui.tsx",
+      "source_location": "L222",
+      "id": "knowledge_center_ui_askai",
+      "community": 21,
+      "norm_label": "askai()"
+    },
+    {
+      "label": "HistoryTextField()",
+      "file_type": "code",
+      "source_file": "src/knowledge-center/ui.tsx",
+      "source_location": "L288",
+      "id": "knowledge_center_ui_historytextfield",
+      "community": 21,
+      "norm_label": "historytextfield()"
     },
     {
       "label": "ChipList()",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L186",
+      "source_location": "L308",
       "id": "knowledge_center_ui_chiplist",
-      "community": 2,
+      "community": 21,
       "norm_label": "chiplist()"
     },
     {
       "label": "TagRow()",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L220",
+      "source_location": "L342",
       "id": "knowledge_center_ui_tagrow",
       "community": 2,
       "norm_label": "tagrow()"
@@ -3570,70 +3750,70 @@
       "label": "CheckboxPills()",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L231",
+      "source_location": "L353",
       "id": "knowledge_center_ui_checkboxpills",
-      "community": 2,
+      "community": 21,
       "norm_label": "checkboxpills()"
     },
     {
       "label": "KC_PRIMARY_BTN",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L254",
+      "source_location": "L376",
       "id": "knowledge_center_ui_kc_primary_btn",
-      "community": 2,
+      "community": 21,
       "norm_label": "kc_primary_btn"
     },
     {
       "label": "KC_GHOST_BTN",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L260",
+      "source_location": "L382",
       "id": "knowledge_center_ui_kc_ghost_btn",
-      "community": 1,
+      "community": 21,
       "norm_label": "kc_ghost_btn"
     },
     {
       "label": "KC_DANGER_BTN",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L266",
+      "source_location": "L388",
       "id": "knowledge_center_ui_kc_danger_btn",
-      "community": 2,
+      "community": 21,
       "norm_label": "kc_danger_btn"
     },
     {
       "label": "IconButton()",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L272",
+      "source_location": "L394",
       "id": "knowledge_center_ui_iconbutton",
-      "community": 2,
+      "community": 21,
       "norm_label": "iconbutton()"
     },
     {
       "label": "EmptyState()",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L282",
+      "source_location": "L404",
       "id": "knowledge_center_ui_emptystate",
-      "community": 2,
+      "community": 21,
       "norm_label": "emptystate()"
     },
     {
       "label": "Pagination()",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L296",
+      "source_location": "L418",
       "id": "knowledge_center_ui_pagination",
-      "community": 1,
+      "community": 21,
       "norm_label": "pagination()"
     },
     {
       "label": "Drawer()",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L324",
+      "source_location": "L446",
       "id": "knowledge_center_ui_drawer",
       "community": 23,
       "norm_label": "drawer()"
@@ -3763,6 +3943,15 @@
       "id": "onboarding_standalone_app_claude_graphify",
       "community": 20,
       "norm_label": "graphify"
+    },
+    {
+      "label": "TEXT_FIELDS",
+      "file_type": "code",
+      "source_file": "src/knowledge-center/Company.tsx",
+      "source_location": "L5",
+      "community": 21,
+      "norm_label": "text_fields",
+      "id": "knowledge_center_company_text_fields"
     },
     {
       "label": "RiskLevel",
@@ -4039,7 +4228,7 @@
       "file_type": "code",
       "source_file": "src/knowledge-center/IcpDetailPane.tsx",
       "source_location": "L17",
-      "community": 2,
+      "community": 21,
       "norm_label": "icpcompletion()",
       "id": "knowledge_center_icpdetailpane_icpcompletion"
     },
@@ -4048,7 +4237,7 @@
       "file_type": "code",
       "source_file": "src/knowledge-center/PersonaDetailPane.tsx",
       "source_location": "L29",
-      "community": 23,
+      "community": 21,
       "norm_label": "personacompletion()",
       "id": "knowledge_center_personadetailpane_personacompletion"
     },
@@ -4291,7 +4480,7 @@
       "file_type": "code",
       "source_file": "src/knowledge-center/Dashboard.tsx",
       "source_location": "L49",
-      "community": 21,
+      "community": 2,
       "norm_label": "header_cell",
       "id": "knowledge_center_dashboard_header_cell"
     },
@@ -4300,7 +4489,7 @@
       "file_type": "code",
       "source_file": "src/knowledge-center/Dashboard.tsx",
       "source_location": "L53",
-      "community": 21,
+      "community": 2,
       "norm_label": "num_cell",
       "id": "knowledge_center_dashboard_num_cell"
     },
@@ -4309,7 +4498,7 @@
       "file_type": "code",
       "source_file": "src/knowledge-center/Dashboard.tsx",
       "source_location": "L74",
-      "community": 21,
+      "community": 2,
       "norm_label": "row()",
       "id": "knowledge_center_dashboard_row"
     },
@@ -4318,7 +4507,7 @@
       "file_type": "code",
       "source_file": "src/knowledge-center/Diagram.tsx",
       "source_location": "L41",
-      "community": 21,
+      "community": 2,
       "norm_label": "levels",
       "id": "knowledge_center_diagram_levels"
     },
@@ -4327,7 +4516,7 @@
       "file_type": "code",
       "source_file": "src/knowledge-center/Diagram.tsx",
       "source_location": "L48",
-      "community": 21,
+      "community": 2,
       "norm_label": "stickylabel()",
       "id": "knowledge_center_diagram_stickylabel"
     },
@@ -4336,7 +4525,7 @@
       "file_type": "code",
       "source_file": "src/knowledge-center/Diagram.tsx",
       "source_location": "L37",
-      "community": 21,
+      "community": 2,
       "norm_label": "row_labels",
       "id": "knowledge_center_diagram_row_labels"
     },
@@ -4508,7 +4697,7 @@
       "captured_at": null,
       "author": null,
       "contributor": null,
-      "community": 1,
+      "community": 23,
       "norm_label": "kc_styles",
       "id": "knowledge_center_ui_kc_styles"
     }
@@ -6094,9 +6283,9 @@
       "source_file": "src/onboarding-shell.tsx",
       "source_location": "L2144",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_onboarding_shell_tsx",
-      "target": "src_onboarding_shell_icpbundle",
-      "confidence_score": 1.0
+      "target": "src_onboarding_shell_icpbundle"
     },
     {
       "relation": "contains",
@@ -6504,9 +6693,9 @@
       "source_file": "src/onboarding-shell.tsx",
       "source_location": "L2094",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_onboarding_shell_tsx",
-      "target": "src_onboarding_shell_positioning",
-      "confidence_score": 1.0
+      "target": "src_onboarding_shell_positioning"
     },
     {
       "relation": "contains",
@@ -6694,9 +6883,9 @@
       "source_file": "src/onboarding-shell.tsx",
       "source_location": "L3066",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_onboarding_shell_tsx",
-      "target": "src_onboarding_shell_review_section_label",
-      "confidence_score": 1.0
+      "target": "src_onboarding_shell_review_section_label"
     },
     {
       "relation": "contains",
@@ -6744,9 +6933,9 @@
       "source_file": "src/onboarding-shell.tsx",
       "source_location": "L2145",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_onboarding_shell_tsx",
-      "target": "src_onboarding_shell_reviseicpbundle",
-      "confidence_score": 1.0
+      "target": "src_onboarding_shell_reviseicpbundle"
     },
     {
       "relation": "contains",
@@ -6794,9 +6983,9 @@
       "source_file": "src/onboarding-shell.tsx",
       "source_location": "L2172",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_onboarding_shell_tsx",
-      "target": "src_onboarding_shell_revisepersonasbundle",
-      "confidence_score": 1.0
+      "target": "src_onboarding_shell_revisepersonasbundle"
     },
     {
       "relation": "contains",
@@ -6804,9 +6993,9 @@
       "source_file": "src/onboarding-shell.tsx",
       "source_location": "L2095",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_onboarding_shell_tsx",
-      "target": "src_onboarding_shell_revisepositioning",
-      "confidence_score": 1.0
+      "target": "src_onboarding_shell_revisepositioning"
     },
     {
       "relation": "contains",
@@ -6824,9 +7013,9 @@
       "source_file": "src/onboarding-shell.tsx",
       "source_location": "L2124",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_onboarding_shell_tsx",
-      "target": "src_onboarding_shell_reviseproductservicesbundle",
-      "confidence_score": 1.0
+      "target": "src_onboarding_shell_reviseproductservicesbundle"
     },
     {
       "relation": "contains",
@@ -6834,9 +7023,9 @@
       "source_file": "src/onboarding-shell.tsx",
       "source_location": "L2108",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_onboarding_shell_tsx",
-      "target": "src_onboarding_shell_revisesectioncontent",
-      "confidence_score": 1.0
+      "target": "src_onboarding_shell_revisesectioncontent"
     },
     {
       "relation": "contains",
@@ -6934,9 +7123,9 @@
       "source_file": "src/onboarding-shell.tsx",
       "source_location": "L2789",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_onboarding_shell_tsx",
-      "target": "src_onboarding_shell_section_icon_path",
-      "confidence_score": 1.0
+      "target": "src_onboarding_shell_section_icon_path"
     },
     {
       "relation": "contains",
@@ -6944,9 +7133,9 @@
       "source_file": "src/onboarding-shell.tsx",
       "source_location": "L2812",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_onboarding_shell_tsx",
-      "target": "src_onboarding_shell_sectionicon",
-      "confidence_score": 1.0
+      "target": "src_onboarding_shell_sectionicon"
     },
     {
       "relation": "contains",
@@ -6964,9 +7153,9 @@
       "source_file": "src/onboarding-shell.tsx",
       "source_location": "L3068",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_onboarding_shell_tsx",
-      "target": "src_onboarding_shell_sectionprogressbar",
-      "confidence_score": 1.0
+      "target": "src_onboarding_shell_sectionprogressbar"
     },
     {
       "relation": "contains",
@@ -6974,9 +7163,9 @@
       "source_file": "src/onboarding-shell.tsx",
       "source_location": "L2006",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_onboarding_shell_tsx",
-      "target": "src_onboarding_shell_sectionreviseprompt",
-      "confidence_score": 1.0
+      "target": "src_onboarding_shell_sectionreviseprompt"
     },
     {
       "relation": "contains",
@@ -7553,9 +7742,9 @@
       "source_file": "src/onboarding-shell.tsx",
       "source_location": "L2156",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_onboarding_shell_reviseicpbundle",
-      "target": "src_onboarding_shell_firstsentence",
-      "confidence_score": 1.0
+      "target": "src_onboarding_shell_firstsentence"
     },
     {
       "relation": "calls",
@@ -7575,9 +7764,9 @@
       "source_file": "src/onboarding-shell.tsx",
       "source_location": "L2111",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_onboarding_shell_revisesectioncontent",
-      "target": "src_onboarding_shell_firstsentence",
-      "confidence_score": 1.0
+      "target": "src_onboarding_shell_firstsentence"
     },
     {
       "relation": "calls",
@@ -7619,9 +7808,9 @@
       "source_file": "src/onboarding-shell.tsx",
       "source_location": "L2100",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_onboarding_shell_revisepositioning",
-      "target": "src_onboarding_shell_titlecase",
-      "confidence_score": 1.0
+      "target": "src_onboarding_shell_titlecase"
     },
     {
       "relation": "calls",
@@ -7641,9 +7830,9 @@
       "source_file": "src/onboarding-shell.tsx",
       "source_location": "L2120",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_onboarding_shell_revisesectioncontent",
-      "target": "src_onboarding_shell_titlecase",
-      "confidence_score": 1.0
+      "target": "src_onboarding_shell_titlecase"
     },
     {
       "relation": "calls",
@@ -7943,6 +8132,26 @@
       "confidence_score": 1.0,
       "source": "src_knowledge_center_data_ts",
       "target": "knowledge_center_data_funding_stage_buckets"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/knowledge-center/data.ts",
+      "source_location": "L377",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_knowledge_center_data_ts",
+      "target": "knowledge_center_data_historyentry"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/knowledge-center/data.ts",
+      "source_location": "L375",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_knowledge_center_data_ts",
+      "target": "knowledge_center_data_historysource"
     },
     {
       "relation": "contains",
@@ -8300,6 +8509,17 @@
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
+      "source_file": "src/knowledge-center/HistoryDrawer.tsx",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_knowledge_center_historydrawer_tsx",
+      "target": "src_knowledge_center_data_ts"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
       "source_file": "src/knowledge-center/IcpDetailPane.tsx",
       "source_location": "L2",
       "weight": 1.0,
@@ -8371,6 +8591,17 @@
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "src_knowledge_center_tree_tsx",
+      "target": "src_knowledge_center_data_ts"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/knowledge-center/ui.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_knowledge_center_ui_tsx",
       "target": "src_knowledge_center_data_ts"
     },
     {
@@ -8996,6 +9227,17 @@
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
+      "source_file": "src/knowledge-center/HistoryDrawer.tsx",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_knowledge_center_historydrawer_tsx",
+      "target": "knowledge_center_data_treenodetype"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
       "source_file": "src/knowledge-center/KnowledgeCenter.tsx",
       "source_location": "L2",
       "weight": 1.0,
@@ -9123,6 +9365,94 @@
       "confidence_score": 1.0,
       "source": "src_knowledge_center_tree_tsx",
       "target": "knowledge_center_data_treekey"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/knowledge-center/Explorer.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_knowledge_center_explorer_tsx",
+      "target": "knowledge_center_data_historysource"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/knowledge-center/IcpDetailPane.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_knowledge_center_icpdetailpane_tsx",
+      "target": "knowledge_center_data_historysource"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/knowledge-center/PersonaDetailPane.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_knowledge_center_personadetailpane_tsx",
+      "target": "knowledge_center_data_historysource"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/knowledge-center/ProductDetailPane.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_knowledge_center_productdetailpane_tsx",
+      "target": "knowledge_center_data_historysource"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/knowledge-center/ui.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_knowledge_center_ui_tsx",
+      "target": "knowledge_center_data_historysource"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/knowledge-center/Explorer.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_knowledge_center_explorer_tsx",
+      "target": "knowledge_center_data_historyentry"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/knowledge-center/HistoryDrawer.tsx",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_knowledge_center_historydrawer_tsx",
+      "target": "knowledge_center_data_historyentry"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/knowledge-center/KnowledgeCenter.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_knowledge_center_knowledgecenter_tsx",
+      "target": "knowledge_center_data_historyentry"
     },
     {
       "relation": "calls",
@@ -10770,6 +11100,16 @@
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "src_knowledge_center_productdetailpane_tsx",
+      "target": "knowledge_center_productdetailpane_logfield"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/knowledge-center/ProductDetailPane.tsx",
+      "source_location": "L9",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_knowledge_center_productdetailpane_tsx",
       "target": "knowledge_center_productdetailpane_productcard"
     },
     {
@@ -10814,6 +11154,17 @@
       "confidence_score": 1.0,
       "source": "src_knowledge_center_productdetailpane_tsx",
       "target": "knowledge_center_ui_fieldlabel"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/knowledge-center/ProductDetailPane.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_knowledge_center_productdetailpane_tsx",
+      "target": "knowledge_center_ui_historytextfield"
     },
     {
       "relation": "imports",
@@ -10902,6 +11253,17 @@
       "confidence_score": 1.0,
       "source": "src_knowledge_center_knowledgecenter_tsx",
       "target": "knowledge_center_company_companysection"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/knowledge-center/KnowledgeCenter.tsx",
+      "source_location": "L7",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_knowledge_center_knowledgecenter_tsx",
+      "target": "knowledge_center_historydrawer_historydrawer"
     },
     {
       "relation": "contains",
@@ -10997,6 +11359,17 @@
       "confidence_score": 1.0,
       "source": "src_knowledge_center_knowledgecenter_tsx",
       "target": "src_knowledge_center_company_tsx"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/knowledge-center/KnowledgeCenter.tsx",
+      "source_location": "L7",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_knowledge_center_knowledgecenter_tsx",
+      "target": "src_knowledge_center_historydrawer_tsx"
     },
     {
       "relation": "imports_from",
@@ -11118,9 +11491,9 @@
       "source_file": "src/knowledge-center/Overview.tsx",
       "source_location": "L18",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_knowledge_center_overview_tsx",
-      "target": "knowledge_center_overview_persona_summary_fields",
-      "confidence_score": 1.0
+      "target": "knowledge_center_overview_persona_summary_fields"
     },
     {
       "relation": "contains",
@@ -11128,9 +11501,9 @@
       "source_file": "src/knowledge-center/Overview.tsx",
       "source_location": "L14",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_knowledge_center_overview_tsx",
-      "target": "knowledge_center_overview_personafield",
-      "confidence_score": 1.0
+      "target": "knowledge_center_overview_personafield"
     },
     {
       "relation": "contains",
@@ -11148,9 +11521,9 @@
       "source_file": "src/knowledge-center/Overview.tsx",
       "source_location": "L105",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_knowledge_center_overview_tsx",
-      "target": "knowledge_center_overview_personasummary",
-      "confidence_score": 1.0
+      "target": "knowledge_center_overview_personasummary"
     },
     {
       "relation": "contains",
@@ -11390,6 +11763,16 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/knowledge-center/IcpDetailPane.tsx",
+      "source_location": "L17",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_knowledge_center_icpdetailpane_tsx",
+      "target": "knowledge_center_icpdetailpane_logfield"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/knowledge-center/IcpDetailPane.tsx",
       "source_location": "L29",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -11450,6 +11833,17 @@
       "confidence_score": 1.0,
       "source": "src_knowledge_center_icpdetailpane_tsx",
       "target": "knowledge_center_ui_fieldlabel"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/knowledge-center/IcpDetailPane.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_knowledge_center_icpdetailpane_tsx",
+      "target": "knowledge_center_ui_historytextfield"
     },
     {
       "relation": "imports",
@@ -11752,12 +12146,106 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "src/knowledge-center/HistoryDrawer.tsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_knowledge_center_historydrawer_tsx",
+      "target": "knowledge_center_historydrawer_displayvalue"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/knowledge-center/HistoryDrawer.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_knowledge_center_historydrawer_tsx",
+      "target": "knowledge_center_historydrawer_entity_label"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/knowledge-center/HistoryDrawer.tsx",
+      "source_location": "L46",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_knowledge_center_historydrawer_tsx",
+      "target": "knowledge_center_historydrawer_historydrawer"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/knowledge-center/HistoryDrawer.tsx",
+      "source_location": "L10",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_knowledge_center_historydrawer_tsx",
+      "target": "knowledge_center_historydrawer_historyrow"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/knowledge-center/HistoryDrawer.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_knowledge_center_historydrawer_tsx",
+      "target": "knowledge_center_ui_drawer"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/knowledge-center/HistoryDrawer.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_knowledge_center_historydrawer_tsx",
+      "target": "knowledge_center_ui_emptystate"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/knowledge-center/HistoryDrawer.tsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_knowledge_center_historydrawer_tsx",
+      "target": "src_knowledge_center_ui_tsx"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/knowledge-center/HistoryDrawer.tsx",
+      "source_location": "L30",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "knowledge_center_historydrawer_historyrow",
+      "target": "knowledge_center_historydrawer_displayvalue"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "src/knowledge-center/PersonaDetailPane.tsx",
       "source_location": "L24",
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "src_knowledge_center_personadetailpane_tsx",
       "target": "knowledge_center_personadetailpane_emptypersona"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/knowledge-center/PersonaDetailPane.tsx",
+      "source_location": "L29",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_knowledge_center_personadetailpane_tsx",
+      "target": "knowledge_center_personadetailpane_logfield"
     },
     {
       "relation": "contains",
@@ -11895,6 +12383,17 @@
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "src_knowledge_center_personadetailpane_tsx",
+      "target": "knowledge_center_ui_historytextfield"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/knowledge-center/PersonaDetailPane.tsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_knowledge_center_personadetailpane_tsx",
       "target": "knowledge_center_ui_icon"
     },
     {
@@ -11989,6 +12488,16 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/knowledge-center/Company.tsx",
+      "source_location": "L8",
+      "weight": 1.0,
+      "source": "src_knowledge_center_company_tsx",
+      "target": "knowledge_center_company_basic_fields",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/knowledge-center/Company.tsx",
       "source_location": "L25",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -12029,11 +12538,51 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/knowledge-center/Company.tsx",
+      "source_location": "L33",
+      "weight": 1.0,
+      "source": "src_knowledge_center_company_tsx",
+      "target": "knowledge_center_company_deep_dive_fields",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/knowledge-center/Company.tsx",
+      "source_location": "L17",
+      "weight": 1.0,
+      "source": "src_knowledge_center_company_tsx",
+      "target": "knowledge_center_company_pitch_fields",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/knowledge-center/Company.tsx",
+      "source_location": "L25",
+      "weight": 1.0,
+      "source": "src_knowledge_center_company_tsx",
+      "target": "knowledge_center_company_positioning_fields",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/knowledge-center/Company.tsx",
       "source_location": "L42",
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "src_knowledge_center_company_tsx",
       "target": "knowledge_center_company_positioningstatement"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/knowledge-center/Company.tsx",
+      "source_location": "L41",
+      "weight": 1.0,
+      "source": "src_knowledge_center_company_tsx",
+      "target": "knowledge_center_company_profiletextfield",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -12054,6 +12603,16 @@
       "confidence_score": 1.0,
       "source": "src_knowledge_center_company_tsx",
       "target": "knowledge_center_company_text_fields"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/knowledge-center/Company.tsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "source": "src_knowledge_center_company_tsx",
+      "target": "knowledge_center_company_textfieldspec",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -12411,6 +12970,16 @@
       "target": "knowledge_center_diagram_stickylabel"
     },
     {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/knowledge-center/Diagram.tsx",
+      "source_location": "L256",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_knowledge_center_diagram_tsx",
+      "target": "knowledge_center_diagram_zoomcontrols"
+    },
+    {
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
@@ -12568,6 +13137,16 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/knowledge-center/ui.tsx",
+      "source_location": "L221",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_knowledge_center_ui_tsx",
+      "target": "knowledge_center_ui_askai"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/knowledge-center/ui.tsx",
       "source_location": "L104",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -12668,11 +13247,31 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/knowledge-center/ui.tsx",
+      "source_location": "L203",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_knowledge_center_ui_tsx",
+      "target": "knowledge_center_ui_firstsentence"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/knowledge-center/ui.tsx",
       "source_location": "L122",
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "src_knowledge_center_ui_tsx",
       "target": "knowledge_center_ui_formatcurrencyshort"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/knowledge-center/ui.tsx",
+      "source_location": "L287",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_knowledge_center_ui_tsx",
+      "target": "knowledge_center_ui_historytextfield"
     },
     {
       "relation": "contains",
@@ -12778,6 +13377,16 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/knowledge-center/ui.tsx",
+      "source_location": "L207",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_knowledge_center_ui_tsx",
+      "target": "knowledge_center_ui_revisetext"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/knowledge-center/ui.tsx",
       "source_location": "L129",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -12854,6 +13463,17 @@
       "weight": 1.0,
       "source": "knowledge_center_dashboard_row",
       "target": "knowledge_center_ui_formatcurrencyshort"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/knowledge-center/ui.tsx",
+      "source_location": "L209",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "knowledge_center_ui_revisetext",
+      "target": "knowledge_center_ui_firstsentence"
     },
     {
       "relation": "contains",
@@ -13166,5 +13786,5 @@
       "source_file": "src/knowledge-center/KnowledgeCenter.tsx"
     }
   ],
-  "built_at_commit": "357cbce27473824ad33c90a6400e2c8d2e9503a4"
+  "built_at_commit": "f5d30dad0eb46ffd5ad6cb8f4b62af94427f2563"
 }

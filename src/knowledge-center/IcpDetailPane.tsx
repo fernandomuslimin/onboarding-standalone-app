@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { COMPANY_SIZE_BUCKETS, FUNDING_STAGE_BUCKETS, IcpDetail, PersonaDetail } from "./data";
-import { CardSection, CheckboxPills, ChipList, EditableField, FieldLabel, Icon, KC_DANGER_BTN, KC_PRIMARY_BTN } from "./ui";
+import { COMPANY_SIZE_BUCKETS, FUNDING_STAGE_BUCKETS, HistorySource, IcpDetail, PersonaDetail } from "./data";
+import { CardSection, CheckboxPills, ChipList, EditableField, FieldLabel, HistoryTextField, Icon, KC_DANGER_BTN, KC_PRIMARY_BTN } from "./ui";
 
 export function emptyIcp(id: string, productId: string): IcpDetail {
   return {
@@ -14,30 +14,45 @@ export function emptyIcp(id: string, productId: string): IcpDetail {
   };
 }
 
-function PercentStat({ label, value, onChange }: { label: string; value: number; onChange: (v: number) => void }) {
+type LogField = (fieldLabel: string, oldValue: string | string[], newValue: string | string[], source: HistorySource, prompt?: string) => void;
+
+function PercentStat({ label, value, onChange, onLogField }: { label: string; value: number; onChange: (v: number) => void; onLogField: LogField }) {
   return (
     <div>
       <FieldLabel>{label}</FieldLabel>
-      <input type="number" min={0} max={100} value={value} onChange={(e) => onChange(Math.max(0, Math.min(100, Number(e.target.value) || 0)))}
+      <input type="number" min={0} max={100} value={value}
+        onChange={(e) => {
+          const next = Math.max(0, Math.min(100, Number(e.target.value) || 0));
+          onLogField(label, String(value), String(next), "manual");
+          onChange(next);
+        }}
         style={{ width: "100%", fontSize: 12.5, fontWeight: 700, color: "var(--color-heading)", border: "1px solid var(--color-border)", borderRadius: 8, padding: "8px 10px", background: "var(--color-page)" }} />
     </div>
   );
 }
 
-export function IcpDetailPane({ icp, personas, onPatch, onDelete, onSelectPersona }: {
+export function IcpDetailPane({ icp, personas, onPatch, onDelete, onSelectPersona, onLogField }: {
   icp: IcpDetail;
   personas: PersonaDetail[];
   onPatch: (fields: Partial<IcpDetail>) => void;
   onDelete: () => void;
   onSelectPersona: (personaId: string) => void;
+  onLogField: LogField;
 }) {
   const [savedAt, setSavedAt] = useState<string | null>(null);
+
+  // Array/pill fields commit on every onChange (add/remove is already a discrete
+  // action, unlike free typing), so this just logs before applying the patch.
+  function logArray(label: string, oldValue: string[], onChange: (v: string[]) => void) {
+    return (v: string[]) => { onLogField(label, oldValue, v, "manual"); onChange(v); };
+  }
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 20, maxWidth: 900 }}>
       <div style={{ background: "var(--color-page)", border: "1px solid var(--color-border)", borderRadius: 14, padding: "18px 22px", boxShadow: "var(--shadow-card)" }}>
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 14, marginBottom: 12 }}>
-          <EditableField value={icp.name} onChange={(v) => onPatch({ name: v })} />
+          <EditableField value={icp.name} onChange={(v) => onPatch({ name: v })}
+            onCommit={(oldValue, newValue) => onLogField("Name", oldValue, newValue, "manual")} />
           <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
             <button type="button" className="kc-primary-btn" style={KC_PRIMARY_BTN} onClick={() => setSavedAt(new Date().toLocaleTimeString())}>
               <Icon name="check" size={14} />
@@ -50,21 +65,17 @@ export function IcpDetailPane({ icp, personas, onPatch, onDelete, onSelectPerson
 
       <CardSection icon="target" title="Identity & Fit">
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          <div>
-            <FieldLabel>Summary</FieldLabel>
-            <EditableField value={icp.summary} onChange={(v) => onPatch({ summary: v })} multiline rows={2} />
-          </div>
-          <div>
-            <FieldLabel>Fit Reasoning</FieldLabel>
-            <EditableField value={icp.fitReasoning} onChange={(v) => onPatch({ fitReasoning: v })} multiline rows={2} />
-          </div>
+          <HistoryTextField label="Summary" value={icp.summary} onChange={(v) => onPatch({ summary: v })} multiline rows={2}
+            onLogChange={(c) => onLogField("Summary", c.oldValue, c.newValue, c.source, c.prompt)} />
+          <HistoryTextField label="Fit Reasoning" value={icp.fitReasoning} onChange={(v) => onPatch({ fitReasoning: v })} multiline rows={2}
+            onLogChange={(c) => onLogField("Fit Reasoning", c.oldValue, c.newValue, c.source, c.prompt)} />
           <div>
             <FieldLabel>Buying Triggers</FieldLabel>
-            <ChipList items={icp.buyingTriggers} onChange={(v) => onPatch({ buyingTriggers: v })} />
+            <ChipList items={icp.buyingTriggers} onChange={logArray("Buying Triggers", icp.buyingTriggers, (v) => onPatch({ buyingTriggers: v }))} />
           </div>
           <div>
             <FieldLabel>Exclusion Criteria</FieldLabel>
-            <ChipList items={icp.exclusionCriteria} onChange={(v) => onPatch({ exclusionCriteria: v })} />
+            <ChipList items={icp.exclusionCriteria} onChange={logArray("Exclusion Criteria", icp.exclusionCriteria, (v) => onPatch({ exclusionCriteria: v }))} />
           </div>
         </div>
       </CardSection>
@@ -73,42 +84,34 @@ export function IcpDetailPane({ icp, personas, onPatch, onDelete, onSelectPerson
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           <div>
             <FieldLabel>Target Industries</FieldLabel>
-            <ChipList items={icp.targetIndustries} onChange={(v) => onPatch({ targetIndustries: v })} />
+            <ChipList items={icp.targetIndustries} onChange={logArray("Target Industries", icp.targetIndustries, (v) => onPatch({ targetIndustries: v }))} />
           </div>
           <div>
             <FieldLabel>Company Size</FieldLabel>
-            <CheckboxPills options={COMPANY_SIZE_BUCKETS} selected={icp.companySizes} onChange={(v) => onPatch({ companySizes: v })} />
+            <CheckboxPills options={COMPANY_SIZE_BUCKETS} selected={icp.companySizes} onChange={logArray("Company Size", icp.companySizes, (v) => onPatch({ companySizes: v }))} />
           </div>
-          <div>
-            <FieldLabel>Revenue Range</FieldLabel>
-            <EditableField value={icp.revenueRange} onChange={(v) => onPatch({ revenueRange: v })} />
-          </div>
+          <HistoryTextField label="Revenue Range" value={icp.revenueRange} onChange={(v) => onPatch({ revenueRange: v })}
+            onLogChange={(c) => onLogField("Revenue Range", c.oldValue, c.newValue, c.source, c.prompt)} />
           <div>
             <FieldLabel>Geographies</FieldLabel>
-            <ChipList items={icp.geographies} onChange={(v) => onPatch({ geographies: v })} />
+            <ChipList items={icp.geographies} onChange={logArray("Geographies", icp.geographies, (v) => onPatch({ geographies: v }))} />
           </div>
           <div>
             <FieldLabel>Funding Stage</FieldLabel>
-            <CheckboxPills options={FUNDING_STAGE_BUCKETS} selected={icp.fundingStages} onChange={(v) => onPatch({ fundingStages: v })} />
+            <CheckboxPills options={FUNDING_STAGE_BUCKETS} selected={icp.fundingStages} onChange={logArray("Funding Stage", icp.fundingStages, (v) => onPatch({ fundingStages: v }))} />
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
-            <div>
-              <FieldLabel>Growth Stage</FieldLabel>
-              <EditableField value={icp.growthStage} onChange={(v) => onPatch({ growthStage: v })} />
-            </div>
-            <div>
-              <FieldLabel>Business Model</FieldLabel>
-              <EditableField value={icp.businessModel} onChange={(v) => onPatch({ businessModel: v })} />
-            </div>
+            <HistoryTextField label="Growth Stage" value={icp.growthStage} onChange={(v) => onPatch({ growthStage: v })}
+              onLogChange={(c) => onLogField("Growth Stage", c.oldValue, c.newValue, c.source, c.prompt)} />
+            <HistoryTextField label="Business Model" value={icp.businessModel} onChange={(v) => onPatch({ businessModel: v })}
+              onLogChange={(c) => onLogField("Business Model", c.oldValue, c.newValue, c.source, c.prompt)} />
           </div>
           <div>
             <FieldLabel>Tech Stack Signals</FieldLabel>
-            <ChipList items={icp.techStackSignals} onChange={(v) => onPatch({ techStackSignals: v })} />
+            <ChipList items={icp.techStackSignals} onChange={logArray("Tech Stack Signals", icp.techStackSignals, (v) => onPatch({ techStackSignals: v }))} />
           </div>
-          <div>
-            <FieldLabel>Decision-Making Unit</FieldLabel>
-            <EditableField value={icp.decisionMakingUnit} onChange={(v) => onPatch({ decisionMakingUnit: v })} multiline rows={2} />
-          </div>
+          <HistoryTextField label="Decision-Making Unit" value={icp.decisionMakingUnit} onChange={(v) => onPatch({ decisionMakingUnit: v })} multiline rows={2}
+            onLogChange={(c) => onLogField("Decision-Making Unit", c.oldValue, c.newValue, c.source, c.prompt)} />
         </div>
       </CardSection>
 
@@ -116,19 +119,19 @@ export function IcpDetailPane({ icp, personas, onPatch, onDelete, onSelectPerson
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           <div>
             <FieldLabel>Pain Points</FieldLabel>
-            <ChipList items={icp.painPoints} onChange={(v) => onPatch({ painPoints: v })} />
+            <ChipList items={icp.painPoints} onChange={logArray("Pain Points", icp.painPoints, (v) => onPatch({ painPoints: v }))} />
           </div>
           <div>
             <FieldLabel>Business Goals</FieldLabel>
-            <ChipList items={icp.businessGoals} onChange={(v) => onPatch({ businessGoals: v })} />
+            <ChipList items={icp.businessGoals} onChange={logArray("Business Goals", icp.businessGoals, (v) => onPatch({ businessGoals: v }))} />
           </div>
           <div>
             <FieldLabel>Operational Goals</FieldLabel>
-            <ChipList items={icp.operationalGoals} onChange={(v) => onPatch({ operationalGoals: v })} />
+            <ChipList items={icp.operationalGoals} onChange={logArray("Operational Goals", icp.operationalGoals, (v) => onPatch({ operationalGoals: v }))} />
           </div>
           <div>
             <FieldLabel>Use Cases</FieldLabel>
-            <ChipList items={icp.useCases} onChange={(v) => onPatch({ useCases: v })} />
+            <ChipList items={icp.useCases} onChange={logArray("Use Cases", icp.useCases, (v) => onPatch({ useCases: v }))} />
           </div>
         </div>
       </CardSection>
@@ -137,30 +140,26 @@ export function IcpDetailPane({ icp, personas, onPatch, onDelete, onSelectPerson
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           <div>
             <FieldLabel>Example Companies</FieldLabel>
-            <ChipList items={icp.exampleCompanies} onChange={(v) => onPatch({ exampleCompanies: v })} />
+            <ChipList items={icp.exampleCompanies} onChange={logArray("Example Companies", icp.exampleCompanies, (v) => onPatch({ exampleCompanies: v }))} />
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
-            <PercentStat label="Competitive Displacement Fit" value={icp.competitiveDisplacementFitPct} onChange={(v) => onPatch({ competitiveDisplacementFitPct: v })} />
-            <PercentStat label="Maturity" value={icp.maturityPct} onChange={(v) => onPatch({ maturityPct: v })} />
-            <PercentStat label="Market Size" value={icp.marketSizePct} onChange={(v) => onPatch({ marketSizePct: v })} />
+            <PercentStat label="Competitive Displacement Fit" value={icp.competitiveDisplacementFitPct} onChange={(v) => onPatch({ competitiveDisplacementFitPct: v })} onLogField={onLogField} />
+            <PercentStat label="Maturity" value={icp.maturityPct} onChange={(v) => onPatch({ maturityPct: v })} onLogField={onLogField} />
+            <PercentStat label="Market Size" value={icp.marketSizePct} onChange={(v) => onPatch({ marketSizePct: v })} onLogField={onLogField} />
           </div>
           <div>
             <FieldLabel>Intent Signals</FieldLabel>
-            <ChipList items={icp.intentSignals} onChange={(v) => onPatch({ intentSignals: v })} />
+            <ChipList items={icp.intentSignals} onChange={logArray("Intent Signals", icp.intentSignals, (v) => onPatch({ intentSignals: v }))} />
           </div>
           <div>
             <FieldLabel>Incumbent Tools</FieldLabel>
-            <ChipList items={icp.incumbentTools} onChange={(v) => onPatch({ incumbentTools: v })} />
+            <ChipList items={icp.incumbentTools} onChange={logArray("Incumbent Tools", icp.incumbentTools, (v) => onPatch({ incumbentTools: v }))} />
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
-            <div>
-              <FieldLabel>Department Size</FieldLabel>
-              <EditableField value={icp.departmentSize} onChange={(v) => onPatch({ departmentSize: v })} />
-            </div>
-            <div>
-              <FieldLabel>Outreach Accessibility</FieldLabel>
-              <EditableField value={icp.outreachAccessibility} onChange={(v) => onPatch({ outreachAccessibility: v })} />
-            </div>
+            <HistoryTextField label="Department Size" value={icp.departmentSize} onChange={(v) => onPatch({ departmentSize: v })}
+              onLogChange={(c) => onLogField("Department Size", c.oldValue, c.newValue, c.source, c.prompt)} />
+            <HistoryTextField label="Outreach Accessibility" value={icp.outreachAccessibility} onChange={(v) => onPatch({ outreachAccessibility: v })}
+              onLogChange={(c) => onLogField("Outreach Accessibility", c.oldValue, c.newValue, c.source, c.prompt)} />
           </div>
         </div>
       </CardSection>

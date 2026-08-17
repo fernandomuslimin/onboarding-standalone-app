@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ICPS, IcpDetail, PERSONAS, PRODUCTS, PersonaDetail, ProductDetail, TreeNodeType, personasForIcp, treeKey } from "./data";
+import { ICPS, IcpDetail, PERSONAS, PRODUCTS, PersonaDetail, ProductDetail, TreeNodeType, HistoryEntry, HistorySource, personasForIcp, treeKey } from "./data";
 import { Drawer, Icon, IconName } from "./ui";
 import { TreeSelection } from "./Tree";
 import { KnowledgeOverview } from "./Overview";
@@ -17,12 +17,13 @@ const VIEWS: { key: ExplorerView; label: string; icon: IconName }[] = [
   { key: "performance", label: "Performance", icon: "chart" },
 ];
 
-export function Explorer({ reviewedKeys, onToggleReviewed, onNodeTypeChange, companyReviewed, onToggleCompanyReviewed }: {
+export function Explorer({ reviewedKeys, onToggleReviewed, onNodeTypeChange, companyReviewed, onToggleCompanyReviewed, onLogChange }: {
   reviewedKeys: Set<string>;
   onToggleReviewed: (key: string) => void;
   onNodeTypeChange: (type: TreeNodeType | null) => void;
   companyReviewed: boolean;
   onToggleCompanyReviewed: () => void;
+  onLogChange: (entry: Omit<HistoryEntry, "id" | "timestamp">) => void;
 }) {
   const [products, setProducts] = useState<ProductDetail[]>(PRODUCTS);
   const [icps, setIcps] = useState<IcpDetail[]>(ICPS);
@@ -97,6 +98,16 @@ export function Explorer({ reviewedKeys, onToggleReviewed, onNodeTypeChange, com
   const selectedIcp = selection?.type === "icp" ? icps.find((i) => i.id === selection.id) : undefined;
   const selectedPersona = selection?.type === "persona" ? personas.find((p) => p.id === selection.id) : undefined;
 
+  // Binds the shared onLogChange to whichever entity is currently selected, so
+  // the detail panes only need to know about their own fields, not entity context.
+  function logField(
+    entityType: TreeNodeType, entityId: string, entityLabel: string,
+    fieldLabel: string, oldValue: string | string[], newValue: string | string[],
+    source: HistorySource, prompt?: string,
+  ) {
+    onLogChange({ entityType, entityId, entityLabel, fieldLabel, oldValue, newValue, source, prompt });
+  }
+
   const detailPane = selectedProduct ? (
     <ProductDetailPane
       key={selectedProduct.id}
@@ -105,6 +116,8 @@ export function Explorer({ reviewedKeys, onToggleReviewed, onNodeTypeChange, com
       onToggleReviewed={() => onToggleReviewed(treeKey("product", selectedProduct.id))}
       onPatchField={(i, v) => patchProductField(selectedProduct.id, i, v)}
       onDelete={() => deleteProduct(selectedProduct.id)}
+      onLogField={(fieldLabel, oldValue, newValue, source, prompt) =>
+        logField("product", selectedProduct.id, selectedProduct.name, fieldLabel, oldValue, newValue, source, prompt)}
     />
   ) : selectedIcp ? (
     <IcpDetailPane
@@ -114,6 +127,8 @@ export function Explorer({ reviewedKeys, onToggleReviewed, onNodeTypeChange, com
       onPatch={(fields) => patchIcp(selectedIcp.id, fields)}
       onDelete={() => deleteIcp(selectedIcp.id)}
       onSelectPersona={(personaId) => setSelection({ type: "persona", id: personaId })}
+      onLogField={(fieldLabel, oldValue, newValue, source, prompt) =>
+        logField("icp", selectedIcp.id, selectedIcp.name, fieldLabel, oldValue, newValue, source, prompt)}
     />
   ) : selectedPersona ? (
     <PersonaDetailPane
@@ -122,6 +137,8 @@ export function Explorer({ reviewedKeys, onToggleReviewed, onNodeTypeChange, com
       onPatchName={(name) => patchPersonaName(selectedPersona.id, name)}
       onPatchField={(si, fi, v) => patchPersonaField(selectedPersona.id, si, fi, v)}
       onDelete={() => deletePersona(selectedPersona.id)}
+      onLogField={(fieldLabel, oldValue, newValue, source, prompt) =>
+        logField("persona", selectedPersona.id, selectedPersona.name, fieldLabel, oldValue, newValue, source, prompt)}
     />
   ) : null;
 

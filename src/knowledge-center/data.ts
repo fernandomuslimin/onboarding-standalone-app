@@ -371,6 +371,22 @@ export function treeKey(type: TreeNodeType, id: string): string {
   return `${type}:${id}`;
 }
 
+/* ─── Field edit history ────────────────────────────────────────── */
+export type HistorySource = "manual" | "ai";
+
+export interface HistoryEntry {
+  id: string;
+  timestamp: number;
+  entityType: TreeNodeType;
+  entityId: string;
+  entityLabel: string;    // name at time of change, so a later rename/delete doesn't orphan the entry
+  fieldLabel: string;
+  oldValue: string | string[];
+  newValue: string | string[];
+  source: HistorySource;
+  prompt?: string;        // present when source === "ai"
+}
+
 export function icpsForProduct(productId: string, icps: IcpDetail[] = ICPS): IcpDetail[] {
   return icps.filter((i) => i.productId === productId);
 }
@@ -836,7 +852,80 @@ export const PERSONAS: PersonaDetail[] = [
   },
 ];
 
-/* ─── Campaign ──────────────────────────────────────────────────── */
+/* ─── Seed change history ────────────────────────────────────────
+   Dummy entries so the History drawer has something to show out of
+   the box — the shape mirrors what Explorer's onLogField wiring would
+   record for a real edit (see Explorer.tsx / HistoryDrawer.tsx). New
+   edits made in the app are prepended ahead of these at runtime. */
+const HOUR = 60 * 60 * 1000;
+const now = Date.now();
+
+export const SEED_HISTORY: HistoryEntry[] = [
+  {
+    id: "seed-1", timestamp: now - 0.4 * HOUR,
+    entityType: "product", entityId: "sending-platform", entityLabel: "Outbound Sending Platform",
+    fieldLabel: "Value Proposition",
+    oldValue: "Get reps sending personalized sequences the same day they sign up, without adding headcount or a setup team.",
+    newValue: "Get reps sending personalized sequences the same day, without adding headcount or a setup team.",
+    source: "ai", prompt: "make it shorter",
+  },
+  {
+    id: "seed-2", timestamp: now - 0.9 * HOUR,
+    entityType: "persona", entityId: "vp-sales-revops", entityLabel: "VP Sales / Head of RevOps",
+    fieldLabel: "Goals: Primary Goal",
+    oldValue: "Hit quarterly pipeline targets",
+    newValue: "Hit quarterly pipeline targets without adding headcount",
+    source: "manual",
+  },
+  {
+    id: "seed-3", timestamp: now - 3 * HOUR,
+    entityType: "icp", entityId: "founder-led-startup", entityLabel: "Founder-Led Sales — Early-Stage Startup",
+    fieldLabel: "Fit Reasoning",
+    oldValue: "Likes low setup friction and is price-sensitive.",
+    newValue: "Values low setup friction over deep customization; price-sensitive and favors usage-based plans.",
+    source: "ai", prompt: "make this more formal",
+  },
+  {
+    id: "seed-4", timestamp: now - 5 * HOUR,
+    entityType: "product", entityId: "personalization-engine", entityLabel: "AI Personalization Engine",
+    fieldLabel: "Competitors",
+    oldValue: ["Lavender"],
+    newValue: ["Lavender", "Copy.ai (sales use case)"],
+    source: "manual",
+  },
+  {
+    id: "seed-5", timestamp: now - 8 * HOUR,
+    entityType: "icp", entityId: "vp-sales-midmarket", entityLabel: "VP Sales / Head of RevOps — Mid-Market B2B",
+    fieldLabel: "Revenue Range",
+    oldValue: "$5M–$20M ARR",
+    newValue: "$5M–$50M ARR",
+    source: "manual",
+  },
+  {
+    id: "seed-6", timestamp: now - 26 * HOUR,
+    entityType: "persona", entityId: "sdr-manager", entityLabel: "SDR Manager",
+    fieldLabel: "Overview: Role Summary",
+    oldValue: "Manages a team of SDRs and is responsible for their outbound activity levels, ramp time, and quota attainment across the team.",
+    newValue: "Manages a team of SDRs and owns ramp time and quota attainment across the team.",
+    source: "ai", prompt: "make it more concise",
+  },
+  {
+    id: "seed-7", timestamp: now - 30 * HOUR,
+    entityType: "product", entityId: "infra-deliverability", entityLabel: "Infrastructure & Deliverability",
+    fieldLabel: "Switch Triggers",
+    oldValue: ["Deliverability drops after a domain flag"],
+    newValue: ["Deliverability drops after a domain flag", "Outgrowing a single sending domain"],
+    source: "manual",
+  },
+  {
+    id: "seed-8", timestamp: now - 49 * HOUR,
+    entityType: "persona", entityId: "agency-owner", entityLabel: "Agency Owner",
+    fieldLabel: "Pain Points: Primary Pain",
+    oldValue: "Hard to prove ROI to clients on outbound campaigns.",
+    newValue: "Hard to prove ROI to clients on outbound campaigns without pulling reports manually from three tools.",
+    source: "manual",
+  },
+];
 export interface SequenceStep {
   day: number;
   channel: "Email" | "LinkedIn" | "Cold Calling";

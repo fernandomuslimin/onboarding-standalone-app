@@ -1,22 +1,21 @@
 # Graph Report - onboarding-standalone-app  (2026-08-17)
 
 ## Corpus Check
-- 29 files · ~52,178 words
+- 30 files · ~54,363 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 486 nodes · 825 edges · 25 communities (15 shown, 10 thin omitted)
+- 507 nodes · 866 edges · 24 communities (14 shown, 10 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 6 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `357cbce2`
+- Built from commit: `f5d30dad`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
 - [[_COMMUNITY_Onboarding Step Data & Editing|Onboarding Step Data & Editing]]
-- [[_COMMUNITY_Community 1|Community 1]]
 - [[_COMMUNITY_Knowledge Center UI Components|Knowledge Center UI Components]]
 - [[_COMMUNITY_Build Tooling & Dependencies|Build Tooling & Dependencies]]
 - [[_COMMUNITY_App Entry & Standalone Shim|App Entry & Standalone Shim]]
@@ -72,19 +71,15 @@
 - **Product / ICP / Persona Combination Data Model** — knowledge_center_data_productdetail, knowledge_center_data_icpdetail, knowledge_center_data_personadetail, knowledge_center_data_scorechain, knowledge_center_data_campaigncombo [INFERRED 0.90]
 - **Reviewed-Sections Progress Tracking Flow** — knowledge_center_knowledgecenter_knowledgecenter, knowledge_center_company_companysection, knowledge_center_product_productsection, knowledge_center_icp_icpsection, knowledge_center_persona_personasection [EXTRACTED 1.00]
 
-## Communities (25 total, 10 thin omitted)
+## Communities (24 total, 10 thin omitted)
 
 ### Community 0 - "Onboarding Step Data & Editing"
 Cohesion: 0.02
 Nodes (73): ALL_STEPS, AvailStatus, BACK_BTN, BRAND_HIGHLIGHTS, Campaign, CAMPAIGNS, CampaignStep, CARD (+65 more)
 
-### Community 1 - "Community 1"
-Cohesion: 0.24
-Nodes (13): CampaignSection(), NAV_GROUPS, NAV_LABEL, RESOURCE_RUNS, ResourceRun, REVIEWABLE_SECTIONS, KnowledgeCenter(), NAV_ICON (+5 more)
-
 ### Community 2 - "Knowledge Center UI Components"
-Cohesion: 0.06
-Nodes (50): CHIP_FIELDS, CompanySection(), CompanySummary(), positioningStatement(), PROSE, TEXT_FIELDS, COMPANY_CONFIDENCE, COMPANY_PROFILE (+42 more)
+Cohesion: 0.05
+Nodes (42): HEADER_CELL, KnowledgeDashboard(), NUM_CELL, Row(), Tier, TIER_META, TIER_ORDER, TIER_SHARE (+34 more)
 
 ### Community 3 - "Build Tooling & Dependencies"
 Cohesion: 0.05
@@ -123,19 +118,19 @@ Cohesion: 0.12
 Nodes (14): index.html (dev entry HTML), Build, code:bash (npm install), code:bash (npm run build), code:bash (npm run build:single), code:bash (npm run build:single && cp dist-single/index.html onboarding), code:tsx (import { useRouter } from "next/navigation";), Onboarding — standalone (+6 more)
 
 ### Community 21 - "Community 21"
-Cohesion: 0.09
-Nodes (24): HEADER_CELL, KnowledgeDashboard(), NUM_CELL, Row(), Tier, TIER_META, TIER_ORDER, TIER_SHARE (+16 more)
+Cohesion: 0.07
+Nodes (46): BASIC_FIELDS, CHIP_FIELDS, CompanySection(), CompanySummary(), DEEP_DIVE_FIELDS, PITCH_FIELDS, POSITIONING_FIELDS, positioningStatement() (+38 more)
 
 ### Community 23 - "Community 23"
-Cohesion: 0.09
-Nodes (46): CHANNEL_ICON, ComboRow(), HEADER_CELL, overallFit(), STATUS_STYLE, tone(), CampaignSequenceView(), CHANNEL_ICON (+38 more)
+Cohesion: 0.07
+Nodes (62): CampaignSection(), CHANNEL_ICON, ComboRow(), HEADER_CELL, overallFit(), STATUS_STYLE, tone(), CampaignSequenceView() (+54 more)
 
 ## Ambiguous Edges - Review These
 - `CAMPAIGN_COMBOS` → `RoadmapPhase`  [AMBIGUOUS]
   src/knowledge-center/data.ts · relation: references
 
 ## Knowledge Gaps
-- **194 isolated node(s):** `name`, `private`, `version`, `type`, `dev` (+189 more)
+- **203 isolated node(s):** `name`, `private`, `version`, `type`, `dev` (+198 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **10 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -144,15 +139,15 @@ _Questions this graph is uniquely positioned to answer:_
 
 - **What is the exact relationship between `CAMPAIGN_COMBOS` and `RoadmapPhase`?**
   _Edge tagged AMBIGUOUS (relation: references) - confidence is low._
-- **Why does `OnboardingShell()` connect `App Entry & Standalone Shim` to `Onboarding Step Data & Editing`, `Community 1`, `Community 18`?**
-  _High betweenness centrality (0.161) - this node is a cross-community bridge._
-- **Why does `KnowledgeCenter()` connect `Community 1` to `Onboarding Step Data & Editing`, `Knowledge Center UI Components`, `App Entry & Standalone Shim`?**
+- **Why does `OnboardingShell()` connect `App Entry & Standalone Shim` to `Onboarding Step Data & Editing`, `Community 18`, `Community 23`?**
+  _High betweenness centrality (0.157) - this node is a cross-community bridge._
+- **Why does `KnowledgeCenter()` connect `Community 23` to `Onboarding Step Data & Editing`, `App Entry & Standalone Shim`, `Community 21`?**
   _High betweenness centrality (0.099) - this node is a cross-community bridge._
-- **Why does `Icon()` connect `Community 1` to `Knowledge Center UI Components`, `Community 21`, `Community 23`?**
+- **Why does `Icon()` connect `Community 21` to `Knowledge Center UI Components`, `Community 23`?**
   _High betweenness centrality (0.070) - this node is a cross-community bridge._
 - **What connects `name`, `private`, `version` to the rest of the system?**
-  _195 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _204 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Onboarding Step Data & Editing` be split into smaller, more focused modules?**
   _Cohesion score 0.015037593984962405 - nodes in this community are weakly interconnected._
 - **Should `Knowledge Center UI Components` be split into smaller, more focused modules?**
-  _Cohesion score 0.06086956521739131 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.05273937532002048 - nodes in this community are weakly interconnected._

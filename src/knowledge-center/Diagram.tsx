@@ -247,6 +247,39 @@ function ProductNav({ products, activeId, onSelect, reviewedKeys }: {
   );
 }
 
+const ZOOM_MIN = 0.5;
+const ZOOM_MAX = 1.5;
+const ZOOM_STEP = 0.1;
+
+// Floats over the bottom-right corner of the canvas, matching ProductNav's
+// floating-overlay treatment so it never displaces the diagram itself.
+function ZoomControls({ zoom, onZoomIn, onZoomOut, onReset }: {
+  zoom: number; onZoomIn: () => void; onZoomOut: () => void; onReset: () => void;
+}) {
+  const btnStyle = (disabled: boolean): React.CSSProperties => ({
+    width: 28, height: 28, display: "flex", alignItems: "center", justifyContent: "center",
+    border: "none", background: "transparent", borderRadius: 7, fontFamily: "inherit",
+    cursor: disabled ? "default" : "pointer", color: disabled ? "var(--color-subtle)" : "var(--color-muted)",
+  });
+  return (
+    <div style={{
+      position: "absolute", bottom: 16, right: 16, zIndex: 5, display: "flex", alignItems: "center", gap: 2,
+      background: "var(--color-page)", border: "1px solid var(--color-border)", borderRadius: 10, boxShadow: "var(--shadow-card)", padding: 4,
+    }}>
+      <button type="button" onClick={onZoomOut} title="Zoom out" disabled={zoom <= ZOOM_MIN} style={btnStyle(zoom <= ZOOM_MIN)}>
+        <Icon name="minus" size={13} />
+      </button>
+      <button type="button" onClick={onReset} title="Reset zoom"
+        style={{ minWidth: 44, height: 28, display: "flex", alignItems: "center", justifyContent: "center", border: "none", background: "transparent", borderRadius: 7, cursor: "pointer", fontSize: 11.5, fontWeight: 700, color: "var(--color-muted)", fontFamily: "inherit" }}>
+        {Math.round(zoom * 100)}%
+      </button>
+      <button type="button" onClick={onZoomIn} title="Zoom in" disabled={zoom >= ZOOM_MAX} style={btnStyle(zoom >= ZOOM_MAX)}>
+        <Icon name="plus" size={13} />
+      </button>
+    </div>
+  );
+}
+
 export function KnowledgeDiagram({
   products, icps, personas, selection, onSelect, reviewedKeys, onAddProduct, onAddIcp, onAddPersona,
   companyReviewed, onToggleCompanyReviewed,
@@ -260,7 +293,29 @@ export function KnowledgeDiagram({
   const chartRef = useRef<HTMLDivElement>(null);
   const [activeProductId, setActiveProductId] = useState<string | null>(null);
   const [companyOpen, setCompanyOpen] = useState(false);
+  const [zoom, setZoom] = useState(1);
   const visibleProducts = activeProductId ? products.filter((p) => p.id === activeProductId) : products;
+
+  function zoomIn() { setZoom((z) => Math.min(ZOOM_MAX, +(z + ZOOM_STEP).toFixed(2))); }
+  function zoomOut() { setZoom((z) => Math.max(ZOOM_MIN, +(z - ZOOM_STEP).toFixed(2))); }
+  function zoomReset() { setZoom(1); }
+
+  // Trackpad pinch (and ctrl+wheel) both arrive as wheel events with
+  // ctrlKey set — browsers synthesize pinch gestures this way since there's
+  // no native pinch event. Listened to natively (not via onWheel) so
+  // preventDefault can actually stop the browser's own page-zoom; plain
+  // two-finger scroll (no ctrlKey) is left alone to pan/scroll as normal.
+  useEffect(() => {
+    const chart = chartRef.current;
+    if (!chart) return;
+    function handleWheel(e: WheelEvent) {
+      if (!e.ctrlKey) return;
+      e.preventDefault();
+      setZoom((z) => Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, +(z - e.deltaY * 0.01).toFixed(3))));
+    }
+    chart.addEventListener("wheel", handleWheel, { passive: false });
+    return () => chart.removeEventListener("wheel", handleWheel);
+  }, []);
 
   // Re-centre whenever the product filter changes, since narrowing to one
   // branch shifts where the content sits within the scroll area.
@@ -297,7 +352,10 @@ export function KnowledgeDiagram({
         <style>{CHART_STYLES}</style>
 
         <div ref={chartRef} className="kc-scrollbar" style={{ flex: 1, minHeight: 0, overflow: "auto", paddingBottom: 24 }}>
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", minWidth: "max-content" }}>
+          <div style={{
+            display: "flex", flexDirection: "column", alignItems: "center", minWidth: "max-content",
+            transform: `scale(${zoom})`, transformOrigin: "top center", transition: "transform 120ms var(--ease-apple)",
+          }}>
             <button type="button" onClick={() => setCompanyOpen(true)} className="kc-chart-box" data-level="company" data-active={companyOpen}
               style={{
                 fontFamily: "inherit", border: "none", cursor: "pointer",
@@ -356,6 +414,8 @@ export function KnowledgeDiagram({
           </div>
         </div>
       </div>
+
+      <ZoomControls zoom={zoom} onZoomIn={zoomIn} onZoomOut={zoomOut} onReset={zoomReset} />
 
       <Drawer open={companyOpen} onClose={() => setCompanyOpen(false)} title="Company Profile" width={900}>
         <CompanySection reviewed={companyReviewed} onToggleReviewed={onToggleCompanyReviewed} />
