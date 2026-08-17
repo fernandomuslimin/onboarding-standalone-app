@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { PRODUCTS, PersonaDetail, PersonaField, personaPerformance } from "./data";
-import { CardSection, ChipList, Drawer, EditableField, EmptyState, FieldLabel, Icon, IconName, KC_DANGER_BTN, KC_PRIMARY_BTN, StatTile, formatCurrencyShort } from "./ui";
+import { HistorySource, PRODUCTS, PersonaDetail, PersonaField, personaPerformance } from "./data";
+import { CardSection, ChipList, Drawer, EditableField, EmptyState, FieldLabel, HistoryTextField, Icon, IconName, KC_DANGER_BTN, KC_PRIMARY_BTN, StatTile, formatCurrencyShort } from "./ui";
 import { ComboRow, ComboTableHeader, overallFit } from "./ComboRow";
 import { CampaignSequenceView } from "./CampaignSequenceView";
 
@@ -26,14 +26,24 @@ export function emptyPersona(id: string, icpId: string): PersonaDetail {
   return { id, name: "Untitled persona", department: "—", matchPct: 0, icpId, subtitle: "", sections: [] };
 }
 
-function PersonaFieldRow({ field, onChange }: { field: PersonaField; onChange: (v: string | string[]) => void }) {
+type LogField = (fieldLabel: string, oldValue: string | string[], newValue: string | string[], source: HistorySource, prompt?: string) => void;
+
+function PersonaFieldRow({ field, onChange, onLogField }: {
+  field: PersonaField; onChange: (v: string | string[]) => void; onLogField: LogField;
+}) {
+  if (Array.isArray(field.value)) {
+    return (
+      <div>
+        <FieldLabel confidence={field.confidence}>{field.label}</FieldLabel>
+        <ChipList items={field.value} onChange={(v) => { onLogField(field.label, field.value, v, "manual"); onChange(v); }} />
+      </div>
+    );
+  }
   return (
-    <div>
-      <FieldLabel>{field.label}</FieldLabel>
-      {Array.isArray(field.value)
-        ? <ChipList items={field.value} onChange={onChange} />
-        : <EditableField value={field.value} onChange={onChange} multiline rows={2} />}
-    </div>
+    <HistoryTextField
+      label={field.label} value={field.value} onChange={onChange} confidence={field.confidence} multiline rows={2}
+      onLogChange={(c) => onLogField(field.label, c.oldValue, c.newValue, c.source, c.prompt)}
+    />
   );
 }
 
@@ -69,11 +79,12 @@ function PerformanceSection({ persona }: { persona: PersonaDetail }) {
   );
 }
 
-export function PersonaDetailPane({ persona, onPatchName, onPatchField, onDelete }: {
+export function PersonaDetailPane({ persona, onPatchName, onPatchField, onDelete, onLogField }: {
   persona: PersonaDetail;
   onPatchName: (name: string) => void;
   onPatchField: (sectionIdx: number, fieldIdx: number, value: string | string[]) => void;
   onDelete: () => void;
+  onLogField: LogField;
 }) {
   const [savedAt, setSavedAt] = useState<string | null>(null);
 
@@ -81,7 +92,8 @@ export function PersonaDetailPane({ persona, onPatchName, onPatchField, onDelete
     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
       <div style={{ background: "var(--color-page)", border: "1px solid var(--color-border)", borderRadius: 14, padding: "18px 22px", boxShadow: "var(--shadow-card)" }}>
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 14, marginBottom: 8 }}>
-          <EditableField value={persona.name} onChange={onPatchName} />
+          <EditableField value={persona.name} onChange={onPatchName}
+            onCommit={(oldValue, newValue) => onLogField("Name", oldValue, newValue, "manual")} />
           <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
             <button type="button" className="kc-primary-btn" style={KC_PRIMARY_BTN} onClick={() => setSavedAt(new Date().toLocaleTimeString())}>
               <Icon name="check" size={14} />
@@ -99,7 +111,9 @@ export function PersonaDetailPane({ persona, onPatchName, onPatchField, onDelete
         <CardSection key={section.heading} icon={SECTION_ICON[section.heading] ?? "list"} title={section.heading}>
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             {section.fields.map((field, fi) => (
-              <PersonaFieldRow key={field.label} field={field} onChange={(v) => onPatchField(si, fi, v)} />
+              <PersonaFieldRow key={field.label} field={field} onChange={(v) => onPatchField(si, fi, v)}
+                onLogField={(fieldLabel, oldValue, newValue, source, prompt) =>
+                  onLogField(`${section.heading}: ${fieldLabel}`, oldValue, newValue, source, prompt)} />
             ))}
           </div>
         </CardSection>

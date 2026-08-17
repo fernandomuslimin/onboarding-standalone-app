@@ -2465,7 +2465,7 @@
       "source_file": "src/knowledge-center/data.ts",
       "source_location": "L102",
       "id": "knowledge_center_data_productfield",
-      "community": 21,
+      "community": 23,
       "norm_label": "productfield"
     },
     {
@@ -2474,7 +2474,7 @@
       "source_file": "src/knowledge-center/data.ts",
       "source_location": "L103",
       "id": "knowledge_center_data_productdetail",
-      "community": 2,
+      "community": 23,
       "norm_label": "productdetail"
     },
     {
@@ -2483,7 +2483,7 @@
       "source_file": "src/knowledge-center/data.ts",
       "source_location": "L112",
       "id": "knowledge_center_data_products",
-      "community": 1,
+      "community": 23,
       "norm_label": "products"
     },
     {
@@ -2492,7 +2492,7 @@
       "source_file": "src/knowledge-center/data.ts",
       "source_location": "L230",
       "id": "knowledge_center_data_company_size_buckets",
-      "community": 21,
+      "community": 23,
       "norm_label": "company_size_buckets"
     },
     {
@@ -2501,7 +2501,7 @@
       "source_file": "src/knowledge-center/data.ts",
       "source_location": "L231",
       "id": "knowledge_center_data_funding_stage_buckets",
-      "community": 21,
+      "community": 23,
       "norm_label": "funding_stage_buckets"
     },
     {
@@ -2510,7 +2510,7 @@
       "source_file": "src/knowledge-center/data.ts",
       "source_location": "L233",
       "id": "knowledge_center_data_icpdetail",
-      "community": 2,
+      "community": 23,
       "norm_label": "icpdetail"
     },
     {
@@ -2519,7 +2519,7 @@
       "source_file": "src/knowledge-center/data.ts",
       "source_location": "L267",
       "id": "knowledge_center_data_icps",
-      "community": 1,
+      "community": 23,
       "norm_label": "icps"
     },
     {
@@ -2582,7 +2582,7 @@
       "source_file": "src/knowledge-center/data.ts",
       "source_location": "L399",
       "id": "knowledge_center_data_personafield",
-      "community": 1,
+      "community": 23,
       "norm_label": "personafield"
     },
     {
@@ -2600,7 +2600,7 @@
       "source_file": "src/knowledge-center/data.ts",
       "source_location": "L401",
       "id": "knowledge_center_data_personadetail",
-      "community": 2,
+      "community": 23,
       "norm_label": "personadetail"
     },
     {
@@ -2609,32 +2609,14 @@
       "source_file": "src/knowledge-center/data.ts",
       "source_location": "L411",
       "id": "knowledge_center_data_personas",
-      "community": 1,
+      "community": 23,
       "norm_label": "personas"
-    },
-    {
-      "label": "now",
-      "file_type": "code",
-      "source_file": "src/knowledge-center/data.ts",
-      "source_location": "L861",
-      "id": "knowledge_center_data_now",
-      "community": 23,
-      "norm_label": "now"
-    },
-    {
-      "label": "SEED_HISTORY",
-      "file_type": "code",
-      "source_file": "src/knowledge-center/data.ts",
-      "source_location": "L863",
-      "id": "knowledge_center_data_seed_history",
-      "community": 23,
-      "norm_label": "seed_history"
     },
     {
       "label": "SequenceStep",
       "file_type": "code",
       "source_file": "src/knowledge-center/data.ts",
-      "source_location": "L929",
+      "source_location": "L856",
       "id": "knowledge_center_data_sequencestep",
       "community": 23,
       "norm_label": "sequencestep"
@@ -2643,16 +2625,16 @@
       "label": "CampaignCombo",
       "file_type": "code",
       "source_file": "src/knowledge-center/data.ts",
-      "source_location": "L936",
+      "source_location": "L863",
       "id": "knowledge_center_data_campaigncombo",
-      "community": 2,
+      "community": 23,
       "norm_label": "campaigncombo"
     },
     {
       "label": "CAMPAIGN_COMBOS",
       "file_type": "code",
       "source_file": "src/knowledge-center/data.ts",
-      "source_location": "L953",
+      "source_location": "L880",
       "id": "knowledge_center_data_campaign_combos",
       "community": 23,
       "norm_label": "campaign_combos"
@@ -2661,7 +2643,7 @@
       "label": "campaignCombosForPersona()",
       "file_type": "code",
       "source_file": "src/knowledge-center/data.ts",
-      "source_location": "L1053",
+      "source_location": "L980",
       "id": "knowledge_center_data_campaigncombosforpersona",
       "community": 2,
       "norm_label": "campaigncombosforpersona()"
@@ -2670,7 +2652,7 @@
       "label": "personaPerformance()",
       "file_type": "code",
       "source_file": "src/knowledge-center/data.ts",
-      "source_location": "L1057",
+      "source_location": "L984",
       "id": "knowledge_center_data_personaperformance",
       "community": 2,
       "norm_label": "personaperformance()"
@@ -2679,7 +2661,7 @@
       "label": "ResourcePage",
       "file_type": "code",
       "source_file": "src/knowledge-center/data.ts",
-      "source_location": "L1068",
+      "source_location": "L995",
       "id": "knowledge_center_data_resourcepage",
       "community": 23,
       "norm_label": "resourcepage"
@@ -2688,18 +2670,18 @@
       "label": "ResourceRun",
       "file_type": "code",
       "source_file": "src/knowledge-center/data.ts",
-      "source_location": "L1073",
+      "source_location": "L1000",
       "id": "knowledge_center_data_resourcerun",
-      "community": 23,
+      "community": 21,
       "norm_label": "resourcerun"
     },
     {
       "label": "RESOURCE_RUNS",
       "file_type": "code",
       "source_file": "src/knowledge-center/data.ts",
-      "source_location": "L1082",
+      "source_location": "L1009",
       "id": "knowledge_center_data_resource_runs",
-      "community": 23,
+      "community": 21,
       "norm_label": "resource_runs"
     },
     {
@@ -2708,7 +2690,7 @@
       "source_file": "src/knowledge-center/Campaign.tsx",
       "source_location": "L1",
       "id": "src_knowledge_center_campaign_tsx",
-      "community": 1,
+      "community": 23,
       "norm_label": "campaign.tsx"
     },
     {
@@ -2726,7 +2708,7 @@
       "source_file": "src/knowledge-center/ComboRow.tsx",
       "source_location": "L1",
       "id": "src_knowledge_center_comborow_tsx",
-      "community": 1,
+      "community": 23,
       "norm_label": "comborow.tsx"
     },
     {
@@ -2735,7 +2717,7 @@
       "source_file": "src/knowledge-center/ComboRow.tsx",
       "source_location": "L6",
       "id": "knowledge_center_comborow_channel_icon",
-      "community": 1,
+      "community": 23,
       "norm_label": "channel_icon"
     },
     {
@@ -2744,7 +2726,7 @@
       "source_file": "src/knowledge-center/ComboRow.tsx",
       "source_location": "L10",
       "id": "knowledge_center_comborow_status_style",
-      "community": 1,
+      "community": 23,
       "norm_label": "status_style"
     },
     {
@@ -2753,7 +2735,7 @@
       "source_file": "src/knowledge-center/ComboRow.tsx",
       "source_location": "L17",
       "id": "knowledge_center_comborow_overallfit",
-      "community": 1,
+      "community": 23,
       "norm_label": "overallfit()"
     },
     {
@@ -2762,7 +2744,7 @@
       "source_file": "src/knowledge-center/ComboRow.tsx",
       "source_location": "L20",
       "id": "knowledge_center_comborow_tone",
-      "community": 1,
+      "community": 23,
       "norm_label": "tone()"
     },
     {
@@ -2771,7 +2753,7 @@
       "source_file": "src/knowledge-center/ComboRow.tsx",
       "source_location": "L27",
       "id": "knowledge_center_comborow_header_cell",
-      "community": 1,
+      "community": 23,
       "norm_label": "header_cell"
     },
     {
@@ -2780,7 +2762,7 @@
       "source_file": "src/knowledge-center/ComboRow.tsx",
       "source_location": "L29",
       "id": "knowledge_center_comborow_combotableheader",
-      "community": 1,
+      "community": 23,
       "norm_label": "combotableheader()"
     },
     {
@@ -2789,7 +2771,7 @@
       "source_file": "src/knowledge-center/ComboRow.tsx",
       "source_location": "L40",
       "id": "knowledge_center_comborow_comborow",
-      "community": 1,
+      "community": 23,
       "norm_label": "comborow()"
     },
     {
@@ -2798,7 +2780,7 @@
       "source_file": "src/knowledge-center/CampaignSequenceView.tsx",
       "source_location": "L1",
       "id": "src_knowledge_center_campaignsequenceview_tsx",
-      "community": 1,
+      "community": 23,
       "norm_label": "campaignsequenceview.tsx"
     },
     {
@@ -2807,7 +2789,7 @@
       "source_file": "src/knowledge-center/CampaignSequenceView.tsx",
       "source_location": "L5",
       "id": "knowledge_center_campaignsequenceview_campaignsequenceview",
-      "community": 1,
+      "community": 23,
       "norm_label": "campaignsequenceview()"
     },
     {
@@ -2816,7 +2798,7 @@
       "source_file": "src/knowledge-center/Explorer.tsx",
       "source_location": "L1",
       "id": "src_knowledge_center_explorer_tsx",
-      "community": 2,
+      "community": 23,
       "norm_label": "explorer.tsx"
     },
     {
@@ -2825,7 +2807,7 @@
       "source_file": "src/knowledge-center/Explorer.tsx",
       "source_location": "L12",
       "id": "knowledge_center_explorer_explorerview",
-      "community": 2,
+      "community": 23,
       "norm_label": "explorerview"
     },
     {
@@ -2834,7 +2816,7 @@
       "source_file": "src/knowledge-center/Explorer.tsx",
       "source_location": "L14",
       "id": "knowledge_center_explorer_views",
-      "community": 2,
+      "community": 23,
       "norm_label": "views"
     },
     {
@@ -2906,7 +2888,7 @@
       "source_file": "src/knowledge-center/Dashboard.tsx",
       "source_location": "L39",
       "id": "knowledge_center_dashboard_performancerow",
-      "community": 2,
+      "community": 23,
       "norm_label": "performancerow"
     },
     {
@@ -2978,7 +2960,7 @@
       "source_file": "src/knowledge-center/ProductDetailPane.tsx",
       "source_location": "L42",
       "id": "knowledge_center_productdetailpane_productdetailpane",
-      "community": 21,
+      "community": 23,
       "norm_label": "productdetailpane()"
     },
     {
@@ -3005,7 +2987,7 @@
       "source_file": "src/knowledge-center/KnowledgeCenter.tsx",
       "source_location": "L14",
       "id": "knowledge_center_knowledgecenter_totalforsection",
-      "community": 1,
+      "community": 23,
       "norm_label": "totalforsection()"
     },
     {
@@ -3221,7 +3203,7 @@
       "source_file": "src/knowledge-center/Resources.tsx",
       "source_location": "L7",
       "id": "knowledge_center_resources_resourcessection",
-      "community": 23,
+      "community": 21,
       "norm_label": "resourcessection()"
     },
     {
@@ -3275,7 +3257,7 @@
       "source_file": "src/knowledge-center/PersonaDetailPane.tsx",
       "source_location": "L1",
       "id": "src_knowledge_center_personadetailpane_tsx",
-      "community": 1,
+      "community": 21,
       "norm_label": "personadetailpane.tsx"
     },
     {
@@ -3284,7 +3266,7 @@
       "source_file": "src/knowledge-center/PersonaDetailPane.tsx",
       "source_location": "L7",
       "id": "knowledge_center_personadetailpane_section_icon",
-      "community": 1,
+      "community": 21,
       "norm_label": "section_icon"
     },
     {
@@ -3293,7 +3275,7 @@
       "source_file": "src/knowledge-center/PersonaDetailPane.tsx",
       "source_location": "L25",
       "id": "knowledge_center_personadetailpane_emptypersona",
-      "community": 1,
+      "community": 23,
       "norm_label": "emptypersona()"
     },
     {
@@ -3302,7 +3284,7 @@
       "source_file": "src/knowledge-center/PersonaDetailPane.tsx",
       "source_location": "L29",
       "id": "knowledge_center_personadetailpane_logfield",
-      "community": 1,
+      "community": 21,
       "norm_label": "logfield"
     },
     {
@@ -3311,7 +3293,7 @@
       "source_file": "src/knowledge-center/PersonaDetailPane.tsx",
       "source_location": "L31",
       "id": "knowledge_center_personadetailpane_personafieldrow",
-      "community": 1,
+      "community": 21,
       "norm_label": "personafieldrow()"
     },
     {
@@ -3329,7 +3311,7 @@
       "source_file": "src/knowledge-center/PersonaDetailPane.tsx",
       "source_location": "L82",
       "id": "knowledge_center_personadetailpane_personadetailpane",
-      "community": 1,
+      "community": 23,
       "norm_label": "personadetailpane()"
     },
     {
@@ -3599,7 +3581,7 @@
       "source_file": "src/knowledge-center/ui.tsx",
       "source_location": "L13",
       "id": "knowledge_center_ui_iconname",
-      "community": 1,
+      "community": 23,
       "norm_label": "iconname"
     },
     {
@@ -3680,7 +3662,7 @@
       "source_file": "src/knowledge-center/ui.tsx",
       "source_location": "L133",
       "id": "knowledge_center_ui_stattile",
-      "community": 1,
+      "community": 21,
       "norm_label": "stattile()"
     },
     {
@@ -3833,7 +3815,7 @@
       "source_file": "src/knowledge-center/ui.tsx",
       "source_location": "L446",
       "id": "knowledge_center_ui_drawer",
-      "community": 2,
+      "community": 23,
       "norm_label": "drawer()"
     },
     {
@@ -4255,7 +4237,7 @@
       "file_type": "code",
       "source_file": "src/knowledge-center/PersonaDetailPane.tsx",
       "source_location": "L29",
-      "community": 1,
+      "community": 21,
       "norm_label": "personacompletion()",
       "id": "knowledge_center_personadetailpane_personacompletion"
     },
@@ -4417,7 +4399,7 @@
       "file_type": "code",
       "source_file": "src/knowledge-center/data.ts",
       "source_location": "L844",
-      "community": 2,
+      "community": 23,
       "norm_label": "scorechain",
       "id": "knowledge_center_data_scorechain"
     },
@@ -4552,7 +4534,7 @@
       "file_type": "code",
       "source_file": "src/knowledge-center/Campaign.tsx",
       "source_location": "L7",
-      "community": 1,
+      "community": 23,
       "norm_label": "channel_icon",
       "id": "knowledge_center_campaign_channel_icon"
     },
@@ -4561,7 +4543,7 @@
       "file_type": "code",
       "source_file": "src/knowledge-center/Campaign.tsx",
       "source_location": "L11",
-      "community": 1,
+      "community": 23,
       "norm_label": "status_style",
       "id": "knowledge_center_campaign_status_style"
     },
@@ -4570,7 +4552,7 @@
       "file_type": "code",
       "source_file": "src/knowledge-center/Campaign.tsx",
       "source_location": "L18",
-      "community": 1,
+      "community": 23,
       "norm_label": "overallfit()",
       "id": "knowledge_center_campaign_overallfit"
     },
@@ -4579,7 +4561,7 @@
       "file_type": "code",
       "source_file": "src/knowledge-center/Campaign.tsx",
       "source_location": "L21",
-      "community": 1,
+      "community": 23,
       "norm_label": "tone()",
       "id": "knowledge_center_campaign_tone"
     },
@@ -4588,7 +4570,7 @@
       "file_type": "code",
       "source_file": "src/knowledge-center/Campaign.tsx",
       "source_location": "L28",
-      "community": 1,
+      "community": 23,
       "norm_label": "header_cell",
       "id": "knowledge_center_campaign_header_cell"
     },
@@ -4597,7 +4579,7 @@
       "file_type": "code",
       "source_file": "src/knowledge-center/Campaign.tsx",
       "source_location": "L30",
-      "community": 1,
+      "community": 23,
       "norm_label": "comborow()",
       "id": "knowledge_center_campaign_comborow"
     },
@@ -8275,16 +8257,6 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/knowledge-center/data.ts",
-      "source_location": "L861",
-      "weight": 1.0,
-      "source": "src_knowledge_center_data_ts",
-      "target": "knowledge_center_data_now",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/knowledge-center/data.ts",
       "source_location": "L594",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -8480,16 +8452,6 @@
       "confidence_score": 1.0,
       "source": "src_knowledge_center_data_ts",
       "target": "knowledge_center_data_scoredimension"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/knowledge-center/data.ts",
-      "source_location": "L863",
-      "weight": 1.0,
-      "source": "src_knowledge_center_data_ts",
-      "target": "knowledge_center_data_seed_history",
-      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -9827,17 +9789,6 @@
       "confidence_score": 1.0,
       "source": "src_knowledge_center_knowledgecenter_tsx",
       "target": "knowledge_center_data_personas"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/knowledge-center/KnowledgeCenter.tsx",
-      "source_location": "L2",
-      "weight": 1.0,
-      "source": "src_knowledge_center_knowledgecenter_tsx",
-      "target": "knowledge_center_data_seed_history",
-      "confidence_score": 1.0
     },
     {
       "relation": "implements",
@@ -12539,9 +12490,9 @@
       "source_file": "src/knowledge-center/Company.tsx",
       "source_location": "L8",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "src_knowledge_center_company_tsx",
-      "target": "knowledge_center_company_basic_fields"
+      "target": "knowledge_center_company_basic_fields",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -12589,9 +12540,9 @@
       "source_file": "src/knowledge-center/Company.tsx",
       "source_location": "L33",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "src_knowledge_center_company_tsx",
-      "target": "knowledge_center_company_deep_dive_fields"
+      "target": "knowledge_center_company_deep_dive_fields",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -12599,9 +12550,9 @@
       "source_file": "src/knowledge-center/Company.tsx",
       "source_location": "L17",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "src_knowledge_center_company_tsx",
-      "target": "knowledge_center_company_pitch_fields"
+      "target": "knowledge_center_company_pitch_fields",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -12609,9 +12560,9 @@
       "source_file": "src/knowledge-center/Company.tsx",
       "source_location": "L25",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "src_knowledge_center_company_tsx",
-      "target": "knowledge_center_company_positioning_fields"
+      "target": "knowledge_center_company_positioning_fields",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -12629,9 +12580,9 @@
       "source_file": "src/knowledge-center/Company.tsx",
       "source_location": "L41",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "src_knowledge_center_company_tsx",
-      "target": "knowledge_center_company_profiletextfield"
+      "target": "knowledge_center_company_profiletextfield",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -12659,9 +12610,9 @@
       "source_file": "src/knowledge-center/Company.tsx",
       "source_location": "L5",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "src_knowledge_center_company_tsx",
-      "target": "knowledge_center_company_textfieldspec"
+      "target": "knowledge_center_company_textfieldspec",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",

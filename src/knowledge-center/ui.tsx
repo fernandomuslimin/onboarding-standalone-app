@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { HistorySource } from "./data";
 
 /* ════════════════════════════════════════════════════════════════════
    Knowledge Center — shared UI primitives
@@ -13,7 +14,7 @@ export type IconName =
   | "building" | "globe" | "users" | "target" | "flag" | "briefcase" | "dollar"
   | "chart" | "search" | "message" | "shield" | "list" | "folder" | "phone"
   | "mail" | "linkedin" | "check" | "clock" | "external" | "chevron-down"
-  | "chevron-left" | "plus" | "trash" | "graph" | "grid" | "filter" | "brain"
+  | "chevron-left" | "plus" | "minus" | "trash" | "graph" | "grid" | "filter" | "brain"
   | "compass" | "layers" | "route" | "handshake" | "book" | "map" | "edit" | "info" | "close";
 
 const ICON_PATHS: Record<IconName, React.ReactNode> = {
@@ -39,6 +40,7 @@ const ICON_PATHS: Record<IconName, React.ReactNode> = {
   "chevron-down": <path d="M6 9l6 6 6-6" />,
   "chevron-left": <path d="M15 18l-6-6 6-6" />,
   plus: <path d="M12 5v14M5 12h14" />,
+  minus: <path d="M5 12h14" />,
   trash: <><path d="M4 7h16" /><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" /><path d="M6 7l1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13" /><path d="M10 11v6M14 11v6" /></>,
   graph: <><circle cx="4" cy="12" r="2" /><circle cx="12" cy="6" r="2" /><circle cx="12" cy="18" r="2" /><circle cx="20" cy="12" r="2" /><path d="M6 12h4M13.4 7.6L18.6 10.4M13.4 16.4L18.6 13.6" /></>,
   grid: <><rect x="3.5" y="3.5" width="7.5" height="7.5" rx="1.4" /><rect x="13" y="3.5" width="7.5" height="7.5" rx="1.4" /><rect x="3.5" y="13" width="7.5" height="7.5" rx="1.4" /><rect x="13" y="13" width="7.5" height="7.5" rx="1.4" /></>,
@@ -143,11 +145,12 @@ export function StatTile({ icon, label, value }: { icon: IconName; label: string
 }
 
 /* ─── Field label ───────────────────────────────────────────────── */
-export function FieldLabel({ children, confidence }: { children: React.ReactNode; confidence?: number }) {
+export function FieldLabel({ children, confidence, aiTrigger }: { children: React.ReactNode; confidence?: number; aiTrigger?: React.ReactNode }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 5 }}>
       <span style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.05em", textTransform: "uppercase" }}>{children}</span>
       <ConfidenceBadge value={confidence} />
+      {aiTrigger}
     </div>
   );
 }
@@ -166,10 +169,21 @@ export function FieldValue({ value }: { value: string | string[] }) {
   return <p style={{ margin: 0, fontSize: 12.5, color: "var(--color-heading)", lineHeight: 1.6 }}>{value}</p>;
 }
 
-/* ─── Editable text (input / textarea, plain — no AI affordances) ─ */
-export function EditableField({ value, onChange, multiline = false, rows = 2 }: {
+/* ─── Editable text (input / textarea) ───────────────────────────
+   `onCommit` is an optional history hook: it fires once per focus→blur
+   edit session (not per keystroke) when the value actually changed,
+   letting callers log a single "manual edit" entry per commit instead
+   of one per character typed. */
+export function EditableField({ value, onChange, multiline = false, rows = 2, onCommit }: {
   value: string; onChange: (v: string) => void; multiline?: boolean; rows?: number;
+  onCommit?: (oldValue: string, newValue: string) => void;
 }) {
+  const focusValueRef = useRef(value);
+  function handleFocus() { focusValueRef.current = value; }
+  function handleBlur() {
+    if (onCommit && value !== focusValueRef.current) onCommit(focusValueRef.current, value);
+  }
+
   const style: React.CSSProperties = {
     width: "100%", fontFamily: KC_FONT, fontSize: 13, color: "var(--color-heading)",
     background: "var(--color-surface)", border: "1px solid transparent", borderRadius: 8,
@@ -177,9 +191,117 @@ export function EditableField({ value, onChange, multiline = false, rows = 2 }: 
     lineHeight: 1.5,
   };
   if (multiline) {
-    return <textarea className="kc-input" rows={rows} value={value} onChange={(e) => onChange(e.target.value)} style={style} />;
+    return <textarea className="kc-input" rows={rows} value={value} onChange={(e) => onChange(e.target.value)} onFocus={handleFocus} onBlur={handleBlur} style={style} />;
   }
-  return <input className="kc-input" value={value} onChange={(e) => onChange(e.target.value)} style={style} />;
+  return <input className="kc-input" value={value} onChange={(e) => onChange(e.target.value)} onFocus={handleFocus} onBlur={handleBlur} style={style} />;
+}
+
+/* ─── Ask-AI mock revise ──────────────────────────────────────────
+   Field-scoped heuristic rewrite — no live model call (mirrors the
+   mocked AI patterns used elsewhere in the app). Kept local to this
+   file rather than shared with onboarding-shell.tsx's own copy, since
+   that file belongs to a different, disconnected part of the app. */
+function firstSentence(s: string): string {
+  const m = s.match(/^.*?[.!?](?=\s|$)/);
+  return m ? m[0] : s;
+}
+function reviseText(text: string, instruction: string): string {
+  const lower = instruction.toLowerCase();
+  if (/shorter|concise|tighten|trim/.test(lower)) return firstSentence(text);
+  if (/more formal|formal tone/.test(lower)) return text.replace(/—/g, ",");
+  if (/casual|friendlier|informal/.test(lower)) return text.replace(/\.(\s|$)/g, "!$1");
+  const setTo = instruction.match(/(?:set|change|update|rewrite)(?:\s+this)?\s+to\s+(.+)/i);
+  if (setTo) return setTo[1].trim();
+  return `${text.replace(/[.\s]+$/, "")} — ${instruction}`;
+}
+
+/* ─── Ask-AI trigger — small icon + instruction popover, sits next to
+   a FieldLabel via its `aiTrigger` slot. `onApplied` fires the moment
+   the mocked revise is applied, carrying the prompt text so callers
+   can log an "ai"-sourced history entry alongside the plain onChange. */
+export function AskAI({ value, onChange, onApplied }: {
+  value: string; onChange: (v: string) => void;
+  onApplied: (oldValue: string, newValue: string, prompt: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [instruction, setInstruction] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [undoValue, setUndoValue] = useState<string | null>(null);
+
+  function apply() {
+    const text = instruction.trim();
+    if (!text || busy) return;
+    setBusy(true);
+    setTimeout(() => {
+      const revised = reviseText(value, text);
+      if (revised !== value) {
+        setUndoValue(value);
+        onChange(revised);
+        onApplied(value, revised, text);
+      }
+      setBusy(false);
+      setOpen(false);
+      setInstruction("");
+    }, 800);
+  }
+  function cancel() { setOpen(false); setInstruction(""); }
+
+  return (
+    <span style={{ position: "relative", display: "inline-flex", alignItems: "center", gap: 6 }}>
+      <button type="button" onClick={() => setOpen((o) => !o)} title="Ask AI to revise this"
+        style={{ background: "none", border: "none", cursor: "pointer", padding: 2, lineHeight: 0, opacity: open ? 1 : 0.55, fontFamily: "inherit" }}>
+        <svg width={9} height={9} viewBox="0 0 24 24" fill="none" stroke="var(--color-brand)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72Z" />
+          <path d="m14 7 3 3" /><path d="M5 6v4" /><path d="M19 14v4" />
+        </svg>
+      </button>
+      {undoValue !== null && !open && (
+        <button type="button" onClick={() => { onChange(undoValue); setUndoValue(null); }}
+          style={{ fontSize: 10, fontWeight: 600, color: "var(--color-brand)", background: "none", border: "none", cursor: "pointer", textDecoration: "underline", padding: 0, fontFamily: "inherit" }}>
+          Undo
+        </button>
+      )}
+      {open && (
+        <div style={{ position: "absolute", top: "calc(100% + 6px)", left: 0, zIndex: 5, display: "flex", gap: 6, background: "var(--color-page)", border: "1px solid var(--color-border)", borderRadius: 10, padding: 6, boxShadow: "var(--shadow-elevated)", width: 240 }}>
+          <input
+            autoFocus value={instruction} onChange={(e) => setInstruction(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); apply(); } if (e.key === "Escape") { e.preventDefault(); cancel(); } }}
+            placeholder="Tell AI what to change…" disabled={busy}
+            style={{ flex: 1, minWidth: 0, fontSize: 11.5, border: "1px solid var(--color-border)", borderRadius: 7, padding: "5px 7px", outline: "none", fontFamily: "inherit", background: "var(--color-surface)", color: "var(--color-heading)" }}
+          />
+          <button type="button" onClick={apply} disabled={busy || !instruction.trim()}
+            style={{ flexShrink: 0, fontSize: 11, fontWeight: 600, borderRadius: 7, border: "none", padding: "0 10px", background: "var(--color-brand)", color: "#fff", cursor: busy || !instruction.trim() ? "default" : "pointer", opacity: busy || !instruction.trim() ? 0.6 : 1, fontFamily: "inherit" }}>
+            {busy ? "…" : "Go"}
+          </button>
+        </div>
+      )}
+    </span>
+  );
+}
+
+/* ─── Text field with history tracking ───────────────────────────
+   Bundles FieldLabel + EditableField + AskAI for the common case: a
+   single labeled, editable text field whose manual and AI-driven
+   edits both need to be logged. `onLogChange` receives one entry per
+   commit (blur for manual edits, apply for AI edits) — callers just
+   fill in the entity/field context around it. */
+export function HistoryTextField({ label, value, onChange, confidence, multiline, rows, onLogChange }: {
+  label: string; value: string; onChange: (v: string) => void; confidence?: number;
+  multiline?: boolean; rows?: number;
+  onLogChange: (change: { oldValue: string; newValue: string; source: HistorySource; prompt?: string }) => void;
+}) {
+  return (
+    <div>
+      <FieldLabel confidence={confidence} aiTrigger={
+        <AskAI value={value} onChange={onChange}
+          onApplied={(oldValue, newValue, prompt) => onLogChange({ oldValue, newValue, source: "ai", prompt })} />
+      }>
+        {label}
+      </FieldLabel>
+      <EditableField value={value} onChange={onChange} multiline={multiline} rows={rows}
+        onCommit={(oldValue, newValue) => onLogChange({ oldValue, newValue, source: "manual" })} />
+    </div>
+  );
 }
 
 /* ─── Tag / chip list with an Add input ─────────────────────────── */

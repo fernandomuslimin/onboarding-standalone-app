@@ -2,25 +2,52 @@ import { useMemo, useState } from "react";
 import { COMPANY_PROFILE, CompanyProfile } from "./data";
 import { CardSection, ChipList, EditableField, FieldLabel, Icon, KC_PRIMARY_BTN, ProgressBar, TagRow } from "./ui";
 
-const TEXT_FIELDS: { key: keyof CompanyProfile; label: string; multiline?: boolean }[] = [
+type TextFieldSpec = { key: keyof CompanyProfile; label: string; multiline?: boolean };
+
+// Short, single-line facts about the company.
+const BASIC_FIELDS: TextFieldSpec[] = [
   { key: "companyName", label: "Company Name" },
   { key: "website", label: "Website" },
   { key: "category", label: "Category" },
   { key: "companySize", label: "Company Size" },
   { key: "annualRevenue", label: "Annual Revenue" },
+];
+
+// The headline pitch and one-paragraph summary.
+const PITCH_FIELDS: TextFieldSpec[] = [
   { key: "elevatorPitch", label: "Elevator Pitch", multiline: true },
   { key: "productServiceSummary", label: "Product / Service Summary", multiline: true },
-  { key: "weHelp", label: "We Help…" },
-  { key: "whoStruggleWith", label: "Who Struggle With…" },
-  { key: "byProviding", label: "By Providing…" },
-  { key: "unlike", label: "Unlike…" },
-  { key: "weUniquely", label: "We Uniquely…" },
+];
+
+// These five clauses stitch together into one sentence in the summary view
+// (see positioningStatement below) — each holds a full clause, not a short
+// value, so they need the same multiline treatment as any other prose field.
+const POSITIONING_FIELDS: TextFieldSpec[] = [
+  { key: "weHelp", label: "We Help…", multiline: true },
+  { key: "whoStruggleWith", label: "Who Struggle With…", multiline: true },
+  { key: "byProviding", label: "By Providing…", multiline: true },
+  { key: "unlike", label: "Unlike…", multiline: true },
+  { key: "weUniquely", label: "We Uniquely…", multiline: true },
+];
+
+const DEEP_DIVE_FIELDS: TextFieldSpec[] = [
   { key: "coreProblem", label: "Core Problem", multiline: true },
   { key: "differentiators", label: "Differentiators", multiline: true },
   { key: "buyingMotion", label: "Buying Motion", multiline: true },
   { key: "proof", label: "Proof", multiline: true },
   { key: "dreamCustomer", label: "Dream Customer", multiline: true },
 ];
+
+function ProfileTextField({ field, profile, onChange }: {
+  field: TextFieldSpec; profile: CompanyProfile; onChange: (key: keyof CompanyProfile, value: string) => void;
+}) {
+  return (
+    <div>
+      <FieldLabel>{field.label}</FieldLabel>
+      <EditableField value={profile[field.key] as string} onChange={(v) => onChange(field.key, v)} multiline={field.multiline} rows={field.multiline ? 3 : undefined} />
+    </div>
+  );
+}
 
 const CHIP_FIELDS: { key: keyof CompanyProfile; label: string }[] = [
   { key: "industries", label: "Industries" },
@@ -79,6 +106,11 @@ export function CompanySection({ reviewed, onToggleReviewed }: { reviewed: boole
             </p>
           </div>
           <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
+            <button type="button" onClick={onToggleReviewed} title="Mark reviewed"
+              style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11.5, fontWeight: 700, color: reviewed ? "var(--color-success)" : "var(--color-muted)", background: reviewed ? "rgba(7,188,12,0.1)" : "var(--color-surface)", border: `1px solid ${reviewed ? "rgba(7,188,12,0.3)" : "var(--color-border)"}`, borderRadius: 999, padding: "0 12px", cursor: "pointer" }}>
+              <Icon name="check" size={11} />
+              {reviewed ? "Reviewed" : "Mark reviewed"}
+            </button>
             <button type="button" className="kc-primary-btn" style={KC_PRIMARY_BTN} onClick={() => setSavedAt(new Date().toLocaleTimeString())}>
               <Icon name="check" size={14} />
               Save
@@ -93,20 +125,27 @@ export function CompanySection({ reviewed, onToggleReviewed }: { reviewed: boole
         {savedAt && <div style={{ fontSize: 11.5, color: "var(--color-success)", marginTop: 8 }}>Saved at {savedAt}</div>}
       </div>
 
-      <CardSection icon="briefcase" title="Business Profile" right={
-        <button type="button" onClick={onToggleReviewed} title="Mark reviewed"
-          style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11.5, fontWeight: 700, color: reviewed ? "var(--color-success)" : "var(--color-muted)", background: reviewed ? "rgba(7,188,12,0.1)" : "var(--color-surface)", border: `1px solid ${reviewed ? "rgba(7,188,12,0.3)" : "var(--color-border)"}`, borderRadius: 999, padding: "4px 10px", cursor: "pointer" }}>
-          <Icon name="check" size={11} />
-          {reviewed ? "Reviewed" : "Mark reviewed"}
-        </button>
-      }>
+      <CardSection icon="briefcase" title="Company Basics">
         <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
-          {TEXT_FIELDS.map(({ key, label, multiline }) => (
-            <div key={key} style={multiline ? { gridColumn: "1 / -1" } : undefined}>
-              <FieldLabel>{label}</FieldLabel>
-              <EditableField value={profile[key] as string} onChange={(v) => patch(key, v)} multiline={multiline} rows={2} />
-            </div>
-          ))}
+          {BASIC_FIELDS.map((field) => <ProfileTextField key={field.key} field={field} profile={profile} onChange={patch} />)}
+        </div>
+      </CardSection>
+
+      <CardSection icon="message" title="Elevator Pitch">
+        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          {PITCH_FIELDS.map((field) => <ProfileTextField key={field.key} field={field} profile={profile} onChange={patch} />)}
+        </div>
+      </CardSection>
+
+      <CardSection icon="compass" title="Positioning Statement">
+        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          {POSITIONING_FIELDS.map((field) => <ProfileTextField key={field.key} field={field} profile={profile} onChange={patch} />)}
+        </div>
+      </CardSection>
+
+      <CardSection icon="brain" title="Deep Dive">
+        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          {DEEP_DIVE_FIELDS.map((field) => <ProfileTextField key={field.key} field={field} profile={profile} onChange={patch} />)}
         </div>
       </CardSection>
 

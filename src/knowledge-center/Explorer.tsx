@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { ICPS, IcpDetail, PERSONAS, PRODUCTS, PersonaDetail, ProductDetail, TreeNodeType, personasForIcp, treeKey } from "./data";
+import { useEffect, useState } from "react";
+import { ICPS, IcpDetail, PERSONAS, PRODUCTS, PersonaDetail, ProductDetail, TreeNodeType, HistoryEntry, HistorySource, personasForIcp, treeKey } from "./data";
 import { Drawer, Icon, IconName } from "./ui";
 import { TreeSelection } from "./Tree";
 import { KnowledgeOverview } from "./Overview";
@@ -17,12 +17,13 @@ const VIEWS: { key: ExplorerView; label: string; icon: IconName }[] = [
   { key: "performance", label: "Performance", icon: "chart" },
 ];
 
-export function Explorer({ reviewedKeys, onToggleReviewed, onNodeTypeChange, companyReviewed, onToggleCompanyReviewed }: {
+export function Explorer({ reviewedKeys, onToggleReviewed, onNodeTypeChange, companyReviewed, onToggleCompanyReviewed, onLogChange }: {
   reviewedKeys: Set<string>;
   onToggleReviewed: (key: string) => void;
   onNodeTypeChange: (type: TreeNodeType | null) => void;
   companyReviewed: boolean;
   onToggleCompanyReviewed: () => void;
+  onLogChange: (entry: Omit<HistoryEntry, "id" | "timestamp">) => void;
 }) {
   const [products, setProducts] = useState<ProductDetail[]>(PRODUCTS);
   const [icps, setIcps] = useState<IcpDetail[]>(ICPS);
@@ -34,7 +35,6 @@ export function Explorer({ reviewedKeys, onToggleReviewed, onNodeTypeChange, com
   // something else is picked. This tracks "closed without changing
   // selection" separately from `selection` itself.
   const [dismissed, setDismissed] = useState(false);
-  const paneRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     onNodeTypeChange(selection?.type ?? null);
@@ -98,6 +98,16 @@ export function Explorer({ reviewedKeys, onToggleReviewed, onNodeTypeChange, com
   const selectedIcp = selection?.type === "icp" ? icps.find((i) => i.id === selection.id) : undefined;
   const selectedPersona = selection?.type === "persona" ? personas.find((p) => p.id === selection.id) : undefined;
 
+  // Binds the shared onLogChange to whichever entity is currently selected, so
+  // the detail panes only need to know about their own fields, not entity context.
+  function logField(
+    entityType: TreeNodeType, entityId: string, entityLabel: string,
+    fieldLabel: string, oldValue: string | string[], newValue: string | string[],
+    source: HistorySource, prompt?: string,
+  ) {
+    onLogChange({ entityType, entityId, entityLabel, fieldLabel, oldValue, newValue, source, prompt });
+  }
+
   const detailPane = selectedProduct ? (
     <ProductDetailPane
       key={selectedProduct.id}
@@ -106,6 +116,8 @@ export function Explorer({ reviewedKeys, onToggleReviewed, onNodeTypeChange, com
       onToggleReviewed={() => onToggleReviewed(treeKey("product", selectedProduct.id))}
       onPatchField={(i, v) => patchProductField(selectedProduct.id, i, v)}
       onDelete={() => deleteProduct(selectedProduct.id)}
+      onLogField={(fieldLabel, oldValue, newValue, source, prompt) =>
+        logField("product", selectedProduct.id, selectedProduct.name, fieldLabel, oldValue, newValue, source, prompt)}
     />
   ) : selectedIcp ? (
     <IcpDetailPane
@@ -115,6 +127,8 @@ export function Explorer({ reviewedKeys, onToggleReviewed, onNodeTypeChange, com
       onPatch={(fields) => patchIcp(selectedIcp.id, fields)}
       onDelete={() => deleteIcp(selectedIcp.id)}
       onSelectPersona={(personaId) => setSelection({ type: "persona", id: personaId })}
+      onLogField={(fieldLabel, oldValue, newValue, source, prompt) =>
+        logField("icp", selectedIcp.id, selectedIcp.name, fieldLabel, oldValue, newValue, source, prompt)}
     />
   ) : selectedPersona ? (
     <PersonaDetailPane
@@ -123,6 +137,8 @@ export function Explorer({ reviewedKeys, onToggleReviewed, onNodeTypeChange, com
       onPatchName={(name) => patchPersonaName(selectedPersona.id, name)}
       onPatchField={(si, fi, v) => patchPersonaField(selectedPersona.id, si, fi, v)}
       onDelete={() => deletePersona(selectedPersona.id)}
+      onLogField={(fieldLabel, oldValue, newValue, source, prompt) =>
+        logField("persona", selectedPersona.id, selectedPersona.name, fieldLabel, oldValue, newValue, source, prompt)}
     />
   ) : null;
 
@@ -139,13 +155,35 @@ export function Explorer({ reviewedKeys, onToggleReviewed, onNodeTypeChange, com
   );
 
   // Clicking empty space clears the selection. Nodes, ghosts and the view
-  // toggle are all buttons, so those are left alone; the detail pane and any
-  // open drawer are excluded by ref/class since they hold inputs that aren't
-  // buttons.
+  // toggle are all buttons, so those are left alone; any open drawer is
+  // excluded by class since it holds inputs that aren't buttons.
   function handleBackgroundClick(event: React.MouseEvent) {
     const target = event.target as HTMLElement;
-    if (target.closest("button") || target.closest(".kc-drawer-panel") || paneRef.current?.contains(target)) return;
+    if (target.closest("button") || target.closest(".kc-drawer-panel")) return;
     setSelection(null);
+  }
+
+  // A persona's detail is too long to sit comfortably below the chart, so
+  // clicking one takes over the page instead of opening in a drawer or
+  // sitting under the dashboard. This applies across every view — the back
+  // button returns to whichever view the persona was opened from, so the
+  // user can pick another persona's detail from there.
+  if (selectedPersona && !dismissed) {
+    const backLabel = view === "diagram" ? "Diagram" : view === "performance" ? "Performance" : "Overview";
+    return (
+      <div style={{ display: "flex", flexDirection: "column", gap: 16, minHeight: "70vh" }}>
+        <button type="button" onClick={() => setDismissed(true)}
+          style={{
+            display: "flex", alignItems: "center", gap: 6, alignSelf: "flex-start", fontFamily: "inherit",
+            fontSize: 12.5, fontWeight: 700, color: "var(--color-muted)", background: "transparent",
+            border: "none", cursor: "pointer", padding: "4px 2px",
+          }}>
+          <Icon name="chevron-left" size={13} />
+          Back to {backLabel}
+        </button>
+        {detailPane}
+      </div>
+    );
   }
 
   if (view === "performance") {
@@ -157,26 +195,6 @@ export function Explorer({ reviewedKeys, onToggleReviewed, onNodeTypeChange, com
           selection={selection} onSelect={setSelection}
           reviewedKeys={reviewedKeys}
         />
-        {detailPane && <div ref={paneRef} style={{ maxWidth: 980 }}>{detailPane}</div>}
-      </div>
-    );
-  }
-
-  // A persona's detail is too long to sit comfortably below the chart, so
-  // clicking one takes over the page instead of opening in a drawer.
-  if (selectedPersona && !dismissed) {
-    return (
-      <div style={{ display: "flex", flexDirection: "column", gap: 16, minHeight: "70vh" }}>
-        <button type="button" onClick={() => setDismissed(true)}
-          style={{
-            display: "flex", alignItems: "center", gap: 6, alignSelf: "flex-start", fontFamily: "inherit",
-            fontSize: 12.5, fontWeight: 700, color: "var(--color-muted)", background: "transparent",
-            border: "none", cursor: "pointer", padding: "4px 2px",
-          }}>
-          <Icon name="chevron-left" size={13} />
-          Back to {view === "diagram" ? "Diagram" : "Overview"}
-        </button>
-        {detailPane}
       </div>
     );
   }

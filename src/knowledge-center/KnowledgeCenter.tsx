@@ -1,9 +1,10 @@
 import { useMemo, useState } from "react";
-import { NAV_GROUPS, NAV_LABEL, REVIEWABLE_SECTIONS, NavKey, PRODUCTS, ICPS, PERSONAS, TreeNodeType } from "./data";
+import { NAV_GROUPS, NAV_LABEL, REVIEWABLE_SECTIONS, NavKey, PRODUCTS, ICPS, PERSONAS, TreeNodeType, HistoryEntry, SEED_HISTORY } from "./data";
 import { Icon, IconName, KC_STYLES } from "./ui";
 import { Explorer } from "./Explorer";
 import { CampaignSection } from "./Campaign";
 import { ResourcesSection } from "./Resources";
+import { HistoryDrawer } from "./HistoryDrawer";
 
 const NAV_ICON: Record<NavKey, IconName> = {
   company: "building", explorer: "layers",
@@ -26,6 +27,12 @@ export function KnowledgeCenter({ onExit }: { onExit: () => void }) {
     campaign: new Set(), resources: new Set(),
   });
   const [explorerNodeType, setExplorerNodeType] = useState<TreeNodeType | null>(null);
+  const [history, setHistory] = useState<HistoryEntry[]>(SEED_HISTORY);
+  const [historyOpen, setHistoryOpen] = useState(false);
+
+  function logChange(entry: Omit<HistoryEntry, "id" | "timestamp">) {
+    setHistory((current) => [{ ...entry, id: `hist-${current.length}-${entry.entityId}-${entry.fieldLabel}`, timestamp: Date.now() }, ...current]);
+  }
 
   function toggleReviewed(key: NavKey, id: string) {
     setReviewed((current) => {
@@ -106,11 +113,18 @@ export function KnowledgeCenter({ onExit }: { onExit: () => void }) {
       <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0, minHeight: 0 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "18px 32px", borderBottom: "1px solid var(--color-border)", background: "var(--color-page)", flexShrink: 0 }}>
           <h1 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>{NAV_LABEL[section]}</h1>
-          {showReviewedBadge && (
-            <span style={{ fontSize: 12.5, fontWeight: 600, color: "var(--color-muted)", fontVariantNumeric: "tabular-nums" }}>
-              {reviewedCount}/{total} reviewed
-            </span>
-          )}
+          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+            {showReviewedBadge && (
+              <span style={{ fontSize: 12.5, fontWeight: 600, color: "var(--color-muted)", fontVariantNumeric: "tabular-nums" }}>
+                {reviewedCount}/{total} reviewed
+              </span>
+            )}
+            <button type="button" onClick={() => setHistoryOpen(true)}
+              style={{ display: "flex", alignItems: "center", gap: 6, fontFamily: "inherit", fontSize: 12.5, fontWeight: 600, color: "var(--color-body)", background: "var(--color-page)", border: "1px solid var(--color-border-strong)", borderRadius: 9, padding: "7px 12px", cursor: "pointer" }}>
+              <Icon name="clock" size={13} />
+              History{history.length > 0 ? ` (${history.length})` : ""}
+            </button>
+          </div>
         </div>
 
         <div style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: "28px 32px 48px", minWidth: 0, background: "var(--color-page)" }}>
@@ -121,12 +135,15 @@ export function KnowledgeCenter({ onExit }: { onExit: () => void }) {
               onNodeTypeChange={setExplorerNodeType}
               companyReviewed={reviewed.company.has("company")}
               onToggleCompanyReviewed={() => toggleReviewed("company", "company")}
+              onLogChange={logChange}
             />
           )}
           {section === "campaign" && <CampaignSection />}
           {section === "resources" && <ResourcesSection />}
         </div>
       </div>
+
+      <HistoryDrawer history={history} open={historyOpen} onClose={() => setHistoryOpen(false)} />
     </div>
   );
 }
