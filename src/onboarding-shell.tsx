@@ -1,5 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import { KnowledgeCenter } from "./knowledge-center/KnowledgeCenter";
+import { CopilotProvider, useRegisterCopilotAdapter } from "./copilot/CopilotContext";
+import { CopilotWidget } from "./copilot/CopilotWidget";
+import { ReferenceableField, ReferenceableSection } from "./copilot/Referenceable";
+import { ResolvedReference } from "./copilot/types";
 
 /* ─── Standalone shims ──────────────────────────────────────────────
    The real app imports these from next/navigation and next/link.
@@ -41,7 +45,6 @@ const STYLES = `
 .ob-ghost-btn:hover:not(:disabled) { background: var(--color-surface); color: var(--color-heading); }
 .ob-back-btn:hover { background: var(--color-surface); color: var(--color-heading); }
 .ob-link-btn:hover { color: var(--color-brand-hover); }
-.ob-editable-field:focus { border-color: var(--color-brand) !important; box-shadow: var(--shadow-focus); }
 .ob-hero-title { font-size: clamp(32px, 5vw, 56px); }
 
 .ob-field-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); align-items: start; gap: 12px; }
@@ -52,6 +55,10 @@ const STYLES = `
 }
 @media (min-width: 1080px) {
   .ob-review-card { max-width: 920px !important; }
+}
+
+@media (max-width: 1080px) {
+  .ob-company-grid { grid-template-columns: 1fr !important; }
 }
 
 @media (max-width: 640px) {
@@ -1778,17 +1785,20 @@ function StepResearch({ onFinish }: { onFinish: () => void }) {
 /* ════════════════════════════════════════════════════════════════════
    STEP 12 — Company Research summary (AI-drafted result)
 ══════════════════════════════════════════════════════════════════════ */
-const RESEARCH_SECTION_LABEL: React.CSSProperties = {
-  fontSize: 11, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.05em",
-  textTransform: "uppercase" as const, paddingBottom: 6, marginBottom: 10, borderBottom: "1px solid var(--color-border)",
-  display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8,
-};
-
-function SectionLabel({ children, ai }: { children: React.ReactNode; ai?: React.ReactNode }) {
+/* ─── Research review card — a bordered "panel" with an icon + title
+   header, used to group each block of AI-drafted findings on the
+   Company Research step so every section reads as one consistent
+   card instead of ad-hoc boxes with mismatched borders. */
+function ResearchSectionCard({ icon, title, children }: { icon: React.ReactNode; title: string; children: React.ReactNode }) {
   return (
-    <div style={RESEARCH_SECTION_LABEL}>
-      <span>{children}</span>
-      {ai}
+    <div style={{ border: "1px solid var(--color-border)", borderRadius: 14, background: "var(--color-page)", overflow: "hidden" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 16px", borderBottom: "1px solid var(--color-border)", background: "var(--color-surface)" }}>
+        <span style={{ width: 26, height: 26, borderRadius: 8, background: "var(--color-brand-tint)", color: "var(--color-brand)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+          {icon}
+        </span>
+        <span style={{ flex: 1, minWidth: 0, fontSize: 12.5, fontWeight: 700, color: "var(--color-heading)", letterSpacing: "0.01em" }}>{title}</span>
+      </div>
+      <div style={{ padding: "16px 18px" }}>{children}</div>
     </div>
   );
 }
@@ -1808,244 +1818,31 @@ function BulletList({ items, tone = "body" }: { items: string[]; tone?: "body" |
   );
 }
 
-/* ─── Inline editable field primitives ─────────────────────────────
-   Shared by any "AI-drafted, human-reviewable" step. Always rendered
-   as a live input/textarea — no click needed to start editing —
-   with an optional "Ask AI" trigger for a revise-by-instruction pass. */
-function EditableText({ value, onChange, multiline = false, placeholder, style, rows = 3, revise }: {
-  value: string; onChange: (v: string) => void; multiline?: boolean; placeholder?: string; style?: React.CSSProperties; rows?: number;
-  revise?: (current: string, instruction: string) => string;
+/* ─── Secondary block accordion — the review wizard's "Secondary
+   (expandable)" tier from summary-view-spec.md: on the page, collapsed
+   by default, one click away. Shared by the Company Research step and
+   the Product/ICP/Personas review panels below so every "show more"
+   in the wizard looks and behaves the same. */
+function SecondaryAccordion({ icon, title, children, defaultOpen = false }: {
+  icon: React.ReactNode; title: string; children: React.ReactNode; defaultOpen?: boolean;
 }) {
-  const [aiOpen, setAiOpen] = useState(false);
-  const [aiInstruction, setAiInstruction] = useState("");
-  const [aiBusy, setAiBusy] = useState(false);
-  const [undoValue, setUndoValue] = useState<string | null>(null);
-  const containerRef = useRef<HTMLSpanElement>(null);
-
-  function applyAI() {
-    if (!revise) return;
-    const instruction = aiInstruction.trim();
-    if (!instruction || aiBusy) return;
-    setAiBusy(true);
-    setTimeout(() => {
-      setUndoValue(value);
-      onChange(revise(value, instruction));
-      setAiBusy(false);
-      setAiOpen(false);
-      setAiInstruction("");
-    }, 800);
-  }
-
-  const fieldStyle: React.CSSProperties = {
-    display: "block", width: "100%", background: "var(--color-surface)", border: "1px solid var(--color-border)",
-    borderRadius: 7, padding: revise ? "5px 32px 5px 7px" : "5px 7px", fontFamily: "inherit", outline: "none", boxSizing: "border-box" as const,
-    color: "var(--color-heading)", lineHeight: 1.5, transition: "border-color 150ms, box-shadow 150ms", ...style,
-  };
-
+  const [open, setOpen] = useState(defaultOpen);
   return (
-    <span ref={containerRef} style={{ position: "relative", display: "block" }}>
-      <span style={{ position: "relative", display: "block" }}>
-        {multiline ? (
-          <textarea
-            className="ob-editable-field" rows={rows} value={value} placeholder={placeholder}
-            onChange={(e) => onChange(e.target.value)}
-            style={{ ...fieldStyle, resize: "vertical" as const }}
-          />
-        ) : (
-          <input
-            className="ob-editable-field" value={value} placeholder={placeholder}
-            onChange={(e) => onChange(e.target.value)}
-            style={{ ...fieldStyle, textOverflow: "ellipsis" }}
-          />
-        )}
-        {revise && (
-          <button
-            type="button"
-            onMouseDown={(e) => e.preventDefault()} // keep focus on the field; only React state (aiOpen) decides the popup, not a focus/blur race
-            onClick={() => setAiOpen((o) => !o)}
-            title="Ask AI to revise this"
-            style={{
-              position: "absolute", top: 0, right: 4, bottom: 0, margin: "auto 0", width: 15, height: 15, display: "flex", alignItems: "center", justifyContent: "center",
-              borderRadius: "50%", border: "none", cursor: "pointer", padding: 0, boxShadow: "0 1px 2px rgba(0,0,0,0.15)",
-              background: aiOpen ? "var(--color-brand)" : "var(--color-brand-tint)",
-              ...(multiline ? { top: 4, bottom: "auto", margin: 0 } : {}),
-            }}
-          >
-            <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke={aiOpen ? "#fff" : "var(--color-brand)"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72Z" />
-              <path d="m14 7 3 3" /><path d="M5 6v4" /><path d="M19 14v4" />
-            </svg>
-          </button>
-        )}
-      </span>
-      {aiOpen && (
-        <div style={{ display: "flex", gap: 6, marginTop: 6 }}>
-          <input
-            autoFocus value={aiInstruction} onChange={(e) => setAiInstruction(e.target.value)}
-            onBlur={() => {
-              // Popup's own blur: if focus left the whole field+popup group
-              // entirely (not just moved between its own pieces), close for real.
-              requestAnimationFrame(() => {
-                if (containerRef.current && !containerRef.current.contains(document.activeElement)) { setAiOpen(false); setAiInstruction(""); }
-              });
-            }}
-            onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); applyAI(); } if (e.key === "Escape") { e.preventDefault(); setAiOpen(false); setAiInstruction(""); } }}
-            placeholder="Tell AI what to change…" disabled={aiBusy}
-            style={{ flex: 1, minWidth: 0, fontSize: 11.5, border: "1px solid var(--color-border)", borderRadius: 7, padding: "5px 7px", outline: "none", fontFamily: "inherit", background: "var(--color-surface)", color: "var(--color-heading)" }}
-          />
-          <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={applyAI} disabled={aiBusy || !aiInstruction.trim()}
-            style={{ flexShrink: 0, fontSize: 11, fontWeight: 600, borderRadius: 7, border: "none", padding: "0 10px", background: "var(--color-brand)", color: "#fff", cursor: aiBusy || !aiInstruction.trim() ? "default" : "pointer", opacity: aiBusy || !aiInstruction.trim() ? 0.6 : 1, display: "flex", alignItems: "center", fontFamily: "inherit" }}>
-            {aiBusy ? <Spinner inverted /> : "Go"}
-          </button>
-        </div>
-      )}
-      {undoValue !== null && (
-        <button type="button" onClick={() => { onChange(undoValue); setUndoValue(null); }}
-          style={{ display: "block", marginTop: 4, fontSize: 10, fontWeight: 600, color: "var(--color-brand)", background: "none", border: "none", cursor: "pointer", textDecoration: "underline", padding: 0, fontFamily: "inherit" }}>
-          Undo
-        </button>
-      )}
-    </span>
-  );
-}
-
-function EditableBulletList({ items, onChange, tone = "body" }: {
-  items: string[]; onChange: (items: string[]) => void; tone?: "body" | "brand";
-}) {
-  const textColor = tone === "brand" ? "var(--color-brand)" : "var(--color-body)";
-  const updateAt = (i: number, v: string) => onChange(items.map((it, idx) => (idx === i ? v : it)));
-  const removeAt = (i: number) => onChange(items.filter((_, idx) => idx !== i));
-  const add = () => onChange([...items, "New point"]);
-
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-      {items.map((item, i) => (
-        <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
-          <span style={{ flex: 1, minWidth: 0 }}>
-            <EditableText value={item} onChange={(v) => updateAt(i, v)} multiline rows={2} style={{ fontSize: 12.5, color: textColor }} revise={reviseText} />
-          </span>
-          <button type="button" onClick={() => removeAt(i)} title="Remove"
-            style={{ flexShrink: 0, background: "none", border: "none", color: "var(--color-subtle)", cursor: "pointer", fontSize: 14, padding: 0, lineHeight: 1.5, fontFamily: "inherit" }}>×</button>
-        </div>
-      ))}
-      <button type="button" onClick={add}
-        style={{ alignSelf: "flex-start", background: "none", border: "none", color: "var(--color-brand)", cursor: "pointer", fontSize: 11.5, fontWeight: 600, padding: "2px 0", fontFamily: "inherit" }}>
-        + Add point
+    <div style={{ border: "1px solid var(--color-border)", borderRadius: 14, background: "var(--color-page)", overflow: "hidden" }}>
+      <button type="button" onClick={() => setOpen((o) => !o)}
+        style={{ width: "100%", display: "flex", alignItems: "center", gap: 10, padding: "12px 16px", background: "var(--color-surface)", border: "none", cursor: "pointer", fontFamily: "inherit", textAlign: "left" as const }}>
+        <span style={{ width: 26, height: 26, borderRadius: 8, background: "var(--color-brand-tint)", color: "var(--color-brand)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+          {icon}
+        </span>
+        <span style={{ flex: 1, minWidth: 0, fontSize: 12.5, fontWeight: 700, color: "var(--color-heading)", letterSpacing: "0.01em" }}>{title}</span>
+        <span style={{ flexShrink: 0, fontSize: 11, fontWeight: 700, color: "var(--color-muted)", display: "flex", alignItems: "center", gap: 5 }}>
+          {open ? "Show less" : "Show more"}
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ transform: open ? "rotate(180deg)" : "none", transition: "transform 150ms" }}>
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </span>
       </button>
-    </div>
-  );
-}
-
-/* ─── Inline "Ask AI" trigger — sits next to a field or a section
-   header. No live model call in this demo (mirrors the rest of the
-   app's mocked delays); `revise` is a pure heuristic transform scoped
-   to whatever value this instance was bound to. */
-function AIRevise<T>({ value, onChange, revise, scale = "field" }: {
-  value: T; onChange: (next: T) => void; revise: (current: T, instruction: string) => T; scale?: "field" | "section";
-}) {
-  const [open, setOpen] = useState(false);
-  const [instruction, setInstruction] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [undoValue, setUndoValue] = useState<T | null>(null);
-  const iconSize = scale === "section" ? 9 : 7;
-
-  function apply() {
-    const text = instruction.trim();
-    if (!text || busy) return;
-    setBusy(true);
-    setTimeout(() => {
-      setUndoValue(value);
-      onChange(revise(value, text));
-      setBusy(false);
-      setOpen(false);
-      setInstruction("");
-    }, scale === "section" ? 1200 : 800);
-  }
-  function cancel() { setOpen(false); setInstruction(""); }
-
-  return (
-    <span style={{ position: "relative", display: "inline-flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
-      <button type="button" onClick={() => setOpen((o) => !o)} title="Ask AI to revise this"
-        style={{ background: "none", border: "none", cursor: "pointer", padding: 2, lineHeight: 0, opacity: open ? 1 : 0.55, fontFamily: "inherit" }}>
-        <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke="var(--color-brand)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72Z" />
-          <path d="m14 7 3 3" /><path d="M5 6v4" /><path d="M19 14v4" />
-        </svg>
-      </button>
-      {undoValue !== null && !open && (
-        <button type="button" onClick={() => { onChange(undoValue); setUndoValue(null); }}
-          style={{ fontSize: 10, fontWeight: 600, color: "var(--color-brand)", background: "none", border: "none", cursor: "pointer", textDecoration: "underline", padding: 0, fontFamily: "inherit" }}>
-          Undo
-        </button>
-      )}
-      {open && (
-        <div style={{ position: "absolute", top: "calc(100% + 6px)", right: 0, zIndex: 5, display: "flex", gap: 6, background: "var(--color-page)", border: "1px solid var(--color-border)", borderRadius: 10, padding: 6, boxShadow: "var(--shadow-elevated)", width: 240 }}>
-          <input
-            autoFocus value={instruction} onChange={(e) => setInstruction(e.target.value)}
-            onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); apply(); } if (e.key === "Escape") { e.preventDefault(); cancel(); } }}
-            placeholder="Tell AI what to change…" disabled={busy}
-            style={{ flex: 1, minWidth: 0, fontSize: 11.5, border: "1px solid var(--color-border)", borderRadius: 7, padding: "5px 7px", outline: "none", fontFamily: "inherit", background: "var(--color-surface)", color: "var(--color-heading)" }}
-          />
-          <button type="button" onClick={apply} disabled={busy || !instruction.trim()}
-            style={{ flexShrink: 0, fontSize: 11, fontWeight: 600, borderRadius: 7, border: "none", padding: "0 10px", background: "var(--color-brand)", color: "#fff", cursor: busy || !instruction.trim() ? "default" : "pointer", opacity: busy || !instruction.trim() ? 0.6 : 1, display: "flex", alignItems: "center", fontFamily: "inherit" }}>
-            {busy ? <Spinner inverted /> : "Go"}
-          </button>
-        </div>
-      )}
-    </span>
-  );
-}
-
-/* ─── Always-visible, whole-section "Ask AI" prompt — used by the
-   Product/ICP/Personas review panels below, where per-field editing
-   has been removed and this is the only way to change anything in a
-   section. Same busy → apply → undo state machine as AIRevise, but
-   rendered inline and always open instead of hidden behind a click,
-   since it's no longer a secondary affordance. Deliberately NOT built
-   on top of AIRevise so StepCompanyResearch's usage is untouched. */
-function SectionRevisePrompt<T>({ value, onChange, revise, placeholder = "Tell AI what to change across this section…" }: {
-  value: T; onChange: (next: T) => void; revise: (current: T, instruction: string) => T; placeholder?: string;
-}) {
-  const [instruction, setInstruction] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [undoValue, setUndoValue] = useState<T | null>(null);
-
-  function apply() {
-    const text = instruction.trim();
-    if (!text || busy) return;
-    setBusy(true);
-    setTimeout(() => {
-      setUndoValue(value);
-      onChange(revise(value, text));
-      setBusy(false);
-      setInstruction("");
-    }, 1200);
-  }
-
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 14 }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8, background: "var(--color-brand-faint)", border: "1px solid var(--color-border)", borderRadius: 12, padding: "8px 8px 8px 12px" }}>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-          <path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72Z" />
-          <path d="m14 7 3 3" /><path d="M5 6v4" /><path d="M19 14v4" />
-        </svg>
-        <input
-          value={instruction} onChange={(e) => setInstruction(e.target.value)}
-          onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); apply(); } }}
-          placeholder={placeholder} disabled={busy}
-          style={{ flex: 1, minWidth: 0, fontSize: 12.5, border: "none", outline: "none", background: "transparent", fontFamily: "inherit", color: "var(--color-heading)" }}
-        />
-        <button type="button" onClick={apply} disabled={busy || !instruction.trim()}
-          style={{ flexShrink: 0, fontSize: 11.5, fontWeight: 600, borderRadius: 8, border: "none", padding: "7px 14px", background: "var(--color-brand)", color: "#fff", cursor: busy || !instruction.trim() ? "default" : "pointer", opacity: busy || !instruction.trim() ? 0.6 : 1, display: "flex", alignItems: "center", fontFamily: "inherit" }}>
-          {busy ? <Spinner inverted /> : "Ask AI"}
-        </button>
-      </div>
-      {undoValue !== null && (
-        <button type="button" onClick={() => { onChange(undoValue); setUndoValue(null); }}
-          style={{ alignSelf: "flex-start", fontSize: 11, fontWeight: 600, color: "var(--color-brand)", background: "none", border: "none", cursor: "pointer", textDecoration: "underline", padding: 0, fontFamily: "inherit" }}>
-          Undo last AI revision
-        </button>
-      )}
+      {open && <div style={{ padding: "16px 18px" }}>{children}</div>}
     </div>
   );
 }
@@ -2068,37 +1865,6 @@ function reviseText(text: string, instruction: string): string {
 }
 
 function titleCase(s: string): string { return s.charAt(0).toUpperCase() + s.slice(1); }
-
-// Section-scoped revisers — same "no live model" heuristic approach as
-// reviseText, but each understands the shape of its own section so a
-// section-level prompt (e.g. "add X as a competitor") can act on the
-// whole list/object instead of a single field.
-type CompanyResearchOverview = CompanyResearchData["overview"];
-function reviseOverview(rows: CompanyResearchOverview, instruction: string): CompanyResearchOverview {
-  const m = instruction.match(/(?:set|update|change)\s+(.+?)\s+to\s+(.+)/i);
-  if (!m) return rows;
-  const label = m[1].trim().toLowerCase();
-  const value = m[2].trim();
-  return rows.map((r) => (r.label.toLowerCase().includes(label) ? { ...r, value } : r));
-}
-
-type ProductBundle = Pick<CompanyResearchData, "productName" | "productDescription" | "productBullets">;
-function reviseProductBundle(bundle: ProductBundle, instruction: string): ProductBundle {
-  const lower = instruction.toLowerCase();
-  if (/shorter|concise|tighten|trim/.test(lower)) {
-    return { ...bundle, productDescription: firstSentence(bundle.productDescription) };
-  }
-  return { ...bundle, productBullets: [...bundle.productBullets, titleCase(instruction)] };
-}
-
-type Positioning = CompanyResearchData["positioning"];
-function revisePositioning(p: Positioning, instruction: string): Positioning {
-  const lower = instruction.toLowerCase();
-  if (/shorter|concise|tighten|trim/.test(lower)) {
-    return { ...p, differentiators: p.differentiators.map(firstSentence) };
-  }
-  return { ...p, differentiators: [...p.differentiators, titleCase(instruction)] };
-}
 
 /* ─── Section-scoped revisers for the Product/ICP/Personas review step.
    Unlike reviseText (one string) these operate on everything shown in
@@ -2129,19 +1895,16 @@ function reviseProductServicesBundle(bundle: PSProductState, instruction: string
     const label = setTo[1].trim().toLowerCase();
     const value = setTo[2].trim();
     if (label.includes("name")) return { ...bundle, name: value };
-    return {
-      ...bundle,
-      sections: bundle.sections.map((s) =>
-        s.label.toLowerCase().includes(label) ? { ...s, content: Array.isArray(s.content) ? [value] : value } : s
-      ),
-    };
+    const patchSections = (list: PSSection[]) => list.map((s) => (s.label.toLowerCase().includes(label) ? { ...s, content: Array.isArray(s.content) ? [value] : value } : s));
+    return { ...bundle, sections: patchSections(bundle.sections), secondarySections: patchSections(bundle.secondarySections) };
   }
   // Everything else (shorter/formal/casual/fallback) applies across
-  // every section in the bundle in one pass.
-  return { ...bundle, sections: bundle.sections.map((s) => ({ ...s, content: reviseSectionContent(s.content, instruction) })) };
+  // every visible section in the bundle in one pass.
+  const reviseAll = (list: PSSection[]) => list.map((s) => ({ ...s, content: reviseSectionContent(s.content, instruction) }));
+  return { ...bundle, sections: reviseAll(bundle.sections), secondarySections: reviseAll(bundle.secondarySections) };
 }
 
-type IcpBundle = { tamDescription: string; icps: IcpScore[] };
+type IcpBundle = { tamDescription: string; icps: IcpCandidate[] };
 function reviseIcpBundle(bundle: IcpBundle, instruction: string): IcpBundle {
   const lower = instruction.toLowerCase();
 
@@ -2150,22 +1913,22 @@ function reviseIcpBundle(bundle: IcpBundle, instruction: string): IcpBundle {
     const label = setTo[1].trim().toLowerCase();
     const value = setTo[2].trim();
     if (/tam|total addressable|market/.test(label)) return { ...bundle, tamDescription: value };
-    return { ...bundle, icps: bundle.icps.map((icp) => (icp.name.toLowerCase().includes(label) ? { ...icp, reasoning: value } : icp)) };
+    return { ...bundle, icps: bundle.icps.map((icp) => (icp.name.toLowerCase().includes(label) ? { ...icp, fitReasoning: value } : icp)) };
   }
   if (/shorter|concise|tighten|trim/.test(lower)) {
-    return { tamDescription: firstSentence(bundle.tamDescription), icps: bundle.icps.map((icp) => ({ ...icp, reasoning: firstSentence(icp.reasoning) })) };
+    return { tamDescription: firstSentence(bundle.tamDescription), icps: bundle.icps.map((icp) => ({ ...icp, fitReasoning: firstSentence(icp.fitReasoning) })) };
   }
   if (/more formal|formal tone/.test(lower)) {
-    return { tamDescription: bundle.tamDescription.replace(/—/g, ","), icps: bundle.icps.map((icp) => ({ ...icp, reasoning: icp.reasoning.replace(/—/g, ",") })) };
+    return { tamDescription: bundle.tamDescription.replace(/—/g, ","), icps: bundle.icps.map((icp) => ({ ...icp, fitReasoning: icp.fitReasoning.replace(/—/g, ",") })) };
   }
   if (/casual|friendlier|informal/.test(lower)) {
-    return { tamDescription: bundle.tamDescription.replace(/\.(\s|$)/g, "!$1"), icps: bundle.icps.map((icp) => ({ ...icp, reasoning: icp.reasoning.replace(/\.(\s|$)/g, "!$1") })) };
+    return { tamDescription: bundle.tamDescription.replace(/\.(\s|$)/g, "!$1"), icps: bundle.icps.map((icp) => ({ ...icp, fitReasoning: icp.fitReasoning.replace(/\.(\s|$)/g, "!$1") })) };
   }
   // Fallback: same raw instruction appended to TAM *and* every ICP's
-  // reasoning — the whole point is it's no longer just one card.
+  // fit reasoning — the whole point is it's no longer just one card.
   return {
     tamDescription: `${bundle.tamDescription.replace(/[.\s]+$/, "")} — ${instruction}`,
-    icps: bundle.icps.map((icp) => ({ ...icp, reasoning: `${icp.reasoning.replace(/[.\s]+$/, "")} — ${instruction}` })),
+    icps: bundle.icps.map((icp) => ({ ...icp, fitReasoning: `${icp.fitReasoning.replace(/[.\s]+$/, "")} — ${instruction}` })),
   };
 }
 
@@ -2175,40 +1938,69 @@ function revisePersonasBundle(personas: PersonaData[], instruction: string): Per
     ...p,
     subtitle: shrink ? firstSentence(p.subtitle) : p.subtitle,
     sections: p.sections.map((s) => ({ ...s, content: reviseSectionContent(s.content, instruction) })),
+    secondarySections: p.secondarySections.map((s) => ({ ...s, content: reviseSectionContent(s.content, instruction) })),
   }));
 }
 
+/* Field shape mirrors docs/field_reference/company.js — see
+   docs/field_reference/summary-view-spec.md Step 1 for the block/tier
+   mapping. `dreamCustomer` and `goalTimeline` are Hidden — internal
+   only/Copilot only per spec and have no consumer in this flow, so
+   they're intentionally not modeled here at all. */
 interface CompanyResearchData {
-  overview: { label: string; value: string }[];
-  productName: string;
-  productDescription: string;
-  productBullets: string[];
-  positioning: { category: string; differentiators: string[] };
+  // Block 1 — Header Strip (Primary, Field-Join)
+  category: string;
+  employeeCount: string;
+  revenue: string;
+  // Block 2 — Who You Are & The Problem You Solve (Primary, AI-Synthesized)
+  whoYouAre: string;
+  // Block 3 — What Makes You Different (Primary, AI-Synthesized)
+  whatMakesYouDifferent: string;
+  // Block 4 — What You Sell (Primary, Field-Join)
+  productSummary: string;
+  products: string[];
+  // Block 5 — Proof & Credibility (Primary, Field-Join)
+  keySellingPoints: string[];
+  notableCustomers: string[];
+  proof: string;
+  // Block 6 — Market Context (Secondary)
+  industries: string[];
+  competitors: string[];
+  // Block 7 — Deal Snapshot (Secondary)
+  buyingMotion: string;
+  dealOverview: string;
+  salesCycle: string;
+  // Block 8 — Risks to Address (Secondary)
+  trustRisks: string[];
 }
 
 function buildInitialCompanyResearch(products: Product[]): CompanyResearchData {
   const product = products[0];
+  const productName = product?.name?.trim() || "Your core product";
   return {
-    overview: [
-      { label: "Business model", value: "B2B SaaS — subscription pricing" },
-      { label: "Company size", value: "Growing team" },
-      { label: "Stage", value: "Early stage" },
+    category: "Sales & Marketing Outreach Software",
+    employeeCount: "Growing team",
+    revenue: "Early stage",
+    whoYouAre: `${product?.description?.trim() || "AI summarised your website to understand what you sell and who it's for."} We help B2B sales teams who struggle with manual, unpersonalized outreach by providing AI-drafted sequences and done-for-you sending infrastructure. Reps spend hours per week hand-personalizing outreach, and quality drops as volume increases.`,
+    whatMakesYouDifferent: "Unlike legacy sales-engagement tools that take weeks to configure and still require manually written copy, this positions itself as an outreach platform built for speed to first send. Low setup friction compared to legacy sales tooling, with AI-assisted personalization built into the core workflow rather than bolted on.",
+    productSummary: `An AI-native outbound platform built around ${productName}.`,
+    products: [productName],
+    keySellingPoints: [
+      "Fast time-to-first-send",
+      "AI personalization built into the core workflow",
+      "Scales across multiple senders and domains",
     ],
-    productName: product?.name?.trim() || "Your core product",
-    productDescription: product?.description?.trim() || "AI summarised your website to understand what you sell and who it's for.",
-    productBullets: [
-      "Positioned around fast setup and low time-to-first-send",
-      "AI-assisted personalization built into the core workflow",
-      "Designed to scale across multiple senders and domains",
+    notableCustomers: [],
+    proof: "Early customers report faster time-to-first-send than manually configured tools.",
+    industries: ["B2B SaaS", "Sales & marketing technology"],
+    competitors: [],
+    buyingMotion: "Self-serve trial with sales assist for larger accounts.",
+    dealOverview: "Starts as a self-serve trial, expanding to more seats and sending channels as reply-rate lift is proven.",
+    salesCycle: "Typically 2–4 weeks for self-serve and mid-market accounts.",
+    trustRisks: [
+      "\"We already have a sales engagement tool\"",
+      "\"Will AI-written copy sound generic?\"",
     ],
-    positioning: {
-      category: "Sales & Marketing Outreach Software",
-      differentiators: [
-        "Positions itself as an outreach platform built for speed to first send",
-        "Messaging leans on personalization and AI-assisted workflows",
-        "Low setup friction compared to legacy sales tooling",
-      ],
-    },
   };
 }
 
@@ -2218,69 +2010,215 @@ function StepCompanyResearch({ products, onNext }: { products: Product[]; onNext
   function patch(fields: Partial<CompanyResearchData>) {
     setData((current) => ({ ...current, ...fields }));
   }
-  function patchPositioning(fields: Partial<CompanyResearchData["positioning"]>) {
-    setData((current) => ({ ...current, positioning: { ...current.positioning, ...fields } }));
-  }
-  function updateOverview(i: number, value: string) {
-    setData((current) => ({ ...current, overview: current.overview.map((row, idx) => (idx === i ? { ...row, value } : row)) }));
-  }
 
-  const { overview, productName, productDescription, productBullets, positioning } = data;
+  const {
+    category, employeeCount, revenue, whoYouAre, whatMakesYouDifferent,
+    productSummary, products: productChips, keySellingPoints, notableCustomers, proof,
+    industries, competitors, buyingMotion, dealOverview, salesCycle, trustRisks,
+  } = data;
+
+  /* Every field addressable at "obc:{key}" via the copilot — mirrors the
+     read-only field renders below one-to-one, so a pinned reference or a
+     typed question can resolve/revise any of them. This page is display-
+     only: the only way to change a value is to pin it and tell the
+     Copilot what to change, never by typing directly into a field. */
+  const TEXT_FIELDS: { key: "category" | "employeeCount" | "revenue" | "whoYouAre" | "whatMakesYouDifferent" | "productSummary" | "proof" | "buyingMotion" | "dealOverview" | "salesCycle"; label: string }[] = [
+    { key: "category", label: "Category" }, { key: "employeeCount", label: "Employee Count" }, { key: "revenue", label: "Revenue" },
+    { key: "whoYouAre", label: "Company Overview" }, { key: "whatMakesYouDifferent", label: "Competitive Differentiation" },
+    { key: "productSummary", label: "Product Summary" }, { key: "proof", label: "Proof" },
+    { key: "buyingMotion", label: "Buying Motion" }, { key: "dealOverview", label: "Deal Overview" }, { key: "salesCycle", label: "Sales Cycle" },
+  ];
+  const LIST_FIELDS: { key: "products" | "keySellingPoints" | "notableCustomers" | "industries" | "competitors" | "trustRisks"; label: string }[] = [
+    { key: "products", label: "Products" }, { key: "keySellingPoints", label: "Key Selling Points" }, { key: "notableCustomers", label: "Notable Customers" },
+    { key: "industries", label: "Industries" }, { key: "competitors", label: "Competitors" }, { key: "trustRisks", label: "Trust Risks" },
+  ];
+
+  useRegisterCopilotAdapter("obc", {
+    resolve(id): ResolvedReference | null {
+      const key = id.split(":")[1];
+      if (!key) {
+        return { id, label: "Company Research", value: [...TEXT_FIELDS, ...LIST_FIELDS].map((f) => ({ label: f.label, value: data[f.key] })) };
+      }
+      const spec = [...TEXT_FIELDS, ...LIST_FIELDS].find((f) => f.key === key);
+      if (!spec) return null;
+      return { id, label: spec.label, value: data[spec.key] };
+    },
+    applyEdit(id, instruction) {
+      const key = id.split(":")[1] as keyof CompanyResearchData | undefined;
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          if (key) {
+            const textSpec = TEXT_FIELDS.find((f) => f.key === key);
+            if (textSpec) {
+              const oldValue = data[textSpec.key];
+              const revised = reviseText(oldValue, instruction);
+              if (revised === oldValue) return resolve({ changedSummary: "no visible change." });
+              patch({ [textSpec.key]: revised } as Partial<CompanyResearchData>);
+              return resolve({ changedSummary: `updated "${textSpec.label}".` });
+            }
+            return resolve({ changedSummary: "this is a list field — ask a question about it instead, list fields aren't editable via the copilot yet." });
+          }
+          let changed = 0;
+          const textPatch: Partial<CompanyResearchData> = {};
+          TEXT_FIELDS.forEach((f) => {
+            const revised = reviseText(data[f.key], instruction);
+            if (revised !== data[f.key]) { (textPatch as Record<string, string>)[f.key] = revised; changed++; }
+          });
+          if (changed > 0) patch(textPatch);
+          resolve({ changedSummary: changed > 0 ? `updated ${changed} field(s).` : "no text fields changed." });
+        }, key ? 800 : 1200);
+      });
+    },
+  });
 
   return (
-    <div className="ob-card" style={{ ...CARD, maxWidth: 560 }}>
+    // `.ob-shell-content` centers steps via `align-items: center`, which
+    // makes an unsized flex child (ReferenceableSection's wrapper div)
+    // shrink-wrap to its content's natural width instead of filling
+    // available space — harmless for the narrow single-column steps, but
+    // it silently caps this step's card below `maxWidth` once the card
+    // wants to actually use the wider two-column layout. This `width:
+    // "100%"` wrapper is the real flex child instead, so the card's own
+    // `maxWidth` + `margin: "0 auto"` below can do the rest.
+    <div style={{ width: "100%" }}>
+    <ReferenceableSection id="obc" label="Company Research">
+    <div className="ob-card" style={{ ...CARD, maxWidth: 1280, margin: "0 auto" }}>
       <span style={{ fontSize: 12, fontWeight: 700, color: "var(--color-brand)", letterSpacing: "0.05em", textTransform: "uppercase" as const }}>Company Research</span>
       <h1 style={{ fontSize: 24, margin: "8px 0 8px" }}>Here&apos;s what we found</h1>
       <p style={{ fontSize: 14, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 24px" }}>
-        AI-researched from your website. Edit any field directly, or hit <span style={{ color: "var(--color-brand)" }}>🪄</span> to ask AI to revise it.
+        AI-researched from your website. Open the Copilot, pin a field, and tell it what to change — this page is read-only otherwise.
       </p>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 22, marginBottom: 24 }}>
-        <div>
-          <SectionLabel ai={<AIRevise value={overview} onChange={(v) => patch({ overview: v })} revise={reviseOverview} scale="section" />}>
-            Company Overview
-          </SectionLabel>
-          <div style={{ borderRadius: 12, border: "1px solid var(--color-border)", overflow: "hidden" }}>
-            {overview.map((row, i) => (
-              <div key={row.label} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "8px 12px", background: "var(--color-surface)", borderBottom: i < overview.length - 1 ? "1px solid var(--color-border)" : "none" }}>
-                <span style={{ fontSize: 12, color: "var(--color-muted)", flexShrink: 0 }}>{row.label}</span>
-                <span style={{ minWidth: 0, maxWidth: "70%" }}>
-                  <EditableText value={row.value} onChange={(v) => updateOverview(i, v)} style={{ fontSize: 12, color: "var(--color-heading)" }} revise={reviseText} />
-                </span>
+      <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 24 }}>
+        {/* Block 1 — Header Strip */}
+        <div style={{ display: "flex", flexWrap: "wrap" as const, gap: 16, border: "1px solid var(--color-border)", borderRadius: 14, background: "var(--color-page)", padding: "14px 16px" }}>
+          {([["category", "Category", category], ["employeeCount", "Company Size", employeeCount], ["revenue", "Revenue", revenue]] as const).map(([key, label, value]) => (
+            <div key={key} style={{ flex: "1 1 150px", minWidth: 0 }}>
+              <ReferenceableField id={`obc:${key}`} label={label}>
+                <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 4 }}>{label}</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: "var(--color-heading)" }}>{value}</div>
+              </ReferenceableField>
+            </div>
+          ))}
+        </div>
+
+        {/* Primary blocks (left, wide) + Secondary blocks (right rail) —
+            collapses to a single column below 1080px, see .ob-company-grid
+            in STYLES above. */}
+        <div className="ob-company-grid" style={{ display: "grid", gridTemplateColumns: "minmax(0, 1.6fr) minmax(300px, 1fr)", gap: 20, alignItems: "start" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 14, minWidth: 0 }}>
+            {/* Block 2 — Who You Are & The Problem You Solve */}
+            <ResearchSectionCard title="Company Overview"
+              icon={<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H9l-5 4v-4H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z" /></svg>}>
+              <ReferenceableField id="obc:whoYouAre" label="Company Overview">
+                <p style={{ fontSize: 13, color: "var(--color-body)", lineHeight: 1.6, margin: 0 }}>{whoYouAre}</p>
+              </ReferenceableField>
+            </ResearchSectionCard>
+
+            {/* Block 3 — What Makes You Different */}
+            <ResearchSectionCard title="Competitive Differentiation"
+              icon={<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="7.5" /><circle cx="12" cy="12" r="2.5" /><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3" /></svg>}>
+              <ReferenceableField id="obc:whatMakesYouDifferent" label="Competitive Differentiation">
+                <p style={{ fontSize: 13, color: "var(--color-body)", lineHeight: 1.6, margin: 0 }}>{whatMakesYouDifferent}</p>
+              </ReferenceableField>
+            </ResearchSectionCard>
+
+            {/* Block 4 — What You Sell */}
+            <ResearchSectionCard title="Products & Offerings"
+              icon={<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 8l2-5h14l2 5" /><rect x="3" y="8" width="18" height="12" rx="2" /><path d="M9 12.5h6" /></svg>}>
+              <div style={{ marginBottom: 10 }}>
+                <ReferenceableField id="obc:productSummary" label="Product Summary">
+                  <p style={{ fontSize: 13, color: "var(--color-body)", lineHeight: 1.6, margin: 0 }}>{productSummary}</p>
+                </ReferenceableField>
               </div>
-            ))}
-          </div>
-        </div>
+              <ReferenceableField id="obc:products" label="Products">
+                <BulletList items={productChips} tone="brand" />
+              </ReferenceableField>
+            </ResearchSectionCard>
 
-        <div>
-          <SectionLabel ai={<AIRevise value={{ productName, productDescription, productBullets }} onChange={(v) => patch(v)} revise={reviseProductBundle} scale="section" />}>
-            Products / Services
-          </SectionLabel>
-          <div style={{ fontSize: 14, fontWeight: 600, color: "var(--color-heading)", marginBottom: 4 }}>
-            <EditableText value={productName} onChange={(v) => patch({ productName: v })} style={{ fontSize: 14, fontWeight: 600 }} revise={reviseText} />
+            {/* Block 5 — Proof & Credibility */}
+            <ResearchSectionCard title="Proof & Credibility"
+              icon={<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12l4-3 3 2 3-2 4 3" /><path d="M6 9v6l3 2.5L12 15M18 9v6l-3 2.5" /></svg>}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 16, marginBottom: 12 }}>
+                <div>
+                  <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>Key Selling Points</div>
+                  <ReferenceableField id="obc:keySellingPoints" label="Key Selling Points">
+                    <BulletList items={keySellingPoints} tone="brand" />
+                  </ReferenceableField>
+                </div>
+                <div>
+                  <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>Notable Customers</div>
+                  <ReferenceableField id="obc:notableCustomers" label="Notable Customers">
+                    <BulletList items={notableCustomers} />
+                  </ReferenceableField>
+                </div>
+              </div>
+              <ReferenceableField id="obc:proof" label="Proof">
+                <p style={{ fontSize: 12.5, color: "var(--color-muted)", fontStyle: "italic" as const, lineHeight: 1.6, margin: 0 }}>{proof}</p>
+              </ReferenceableField>
+            </ResearchSectionCard>
           </div>
-          <div style={{ fontSize: 13, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 10px" }}>
-            <EditableText value={productDescription} onChange={(v) => patch({ productDescription: v })} multiline rows={2} style={{ fontSize: 13 }} revise={reviseText} />
-          </div>
-          <EditableBulletList items={productBullets} onChange={(v) => patch({ productBullets: v })} tone="brand" />
-        </div>
 
-        <div>
-          <SectionLabel ai={<AIRevise value={positioning} onChange={(v) => patch({ positioning: v })} revise={revisePositioning} scale="section" />}>
-            Positioning
-          </SectionLabel>
-          <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 4 }}>Category</div>
-          <div style={{ fontSize: 12.5, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 12px" }}>
-            <EditableText value={positioning.category} onChange={(v) => patchPositioning({ category: v })} style={{ fontSize: 12.5 }} revise={reviseText} />
+          <div style={{ display: "flex", flexDirection: "column", gap: 14, minWidth: 0 }}>
+            {/* Blocks 6–8 — Secondary (expandable) */}
+            <SecondaryAccordion title="Market Context"
+              icon={<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a14 14 0 0 1 0 18 14 14 0 0 1 0-18Z" /></svg>}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                <div>
+                  <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>Industries</div>
+                  <ReferenceableField id="obc:industries" label="Industries">
+                    <BulletList items={industries} />
+                  </ReferenceableField>
+                </div>
+                <div>
+                  <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>Competitors</div>
+                  <ReferenceableField id="obc:competitors" label="Competitors">
+                    <BulletList items={competitors} />
+                  </ReferenceableField>
+                </div>
+              </div>
+            </SecondaryAccordion>
+
+            <SecondaryAccordion title="Deal Snapshot"
+              icon={<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 6.5v11M15 9.3c0-1.3-1.4-2.3-3-2.3s-3 1-3 2.3 1.2 2 3 2.3c1.8.3 3 1 3 2.4s-1.4 2.3-3 2.3-3-.9-3-2.2" /></svg>}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                <div>
+                  <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 4 }}>Buying Motion</div>
+                  <ReferenceableField id="obc:buyingMotion" label="Buying Motion">
+                    <p style={{ fontSize: 12.5, color: "var(--color-body)", lineHeight: 1.6, margin: 0 }}>{buyingMotion}</p>
+                  </ReferenceableField>
+                </div>
+                <div>
+                  <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 4 }}>Deal Overview</div>
+                  <ReferenceableField id="obc:dealOverview" label="Deal Overview">
+                    <p style={{ fontSize: 12.5, color: "var(--color-body)", lineHeight: 1.6, margin: 0 }}>{dealOverview}</p>
+                  </ReferenceableField>
+                </div>
+                <div>
+                  <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 4 }}>Sales Cycle</div>
+                  <ReferenceableField id="obc:salesCycle" label="Sales Cycle">
+                    <p style={{ fontSize: 12.5, color: "var(--color-body)", lineHeight: 1.6, margin: 0 }}>{salesCycle}</p>
+                  </ReferenceableField>
+                </div>
+              </div>
+            </SecondaryAccordion>
+
+            <SecondaryAccordion title="Risks to Address"
+              icon={<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3l7 3v6c0 4.5-3 8-7 9-4-1-7-4.5-7-9V6l7-3Z" /></svg>}>
+              <ReferenceableField id="obc:trustRisks" label="Trust Risks">
+                <BulletList items={trustRisks} />
+              </ReferenceableField>
+            </SecondaryAccordion>
           </div>
-          <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>Key Differentiators</div>
-          <EditableBulletList items={positioning.differentiators} onChange={(v) => patchPositioning({ differentiators: v })} />
         </div>
       </div>
 
-      <button onClick={onNext} className="ob-primary-btn" style={PRIMARY_BTN}>
+      <button onClick={onNext} className="ob-primary-btn" style={{ ...PRIMARY_BTN, width: "auto", padding: "14px 32px" }}>
         Approve and Continue
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
       </button>
+    </div>
+    </ReferenceableSection>
     </div>
   );
 }
@@ -2306,32 +2244,62 @@ function PSField({ section }: { section: PSSection }) {
   );
 }
 
-interface PSProductState { name: string; badge: string; sections: PSSection[] }
+/* Field shape mirrors docs/field_reference/product.js — see
+   summary-view-spec.md Step 2. `sections` are Primary (Field-Join/
+   AI-Synthesized), `secondarySections` are Secondary (expandable),
+   `hiddenSections` are Hidden — Copilot only: never rendered directly
+   but still resolvable/editable through the copilot adapter below.
+   Messaging playbook / extended commercials / additional proof are
+   represented by one illustrative section each rather than the full
+   field list, since none of it is ever shown in this wizard. */
+interface PSProductState { name: string; badge: string; timeToValue: string; elevatorPitch: string; sections: PSSection[]; secondarySections: PSSection[]; hiddenSections: PSSection[] }
 
 function buildInitialPSProduct(product?: Product): PSProductState {
   const name = product?.name?.trim() || "Your core product";
   const badge = product?.variant?.trim() || "Core product";
   const description = product?.description?.trim() || "AI summarised your website to understand what you sell and who it's for.";
 
-  const sections: PSSection[] = [
-    { label: "Description", content: description },
-    { label: "Key Features", content: ["AI-drafted, personalized outreach at scale", "Multi-domain, multi-sender sending infrastructure", "Same-day setup with no lengthy onboarding"] },
-    { label: "Ideal Customer", content: "Sales leaders and founder-led teams at B2B companies who need to scale outbound without adding headcount." },
-    { label: "Value Proposition", content: "Cuts the time spent on manual prospecting by letting AI draft and personalize outreach at scale, while keeping messaging consistent across every sender and domain." },
-  ];
-
-  return { name, badge, sections };
+  return {
+    name, badge,
+    timeToValue: "Same day for first send; full ramp in 2–3 weeks",
+    elevatorPitch: "Personalized, multi-channel outbound sending the same day you sign up.",
+    sections: [
+      { label: "Product Overview", content: `${description} Cuts the time spent on manual prospecting by letting AI draft and personalize outreach at scale, while keeping messaging consistent across every sender and domain.` },
+      { label: "Key Capabilities", content: ["AI-drafted, personalized outreach at scale", "Multi-domain, multi-sender sending infrastructure", "Same-day setup with no lengthy onboarding"] },
+      { label: "Target Customer", content: "Sales leaders and founder-led teams at B2B companies who need to scale outbound without adding headcount." },
+      { label: "Proof Points", content: ["Faster time-to-first-send than manually configured tools", "Early customers report stronger reply rates within the first 30 days"] },
+      { label: "Commercial Terms", content: "Subscription pricing, available month-to-month or annual." },
+    ],
+    secondarySections: [
+      { label: "Competitive Snapshot", content: ["Category is well established and still consolidating"] },
+      { label: "Objections & Switch Triggers", content: ["\"We already have a sales engagement tool\"", "\"Our reps won't adopt another tool\""] },
+    ],
+    hiddenSections: [
+      { label: "Messaging Guidance", content: "Lead with time-to-first-send; avoid vague \"AI-powered\" claims without specifics." },
+      { label: "Extended Commercials", content: "MRR, renewal rate, and LTV will populate here once the account has billing history." },
+      { label: "Additional Proof", content: "Industry and social proof will populate here as reviews and case studies come in." },
+    ],
+  };
 }
 
 /* ════════════════════════════════════════════════════════════════════
    Shared Persona building blocks — used by the merged Product / ICP /
    Persona review step further below.
 ══════════════════════════════════════════════════════════════════════ */
+/* Field shape mirrors docs/field_reference/persona2.js — see
+   summary-view-spec.md Step 4. `sections` are Primary (blocks 3–9),
+   `secondarySections` are Secondary (block 10, Qualification Snapshot),
+   `hiddenSections` are Hidden — Copilot only: never rendered but still
+   resolvable/editable through the copilot adapter. Represented by a
+   handful of illustrative sections rather than the full ~40-field
+   hidden set, since none of it is ever shown in this wizard. */
 interface PersonaData {
   title: string;
   roleTag: string;
   subtitle: string;
   sections: PSSection[];
+  secondarySections: PSSection[];
+  hiddenSections: PSSection[];
 }
 
 const PERSONAS_DEFAULT: PersonaData[] = [
@@ -2340,8 +2308,20 @@ const PERSONAS_DEFAULT: PersonaData[] = [
     roleTag: "Mid-Market B2B",
     subtitle: "Owns the outbound quota and is judged on pipeline generated, not activity — manual prospecting doesn't scale to their number.",
     sections: [
+      { label: "Key Responsibilities", content: ["Own pipeline generation targets", "Hire and ramp new reps", "Select and manage sales tooling"] },
+      { label: "Goals", content: ["Hit quarterly pipeline targets without adding headcount", "Improve rep ramp time"] },
       { label: "Primary Pain", content: "Reps spend hours per week manually personalizing outreach, and quality drops as volume increases — pipeline generation stalls below quota." },
+      { label: "Current Tools", content: ["Outreach or Salesloft", "Salesforce/HubSpot CRM"] },
+      { label: "Preferred Outreach Channels", content: "Email primary, LinkedIn for warm-up — Tuesday–Thursday, 8–10am local time." },
+      { label: "Anticipated Objections", content: ["\"We already have a sales engagement platform\"", "\"Our reps won't adopt another tool\""] },
       { label: "Opening Hook", content: "Your reps are spending hours a week hand-personalizing emails and still missing quota. AI can draft it in seconds without sounding generic — worth a look?" },
+    ],
+    secondarySections: [
+      { label: "Qualification Snapshot", content: "Meeting-ready when they explicitly ask for a demo and mention a specific pipeline target or rep count." },
+    ],
+    hiddenSections: [
+      { label: "Buyer Psychology", content: "Primarily motivated by fear of missing pipeline targets; moderate risk tolerance — wants proof before full commitment." },
+      { label: "Decision-Making Detail", content: "Economic buyer with final approval; Head of RevOps handles technical evaluation." },
     ],
   },
   {
@@ -2349,8 +2329,20 @@ const PERSONAS_DEFAULT: PersonaData[] = [
     roleTag: "Early-Stage Startup",
     subtitle: "Wearing multiple hats with no dedicated SDR — needs outbound running without the setup overhead of enterprise tooling.",
     sections: [
+      { label: "Key Responsibilities", content: ["Run all outbound personally", "Close first reference customers"] },
+      { label: "Goals", content: ["Get outbound live fast with minimal setup"] },
       { label: "Primary Pain", content: "Founder is personally writing every outbound email, which doesn't scale past a handful of prospects a day." },
+      { label: "Current Tools", content: ["Manual emails from a personal inbox", "Spreadsheet-based prospect list"] },
+      { label: "Preferred Outreach Channels", content: "Email and LinkedIn DM — evenings or early morning." },
+      { label: "Anticipated Objections", content: ["\"I don't have time to set this up\""] },
       { label: "Opening Hook", content: "Still writing every cold email yourself? Get AI-personalized sequences live today, no setup team required." },
+    ],
+    secondarySections: [
+      { label: "Qualification Snapshot", content: "Meeting-ready when they mention a specific launch or fundraising timeline driving urgency." },
+    ],
+    hiddenSections: [
+      { label: "Buyer Psychology", content: "Primarily motivated by needing to show pipeline to investors before the next raise." },
+      { label: "Decision-Making Detail", content: "Sole decision-maker — no committee to route through." },
     ],
   },
   {
@@ -2358,8 +2350,20 @@ const PERSONAS_DEFAULT: PersonaData[] = [
     roleTag: "Fractional SDR Team",
     subtitle: "Runs outbound for multiple clients and needs to standardize quality without a separate setup per account.",
     sections: [
+      { label: "Key Responsibilities", content: ["Manage client outbound quality", "Own vendor selection across accounts"] },
+      { label: "Goals", content: ["Consistent quality across every client without per-client setup"] },
       { label: "Primary Pain", content: "Standing up outbound for each new client takes real setup time, and quality varies depending on which junior SDR is writing copy." },
+      { label: "Current Tools", content: ["Mixed sending tools chosen per client", "Manual QA process for outbound copy"] },
+      { label: "Preferred Outreach Channels", content: "Email and LinkedIn, multi-channel — weekday mid-morning or early afternoon." },
+      { label: "Anticipated Objections", content: ["\"Can we separate workspaces per client?\""] },
       { label: "Opening Hook", content: "Standardize outbound quality across every client account — AI-personalized sequences without a per-client setup project." },
+    ],
+    secondarySections: [
+      { label: "Qualification Snapshot", content: "Meeting-ready when they confirm active client count and a specific onboarding timeline." },
+    ],
+    hiddenSections: [
+      { label: "Buyer Psychology", content: "Primarily motivated by protecting margin on fixed-fee engagements." },
+      { label: "Decision-Making Detail", content: "Owner or operations lead has final say on vendor selection." },
     ],
   },
 ];
@@ -2750,35 +2754,106 @@ const RECOMMENDATION_BADGE: Record<Recommendation, React.CSSProperties> = {
   "Test Small": { color: "var(--color-warning)", background: "rgba(241,196,15,0.15)", border: "1px solid rgba(241,196,15,0.35)" },
   Defer: { color: "var(--color-muted)", background: "var(--color-surface)", border: "1px solid var(--color-border)" },
 };
-const RECOMMENDATION_ORDER: Recommendation[] = ["Launch First", "Test Small", "Defer"];
-function nextRecommendation(r: Recommendation): Recommendation { return RECOMMENDATION_ORDER[(RECOMMENDATION_ORDER.indexOf(r) + 1) % RECOMMENDATION_ORDER.length]; }
 
 const MONO_FONT = "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace";
 
-interface IcpScore {
+/* Field shape mirrors docs/field_reference/icp.js — see
+   summary-view-spec.md Step 3. Fields through `icpProof` render as
+   Primary blocks on the expanded card; `marketSize` through
+   `decisionMakingUnit` are Secondary, behind their own accordion.
+   Targeting filters (departmentSize, incumbentTools, outreachAccessibility,
+   exclusionCriteria, competitiveDisplacementFit, useCases, maturity,
+   operationalGoals) are Hidden — Copilot only — and have no field here
+   at all, same as Company's dreamCustomer: nothing else in this flow
+   consumes them. */
+interface IcpCandidate {
   name: string;
-  reasoning: string;
   recommendation: Recommendation;
+  growthStage: string;
+  summary: string;
+  fitReasoning: string;
+  targetIndustries: string[];
+  companySize: string[];
+  revenueRange: string;
+  geographies: string[];
+  painPoints: string[];
+  businessGoals: string[];
+  buyingTriggers: string[];
+  intentSignals: string[];
+  icpProof: string[];
+  marketSize: string;
+  techStack: string[];
+  businessModel: string;
+  fundingStage: string[];
+  decisionMakingUnit: string;
 }
 
 const TAM_DESCRIPTION_DEFAULT =
   "Centres on B2B companies running outbound sales motions who still personalize manually or through generic templates — roughly 175,000–230,000 companies and agencies across mid-market, early-stage, and agency segments.";
 
-const ICP_SCORES_DEFAULT: IcpScore[] = [
+const ICP_CANDIDATES_DEFAULT: IcpCandidate[] = [
   {
     name: "VP Sales / Head of RevOps — Mid-Market B2B",
-    reasoning: "Closest match to the core use case — owns outbound quota, actively evaluating tools to replace manual prospecting.",
     recommendation: "Launch First",
+    growthStage: "Growth",
+    summary: "Mid-market B2B teams running multi-sender outbound who need faster time-to-send without adding headcount.",
+    fitReasoning: "Closest match to the core use case — owns outbound quota, actively evaluating tools to replace manual prospecting.",
+    targetIndustries: ["B2B SaaS", "Sales & marketing technology"],
+    companySize: ["51–200", "201–1,000"],
+    revenueRange: "$5M–$50M ARR",
+    geographies: ["North America", "UK & Ireland"],
+    painPoints: ["Reps spend hours per week manually personalizing outreach", "Quality drops as sending volume increases"],
+    businessGoals: ["Hit pipeline targets without adding headcount", "Consistent messaging across a growing rep team"],
+    buyingTriggers: ["Missed a quarterly pipeline target", "Just hired new reps who need to ramp fast"],
+    intentSignals: ["Job posting for SDR/BDR roles", "Current tool contract renewal within 90 days"],
+    icpProof: ["Northwind Analytics", "Vantage Metrics"],
+    marketSize: "Roughly 46% of the addressable market — the largest reachable segment.",
+    techStack: ["Salesforce or HubSpot CRM", "An existing sales engagement tool being outgrown"],
+    businessModel: "B2B SaaS, subscription",
+    fundingStage: ["Series A", "Series B"],
+    decisionMakingUnit: "VP Sales (economic buyer) + Head of RevOps (technical evaluator)",
   },
   {
     name: "Founder-led Sales — Early-Stage Startups",
-    reasoning: "Values low setup friction over deep customization; price-sensitive and favors usage-based plans.",
     recommendation: "Test Small",
+    growthStage: "Early",
+    summary: "Small teams wearing multiple hats who need to move fast on outbound without a dedicated SDR function.",
+    fitReasoning: "Values low setup friction over deep customization; price-sensitive and favors usage-based plans.",
+    targetIndustries: ["Early-stage B2B SaaS", "Technical founder-led sales"],
+    companySize: ["1–50"],
+    revenueRange: "Pre-revenue – $2M ARR",
+    geographies: ["North America"],
+    painPoints: ["Founder personally writing every outbound email"],
+    businessGoals: ["Show pipeline to investors", "Land first reference customers"],
+    buyingTriggers: ["Just raised a seed round and needs to show pipeline"],
+    intentSignals: ["Recent seed announcement", "First sales hire job posting"],
+    icpProof: ["Basecamp Robotics", "LoopWorks"],
+    marketSize: "Roughly 31% of the addressable market — large but price-sensitive.",
+    techStack: ["Lightweight or no CRM yet", "Founder still doing outbound personally"],
+    businessModel: "B2B SaaS, usage or seat-based",
+    fundingStage: ["Seed", "Series A"],
+    decisionMakingUnit: "Founder (sole decision-maker)",
   },
   {
     name: "Agency / Fractional SDR Teams",
-    reasoning: "Needs multi-workspace support per client that may not be a priority yet.",
     recommendation: "Defer",
+    growthStage: "Steady",
+    summary: "Runs outbound for multiple clients and needs to standardize quality without a separate setup per account.",
+    fitReasoning: "Needs multi-workspace support per client that may not be a priority yet.",
+    targetIndustries: ["B2B lead generation agencies", "Fractional SDR / outsourced sales teams"],
+    companySize: ["1–50", "51–200"],
+    revenueRange: "$1M–$10M revenue",
+    geographies: ["North America", "Western Europe"],
+    painPoints: ["Standing up outbound per client takes real setup time"],
+    businessGoals: ["Protect margin on fixed-fee engagements"],
+    buyingTriggers: ["Onboarding a new client and need outbound live fast"],
+    intentSignals: ["Client roster growth past 10 accounts"],
+    icpProof: ["Cedar & Co Consulting", "OutboundWorks Agency"],
+    marketSize: "Roughly 12% of the addressable market — smallest, lowest-priority segment.",
+    techStack: ["Multiple sending tools chosen per client"],
+    businessModel: "Services, managed accounts",
+    fundingStage: ["Bootstrapped"],
+    decisionMakingUnit: "Agency owner / operations lead",
   },
 ];
 
@@ -2887,71 +2962,181 @@ function CollapsibleReviewSection({ section, label, approved, active, locked, su
   );
 }
 
-function ProductServicesPanel({ state, onChange }: { state: PSProductState; onChange: (next: PSProductState) => void }) {
+function ProductServicesPanel({ state, onChange, productIdx }: { state: PSProductState; onChange: (next: PSProductState) => void; productIdx: number }) {
   return (
+    <ReferenceableSection id={`ob:product:${productIdx}`} label={`${state.name} — Product & Services`}>
     <div>
-      <SectionRevisePrompt
-        value={state} onChange={onChange} revise={reviseProductServicesBundle}
-        placeholder="Tell AI what to change about the product, description, features, ideal customer, or value prop…"
-      />
-      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+      {/* Block 1 — Header (Primary, Field-Join) */}
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
         <span style={{ flex: "1 1 auto", minWidth: 0, fontSize: 15, fontWeight: 700, color: "var(--color-heading)" }}>{state.name}</span>
         <span style={{ fontSize: 11.5, fontWeight: 600, color: "var(--color-brand)", background: "var(--color-brand-tint)", borderRadius: 999, padding: "3px 10px", flexShrink: 0 }}>
           {state.badge}
         </span>
+        <ReferenceableField id={`ob:product:${productIdx}:field:Time To Value`} label="Time To Value">
+          <span style={{ fontSize: 11.5, color: "var(--color-muted)", flexShrink: 0 }}>{state.timeToValue}</span>
+        </ReferenceableField>
       </div>
+
+      {/* Block 2 — Elevator Pitch (Primary, Verbatim Passthrough) */}
+      <ReferenceableField id={`ob:product:${productIdx}:field:Elevator Pitch`} label="Elevator Pitch">
+        <p style={{ fontSize: 13.5, fontStyle: "italic" as const, color: "var(--color-heading)", margin: "0 0 14px" }}>&ldquo;{state.elevatorPitch}&rdquo;</p>
+      </ReferenceableField>
+
+      {/* Blocks 3–6, 8 — Primary (Field-Join / AI-Synthesized) */}
       <div className="ob-field-grid">
         {state.sections.map((section) => (
-          <PSField key={section.label} section={section} />
+          <ReferenceableField key={section.label} id={`ob:product:${productIdx}:field:${section.label}`} label={section.label}>
+            <PSField section={section} />
+          </ReferenceableField>
+        ))}
+      </div>
+
+      {/* Blocks 7, 9 — Secondary (expandable) */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 12 }}>
+        {state.secondarySections.map((section) => (
+          <SecondaryAccordion key={section.label} title={section.label}
+            icon={<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9" /></svg>}>
+            <ReferenceableField id={`ob:product:${productIdx}:field:${section.label}`} label={section.label}>
+              <PSField section={section} />
+            </ReferenceableField>
+          </SecondaryAccordion>
         ))}
       </div>
     </div>
+    </ReferenceableSection>
   );
 }
 
-function IcpPanel({ tamDescription, icps, onChangeTam, onChangeIcps }: {
-  tamDescription: string; icps: IcpScore[];
-  onChangeTam: (v: string) => void; onChangeIcps: (v: IcpScore[]) => void;
+/* One ICP candidate card — collapsed shows just the header spec's
+   Block 1 (name/growthStage/recommendation); expanding it reveals
+   Blocks 2–6 (Primary) plus a Secondary accordion for Blocks 8–9
+   (Market Size, Deeper Firmographics). Block 7 "Candidate Personas"
+   isn't duplicated here — the Personas section right after this one
+   already covers it. */
+function IcpCandidateCard({ icp, index, productIdx }: {
+  icp: IcpCandidate; index: number; productIdx: number;
 }) {
-  function cycleRecommendation(i: number) {
-    onChangeIcps(icps.map((icp, idx) => (idx === i ? { ...icp, recommendation: nextRecommendation(icp.recommendation) } : icp)));
-  }
-
+  const [expanded, setExpanded] = useState(index === 0);
   return (
-    <div>
-      <SectionRevisePrompt
-        value={{ tamDescription, icps }}
-        onChange={(next) => { onChangeTam(next.tamDescription); onChangeIcps(next.icps); }}
-        revise={reviseIcpBundle}
-        placeholder="Tell AI what to change about the market size or any ICP…"
-      />
-      <div style={{ display: "flex", gap: 10, alignItems: "flex-start", background: "var(--color-brand-faint)", border: "1px solid var(--color-border)", borderRadius: 12, padding: "14px 16px", marginBottom: 14 }}>
-        <span style={{ flexShrink: 0, width: 26, height: 26, borderRadius: 8, background: "var(--color-brand-tint)", color: "var(--color-brand)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 8v4l3 2" /></svg>
-        </span>
-        <p style={{ flex: 1, fontSize: 13, color: "var(--color-body)", lineHeight: 1.6, margin: 0 }}>{tamDescription}</p>
+    <ReferenceableField id={`ob:icp:${productIdx}:icp:${index}`} label={icp.name}>
+      <div style={{ borderRadius: 12, border: "1px solid var(--color-border)", background: "var(--color-page)", overflow: "hidden" }}>
+        <button type="button" onClick={() => setExpanded((e) => !e)}
+          style={{ width: "100%", display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10, padding: "14px 16px", background: "transparent", border: "none", cursor: "pointer", fontFamily: "inherit", textAlign: "left" as const }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <span style={{ display: "block", fontSize: 13.5, fontWeight: 700, color: "var(--color-heading)", lineHeight: 1.4 }}>{icp.name}</span>
+            <span style={{ fontSize: 11, color: "var(--color-muted)" }}>{icp.growthStage}</span>
+          </div>
+          <span style={{ flexShrink: 0, fontFamily: MONO_FONT, fontSize: 10.5, fontWeight: 700, padding: "4px 10px", borderRadius: 999, whiteSpace: "nowrap" as const, ...RECOMMENDATION_BADGE[icp.recommendation] }}>
+            {icp.recommendation}
+          </span>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--color-muted)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: 3, transform: expanded ? "rotate(180deg)" : "none", transition: "transform 150ms" }}>
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </button>
+        {expanded && (
+          <div style={{ padding: "0 16px 16px", display: "flex", flexDirection: "column", gap: 12 }}>
+            {/* Block 2 — Who This Is & Why They Fit */}
+            <div>
+              <p style={{ fontSize: 12.5, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 6px" }}>{icp.summary}</p>
+              <p style={{ fontSize: 12.5, color: "var(--color-muted)", fontStyle: "italic" as const, lineHeight: 1.6, margin: 0 }}>{icp.fitReasoning}</p>
+            </div>
+            {/* Block 3 — Firmographic Snapshot */}
+            <div>
+              <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>Firmographic Snapshot</div>
+              <BulletList items={[...icp.targetIndustries, ...icp.companySize, icp.revenueRange, ...icp.geographies]} />
+            </div>
+            {/* Block 4 — Pains & Goals */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 16 }}>
+              <div>
+                <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>Pain Points</div>
+                <BulletList items={icp.painPoints} />
+              </div>
+              <div>
+                <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>Business Goals</div>
+                <BulletList items={icp.businessGoals} />
+              </div>
+            </div>
+            {/* Block 5 — Buying Signals */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 16 }}>
+              <div>
+                <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>Buying Triggers</div>
+                <BulletList items={icp.buyingTriggers} />
+              </div>
+              <div>
+                <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>Intent Signals</div>
+                <BulletList items={icp.intentSignals} />
+              </div>
+            </div>
+            {/* Block 6 — Real Companies Like This */}
+            {icp.icpProof.length > 0 && (
+              <div>
+                <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>Real Companies Like This</div>
+                <BulletList items={icp.icpProof} tone="brand" />
+              </div>
+            )}
+            {/* Blocks 8–9 — Secondary (expandable) */}
+            <SecondaryAccordion title="Market Sizing & Additional Firmographics"
+              icon={<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 20V9M11 20V4M18 20v-7" /><path d="M2 20h20" /></svg>}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                <div>
+                  <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 4 }}>Market Size</div>
+                  <p style={{ fontSize: 12.5, color: "var(--color-body)", lineHeight: 1.6, margin: 0 }}>{icp.marketSize}</p>
+                </div>
+                <div>
+                  <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>Tech Stack Signals</div>
+                  <BulletList items={icp.techStack} />
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 16 }}>
+                  <div>
+                    <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 4 }}>Business Model</div>
+                    <p style={{ fontSize: 12.5, color: "var(--color-body)", lineHeight: 1.6, margin: 0 }}>{icp.businessModel}</p>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>Funding Stage</div>
+                    <BulletList items={icp.fundingStage} />
+                  </div>
+                </div>
+                <div>
+                  <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 4 }}>Decision-Making Unit</div>
+                  <p style={{ fontSize: 12.5, color: "var(--color-body)", lineHeight: 1.6, margin: 0 }}>{icp.decisionMakingUnit}</p>
+                </div>
+              </div>
+            </SecondaryAccordion>
+          </div>
+        )}
       </div>
+    </ReferenceableField>
+  );
+}
+
+function IcpPanel({ tamDescription, icps, productIdx }: {
+  tamDescription: string; icps: IcpCandidate[];
+  onChangeTam: (v: string) => void; onChangeIcps: (v: IcpCandidate[]) => void; productIdx: number;
+}) {
+  return (
+    <ReferenceableSection id={`ob:icp:${productIdx}`} label="Ideal Customer Profile">
+    <div>
+      <ReferenceableField id={`ob:icp:${productIdx}:tam`} label="Total Addressable Market">
+        <div style={{ display: "flex", gap: 10, alignItems: "flex-start", background: "var(--color-brand-faint)", border: "1px solid var(--color-border)", borderRadius: 12, padding: "14px 16px", marginBottom: 14 }}>
+          <span style={{ flexShrink: 0, width: 26, height: 26, borderRadius: 8, background: "var(--color-brand-tint)", color: "var(--color-brand)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 8v4l3 2" /></svg>
+          </span>
+          <p style={{ flex: 1, fontSize: 13, color: "var(--color-body)", lineHeight: 1.6, margin: 0 }}>{tamDescription}</p>
+        </div>
+      </ReferenceableField>
       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
         {icps.map((icp, i) => (
-          <div key={i} style={{ padding: "14px 16px", borderRadius: 12, border: "1px solid var(--color-border)", background: "var(--color-page)" }}>
-            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10, marginBottom: 6 }}>
-              <span style={{ flex: 1, fontSize: 13.5, fontWeight: 700, color: "var(--color-heading)", lineHeight: 1.4 }}>{icp.name}</span>
-              <button type="button" onClick={() => cycleRecommendation(i)} title="Click to change recommendation"
-                style={{ flexShrink: 0, fontFamily: MONO_FONT, fontSize: 10.5, fontWeight: 700, padding: "4px 10px", borderRadius: 999, whiteSpace: "nowrap" as const, cursor: "pointer", border: "none", ...RECOMMENDATION_BADGE[icp.recommendation] }}>
-                {icp.recommendation}
-              </button>
-            </div>
-            <div style={{ fontSize: 12.5, color: "var(--color-muted)", lineHeight: 1.5 }}>{icp.reasoning}</div>
-          </div>
+          <IcpCandidateCard key={i} icp={icp} index={i} productIdx={productIdx} />
         ))}
       </div>
     </div>
+    </ReferenceableSection>
   );
 }
 
-function PersonasPanel({ personas, onChange, approvedList, onApprovePersona }: {
+function PersonasPanel({ personas, onChange, approvedList, onApprovePersona, productIdx }: {
   personas: PersonaData[]; onChange: (next: PersonaData[]) => void;
-  approvedList: boolean[]; onApprovePersona: (i: number) => void;
+  approvedList: boolean[]; onApprovePersona: (i: number) => void; productIdx: number;
 }) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const persona = personas[selectedIndex];
@@ -2965,11 +3150,8 @@ function PersonasPanel({ personas, onChange, approvedList, onApprovePersona }: {
   }
 
   return (
+    <ReferenceableSection id={`ob:personas:${productIdx}`} label="Personas">
     <div>
-      <SectionRevisePrompt
-        value={personas} onChange={onChange} revise={revisePersonasBundle}
-        placeholder="Tell AI what to change across all personas…"
-      />
       {personas.length > 1 && (
         <div style={{ display: "flex", gap: 8, marginBottom: 14, overflowX: "auto" as const, paddingBottom: 2 }}>
           {personas.map((p, i) => {
@@ -3000,27 +3182,44 @@ function PersonasPanel({ personas, onChange, approvedList, onApprovePersona }: {
         </div>
       )}
 
-      <div style={{ display: "flex", alignItems: "flex-start", gap: 12, marginBottom: 14, background: "var(--color-page)", border: "1px solid var(--color-border)", borderRadius: 12, padding: "14px 16px" }}>
-        <div style={{ width: 34, height: 34, borderRadius: "50%", background: "var(--color-brand)", color: "#fff", fontSize: 13, fontWeight: 700, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          {selectedIndex + 1}
-        </div>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" as const }}>
-            <span style={{ flex: "1 1 160px", minWidth: 0, fontSize: 14.5, fontWeight: 700, color: "var(--color-heading)" }}>{persona.title}</span>
-            <span style={{ flexShrink: 0, fontSize: 11, fontWeight: 600, color: "var(--color-brand)", border: "1px solid var(--color-border)", background: "var(--color-brand-tint)", borderRadius: 999, padding: "2px 10px" }}>{persona.roleTag}</span>
-            {personas.length > 1 && (
-              <span style={{ flexShrink: 0, fontSize: 11, color: "var(--color-subtle)", marginLeft: "auto" }}>{selectedIndex + 1} / {personas.length}</span>
-            )}
+      <ReferenceableField id={`ob:personas:${productIdx}:persona:${selectedIndex}`} label={persona.title}>
+        <div style={{ display: "flex", alignItems: "flex-start", gap: 12, marginBottom: 14, background: "var(--color-page)", border: "1px solid var(--color-border)", borderRadius: 12, padding: "14px 16px" }}>
+          <div style={{ width: 34, height: 34, borderRadius: "50%", background: "var(--color-brand)", color: "#fff", fontSize: 13, fontWeight: 700, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            {selectedIndex + 1}
           </div>
-          <p style={{ fontSize: 12.5, color: "var(--color-muted)", lineHeight: 1.5, margin: "5px 0 0" }}>{persona.subtitle}</p>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" as const }}>
+              <span style={{ flex: "1 1 160px", minWidth: 0, fontSize: 14.5, fontWeight: 700, color: "var(--color-heading)" }}>{persona.title}</span>
+              <span style={{ flexShrink: 0, fontSize: 11, fontWeight: 600, color: "var(--color-brand)", border: "1px solid var(--color-border)", background: "var(--color-brand-tint)", borderRadius: 999, padding: "2px 10px" }}>{persona.roleTag}</span>
+              {personas.length > 1 && (
+                <span style={{ flexShrink: 0, fontSize: 11, color: "var(--color-subtle)", marginLeft: "auto" }}>{selectedIndex + 1} / {personas.length}</span>
+              )}
+            </div>
+            <p style={{ fontSize: 12.5, color: "var(--color-muted)", lineHeight: 1.5, margin: "5px 0 0" }}>{persona.subtitle}</p>
+          </div>
         </div>
-      </div>
+      </ReferenceableField>
 
       <div className="ob-field-grid">
         {persona.sections.map((section) => (
-          <PSField key={`${selectedIndex}-${section.label}`} section={section} />
+          <ReferenceableField key={`${selectedIndex}-${section.label}`} id={`ob:personas:${productIdx}:persona:${selectedIndex}:field:${section.label}`} label={section.label}>
+            <PSField section={section} />
+          </ReferenceableField>
         ))}
       </div>
+
+      {persona.secondarySections.length > 0 && (
+        <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 12 }}>
+          {persona.secondarySections.map((section) => (
+            <SecondaryAccordion key={`${selectedIndex}-${section.label}`} title={section.label}
+              icon={<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5" /></svg>}>
+              <ReferenceableField id={`ob:personas:${productIdx}:persona:${selectedIndex}:field:${section.label}`} label={section.label}>
+                <PSField section={section} />
+              </ReferenceableField>
+            </SecondaryAccordion>
+          ))}
+        </div>
+      )}
 
       <button type="button" onClick={approveCurrent} className="ob-primary-btn" style={{ ...PRIMARY_BTN, width: "auto", padding: "10px 24px", fontSize: 13, marginTop: 14, borderRadius: 999, gap: 6 }}>
         {personaApproved ? "Save changes" : (
@@ -3031,6 +3230,7 @@ function PersonasPanel({ personas, onChange, approvedList, onApprovePersona }: {
         )}
       </button>
     </div>
+    </ReferenceableSection>
   );
 }
 
@@ -3044,7 +3244,7 @@ function nextReviewSection(s: ReviewSectionKey): ReviewSectionKey | null {
 interface ProductReviewState {
   product: PSProductState;
   tamDescription: string;
-  icps: IcpScore[];
+  icps: IcpCandidate[];
   personas: PersonaData[];
   personaApproved: boolean[];
   approved: { product: boolean; icp: boolean; personas: boolean };
@@ -3055,7 +3255,7 @@ function buildInitialProductReview(product: Product): ProductReviewState {
   return {
     product: buildInitialPSProduct(product),
     tamDescription: TAM_DESCRIPTION_DEFAULT,
-    icps: ICP_SCORES_DEFAULT.map((icp) => ({ ...icp })),
+    icps: ICP_CANDIDATES_DEFAULT.map((icp) => ({ ...icp })),
     personas: PERSONAS_DEFAULT.map((p) => ({ ...p, sections: p.sections.map((s) => ({ ...s })) })),
     personaApproved: PERSONAS_DEFAULT.map(() => false),
     approved: { product: false, icp: false, personas: false },
@@ -3091,8 +3291,14 @@ function StepProductReview({ products, onNext }: { products: Product[]; onNext: 
   const current = reviewStates[selectedIndex];
   const n = selectedIndex + 1;
 
+  // Generalized so the copilot adapter below can write into a specific
+  // product's state even if the user switched tabs after pinning a
+  // reference on a different product than the one currently active.
+  function patchAt(index: number, fields: Partial<ProductReviewState>) {
+    setReviewStates((cur) => cur.map((s, i) => (i === index ? { ...s, ...fields } : s)));
+  }
   function patchCurrent(fields: Partial<ProductReviewState>) {
-    setReviewStates((cur) => cur.map((s, i) => (i === selectedIndex ? { ...s, ...fields } : s)));
+    patchAt(selectedIndex, fields);
   }
   function toggleSection(section: ReviewSectionKey) {
     patchCurrent({ activeSection: current.activeSection === section ? null : section });
@@ -3120,6 +3326,153 @@ function StepProductReview({ products, onNext }: { products: Product[]; onNext: 
     if (selectedIndex < products.length - 1) setSelectedIndex(selectedIndex + 1);
     else onNext();
   }
+
+  /* ─── Copilot adapter ──────────────────────────────────────────────
+     One slice covering every onboarding review reference. Ids embed a
+     literal productIdx captured at pin time, so applyEdit always
+     writes into that product's state via patchAt even if the user has
+     since switched to a different product tab. */
+  useRegisterCopilotAdapter("ob", {
+    resolve(id): ResolvedReference | null {
+      const parts = id.split(":");
+      const entity = parts[1];
+      const state = reviewStates[Number(parts[2])];
+      if (!state) return null;
+
+      if (entity === "product") {
+        const fieldLabel = parts[4];
+        const allProductSections = [...state.product.sections, ...state.product.secondarySections, ...state.product.hiddenSections];
+        if (fieldLabel) {
+          const section = allProductSections.find((s) => s.label === fieldLabel);
+          if (!section) return null;
+          return { id, label: `${state.product.name} — ${section.label}`, value: section.content };
+        }
+        return { id, label: state.product.name, value: allProductSections.map((s) => ({ label: s.label, value: s.content })) };
+      }
+
+      if (entity === "icp") {
+        const sub = parts[3];
+        if (sub === "tam") return { id, label: "Total Addressable Market", value: state.tamDescription };
+        if (sub === "icp") {
+          const icp = state.icps[Number(parts[4])];
+          if (!icp) return null;
+          return {
+            id, label: icp.name,
+            value: [
+              { label: "Summary", value: icp.summary }, { label: "Fit Reasoning", value: icp.fitReasoning },
+              { label: "Target Industries", value: icp.targetIndustries }, { label: "Company Size", value: icp.companySize },
+              { label: "Revenue Range", value: icp.revenueRange }, { label: "Geographies", value: icp.geographies },
+              { label: "Pain Points", value: icp.painPoints }, { label: "Business Goals", value: icp.businessGoals },
+              { label: "Buying Triggers", value: icp.buyingTriggers }, { label: "Intent Signals", value: icp.intentSignals },
+              { label: "Representative Accounts", value: icp.icpProof }, { label: "Market Size", value: icp.marketSize },
+              { label: "Tech Stack Signals", value: icp.techStack }, { label: "Business Model", value: icp.businessModel },
+              { label: "Funding Stage", value: icp.fundingStage }, { label: "Decision-Making Unit", value: icp.decisionMakingUnit },
+            ],
+          };
+        }
+        return {
+          id, label: "Ideal Customer Profile",
+          value: [{ label: "Total Addressable Market", value: state.tamDescription }, ...state.icps.map((icp) => ({ label: icp.name, value: icp.fitReasoning }))],
+        };
+      }
+
+      if (entity === "personas") {
+        if (parts[3] === "persona") {
+          const persona = state.personas[Number(parts[4])];
+          if (!persona) return null;
+          const allPersonaSections = [...persona.sections, ...persona.secondarySections, ...persona.hiddenSections];
+          const fieldLabel = parts[6];
+          if (fieldLabel) {
+            const section = allPersonaSections.find((s) => s.label === fieldLabel);
+            if (!section) return null;
+            return { id, label: `${persona.title} — ${section.label}`, value: section.content };
+          }
+          return { id, label: persona.title, value: allPersonaSections.map((s) => ({ label: s.label, value: s.content })) };
+        }
+        return { id, label: "Personas", value: state.personas.flatMap((p) => p.sections.map((s) => ({ label: `${p.title}: ${s.label}`, value: s.content }))) };
+      }
+
+      return null;
+    },
+    applyEdit(id, instruction) {
+      const parts = id.split(":");
+      const entity = parts[1];
+      const productIdx = Number(parts[2]);
+      const state = reviewStates[productIdx];
+      if (!state) return Promise.resolve(null);
+
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          if (entity === "product") {
+            const fieldLabel = parts[4];
+            if (fieldLabel) {
+              const group = (["sections", "secondarySections", "hiddenSections"] as const).find((g) => state.product[g].some((s) => s.label === fieldLabel));
+              if (!group) return resolve(null);
+              const idx = state.product[group].findIndex((s) => s.label === fieldLabel);
+              const oldContent = state.product[group][idx].content;
+              const revisedContent = reviseSectionContent(oldContent, instruction);
+              if (revisedContent === oldContent) return resolve({ changedSummary: "no visible change." });
+              const updated = state.product[group].map((s, i) => (i === idx ? { ...s, content: revisedContent } : s));
+              patchAt(productIdx, { product: { ...state.product, [group]: updated } });
+              return resolve({ changedSummary: `updated "${fieldLabel}".` });
+            }
+            patchAt(productIdx, { product: reviseProductServicesBundle(state.product, instruction) });
+            return resolve({ changedSummary: "updated the product bundle." });
+          }
+
+          if (entity === "icp") {
+            const sub = parts[3];
+            if (sub === "tam") {
+              const revised = reviseIcpBundle({ tamDescription: state.tamDescription, icps: [] }, instruction).tamDescription;
+              if (revised === state.tamDescription) return resolve({ changedSummary: "no visible change." });
+              patchAt(productIdx, { tamDescription: revised });
+              return resolve({ changedSummary: "updated the total addressable market description." });
+            }
+            if (sub === "icp") {
+              const icpIdx = Number(parts[4]);
+              const icp = state.icps[icpIdx];
+              if (!icp) return resolve(null);
+              const revised = reviseIcpBundle({ tamDescription: "", icps: [icp] }, instruction).icps[0];
+              if (revised.fitReasoning === icp.fitReasoning) return resolve({ changedSummary: "no visible change." });
+              patchAt(productIdx, { icps: state.icps.map((c, i) => (i === icpIdx ? revised : c)) });
+              return resolve({ changedSummary: `updated "${icp.name}".` });
+            }
+            const result = reviseIcpBundle({ tamDescription: state.tamDescription, icps: state.icps }, instruction);
+            patchAt(productIdx, { tamDescription: result.tamDescription, icps: result.icps });
+            return resolve({ changedSummary: "updated the market size and every ICP." });
+          }
+
+          if (entity === "personas") {
+            if (parts[3] === "persona") {
+              const personaIdx = Number(parts[4]);
+              const persona = state.personas[personaIdx];
+              if (!persona) return resolve(null);
+              const fieldLabel = parts[6];
+              if (fieldLabel) {
+                const group = (["sections", "secondarySections", "hiddenSections"] as const).find((g) => persona[g].some((s) => s.label === fieldLabel));
+                if (!group) return resolve(null);
+                const idx = persona[group].findIndex((s) => s.label === fieldLabel);
+                const oldContent = persona[group][idx].content;
+                const revisedContent = reviseSectionContent(oldContent, instruction);
+                if (revisedContent === oldContent) return resolve({ changedSummary: "no visible change." });
+                const updated = persona[group].map((s, i) => (i === idx ? { ...s, content: revisedContent } : s));
+                patchAt(productIdx, { personas: state.personas.map((p, i) => (i === personaIdx ? { ...p, [group]: updated } : p)) });
+                return resolve({ changedSummary: `updated "${fieldLabel}".` });
+              }
+              const revised = revisePersonasBundle([persona], instruction)[0];
+              if (JSON.stringify(revised) === JSON.stringify(persona)) return resolve({ changedSummary: "no visible change." });
+              patchAt(productIdx, { personas: state.personas.map((p, i) => (i === personaIdx ? revised : p)) });
+              return resolve({ changedSummary: `updated "${persona.title}".` });
+            }
+            patchAt(productIdx, { personas: revisePersonasBundle(state.personas, instruction) });
+            return resolve({ changedSummary: "updated every persona." });
+          }
+
+          resolve(null);
+        }, 1000);
+      });
+    },
+  });
 
   return (
     <div className="ob-card ob-review-card" style={{ ...CARD, maxWidth: 660 }}>
@@ -3177,7 +3530,7 @@ function StepProductReview({ products, onNext }: { products: Product[]; onNext: 
         onToggle={() => toggleSection("product")}
         onApprove={() => approveSection("product")}
       >
-        <ProductServicesPanel state={current.product} onChange={(next) => patchCurrent({ product: next })} />
+        <ProductServicesPanel state={current.product} onChange={(next) => patchCurrent({ product: next })} productIdx={selectedIndex} />
       </CollapsibleReviewSection>
 
       <CollapsibleReviewSection
@@ -3195,6 +3548,7 @@ function StepProductReview({ products, onNext }: { products: Product[]; onNext: 
           icps={current.icps}
           onChangeTam={(v) => patchCurrent({ tamDescription: v })}
           onChangeIcps={(v) => patchCurrent({ icps: v })}
+          productIdx={selectedIndex}
         />
       </CollapsibleReviewSection>
 
@@ -3214,6 +3568,7 @@ function StepProductReview({ products, onNext }: { products: Product[]; onNext: 
           onChange={(v) => patchCurrent({ personas: v })}
           approvedList={current.personaApproved}
           onApprovePersona={approvePersona}
+          productIdx={selectedIndex}
         />
       </CollapsibleReviewSection>
 
@@ -3435,12 +3790,12 @@ export function OnboardingShell() {
     });
   }
 
-  if (enteredApp) {
-    return <KnowledgeCenter onExit={() => setEnteredApp(false)} />;
-  }
+  let body: React.ReactNode;
 
-  if (showResume && draft) {
-    return (
+  if (enteredApp) {
+    body = <KnowledgeCenter onExit={() => setEnteredApp(false)} />;
+  } else if (showResume && draft) {
+    body = (
       <div className="ob-shell" style={PAGE_STYLE}>
         <style>{STYLES}</style>
         <PageChrome />
@@ -3449,12 +3804,11 @@ export function OnboardingShell() {
         </div>
       </div>
     );
-  }
-
-  return (
+  } else {
+    body = (
     <div className="ob-shell" style={PAGE_STYLE}>
       <style>{STYLES}</style>
-      <PageChrome hideLogo={step === "brand_welcome"} />
+      <PageChrome hideLogo={step === "brand_welcome" || PHASES.find((p) => p.label === "Review & Approve")!.steps.includes(step)} />
       <div
         className="ob-shell-content"
         style={
@@ -3561,5 +3915,13 @@ export function OnboardingShell() {
         )}
       </div>
     </div>
+    );
+  }
+
+  return (
+    <CopilotProvider>
+      {body}
+      <CopilotWidget />
+    </CopilotProvider>
   );
 }

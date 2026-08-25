@@ -1,6 +1,11 @@
 import { useMemo, useState } from "react";
-import { COMPANY_PROFILE, CompanyProfile } from "./data";
-import { CardSection, ChipList, EditableField, FieldLabel, Icon, KC_PRIMARY_BTN, ProgressBar, TagRow } from "./ui";
+import { COMPANY_CONFIDENCE, CompanyProfile, HistorySource } from "./data";
+import { AccordionBlock, CardSection, ChipList, FieldLabel, HistoryTextField, Icon, KC_PRIMARY_BTN, LowConfidenceMark, ProgressBar, TagRow, reviseText } from "./ui";
+import { ReferenceableField, ReferenceableSection } from "../copilot/Referenceable";
+import { useRegisterCopilotAdapter } from "../copilot/CopilotContext";
+import { ResolvedReference } from "../copilot/types";
+
+type LogField = (fieldLabel: string, oldValue: string | string[], newValue: string | string[], source: HistorySource, prompt?: string) => void;
 
 type TextFieldSpec = { key: keyof CompanyProfile; label: string; multiline?: boolean };
 
@@ -38,14 +43,17 @@ const DEEP_DIVE_FIELDS: TextFieldSpec[] = [
   { key: "dreamCustomer", label: "Dream Customer", multiline: true },
 ];
 
-function ProfileTextField({ field, profile, onChange }: {
-  field: TextFieldSpec; profile: CompanyProfile; onChange: (key: keyof CompanyProfile, value: string) => void;
+function ProfileTextField({ field, profile, onChange, onLogField }: {
+  field: TextFieldSpec; profile: CompanyProfile; onChange: (key: keyof CompanyProfile, value: string) => void; onLogField: LogField;
 }) {
+  const value = profile[field.key] as string;
   return (
-    <div>
-      <FieldLabel>{field.label}</FieldLabel>
-      <EditableField value={profile[field.key] as string} onChange={(v) => onChange(field.key, v)} multiline={field.multiline} rows={field.multiline ? 3 : undefined} />
-    </div>
+    <ReferenceableField id={`company:${field.key}`} label={field.label}>
+      <HistoryTextField
+        label={field.label} value={value} onChange={(v) => onChange(field.key, v)} multiline={field.multiline} rows={field.multiline ? 3 : undefined}
+        onLogChange={(c) => onLogField(field.label, c.oldValue, c.newValue, c.source, c.prompt)}
+      />
+    </ReferenceableField>
   );
 }
 
@@ -66,19 +74,100 @@ function computeCompletion(profile: CompanyProfile): number {
   return Math.round((filled / values.length) * 100);
 }
 
-function positioningStatement(p: CompanyProfile): string {
-  return `We help ${p.weHelp} who struggle with ${p.whoStruggleWith} by providing ${p.byProviding}. Unlike ${p.unlike}, we uniquely ${p.weUniquely}.`;
+// AI-Synthesized blocks 2 & 3 (see summary-view-spec.md Step 1) — in a real
+// pipeline these are model-written prose combining the source fields; here
+// they're stitched deterministically, matching the mock style used
+// elsewhere in this file (e.g. reviseText).
+function whoYouAreParagraph(p: CompanyProfile): string {
+  return `${p.elevatorPitch} We help ${p.weHelp} who struggle with ${p.whoStruggleWith} by providing ${p.byProviding}. ${p.coreProblem}`;
+}
+function differentiationParagraph(p: CompanyProfile): string {
+  return `Unlike ${p.unlike}, we uniquely ${p.weUniquely}. ${p.differentiators}`;
 }
 
-export function CompanySection({ reviewed, onToggleReviewed }: { reviewed: boolean; onToggleReviewed: () => void }) {
-  const [profile, setProfile] = useState<CompanyProfile>(COMPANY_PROFILE);
+// Every text field addressable at "company:{key}" via the copilot —
+// everything ProfileTextField/HistoryTextField renders, i.e. all of
+// BASIC_FIELDS/PITCH_FIELDS/POSITIONING_FIELDS/DEEP_DIVE_FIELDS plus
+// the two Deal & Sales Cycle fields.
+const COMPANY_TEXT_FIELDS: TextFieldSpec[] = [...BASIC_FIELDS, ...PITCH_FIELDS, ...POSITIONING_FIELDS, ...DEEP_DIVE_FIELDS, { key: "dealOverview", label: "Deal Overview" }, { key: "salesCycle", label: "Sales Cycle" }];
+
+// The Summary view (below) shows two AI-Synthesized blocks that don't map to
+// a single profile field — they're prose combining several. These two
+// synthetic ids let the copilot pin/resolve/revise each block as a unit
+// (mirrors the "one prompt per block" bundle-revise pattern used for the
+// same blocks in onboarding-shell.tsx's Company Research step), reusing the
+// exact paragraph builders the summary renders so the copilot always
+// "reads" what the user sees.
+const SYNTHESIZED_BLOCKS: { key: "whoYouAre" | "whatMakesYouDifferent"; label: string; build: (p: CompanyProfile) => string; fields: (keyof CompanyProfile)[] }[] = [
+  { key: "whoYouAre", label: "Company Overview", build: whoYouAreParagraph, fields: ["elevatorPitch", "weHelp", "whoStruggleWith", "byProviding", "coreProblem"] },
+  { key: "whatMakesYouDifferent", label: "Competitive Differentiation", build: differentiationParagraph, fields: ["unlike", "weUniquely", "differentiators"] },
+];
+
+export function CompanySection({ profile, onChange, onLogField, reviewed, onToggleReviewed }: {
+  profile: CompanyProfile; onChange: (key: keyof CompanyProfile, value: string | string[]) => void; onLogField: LogField;
+  reviewed: boolean; onToggleReviewed: () => void;
+}) {
   const [savedAt, setSavedAt] = useState<string | null>(null);
   const [view, setView] = useState<"summary" | "detail">("summary");
   const completion = useMemo(() => computeCompletion(profile), [profile]);
 
   function patch(key: keyof CompanyProfile, value: string | string[]) {
-    setProfile((current) => ({ ...current, [key]: value } as CompanyProfile));
+    onChange(key, value);
   }
+
+  useRegisterCopilotAdapter("company", {
+    resolve(id): ResolvedReference | null {
+      const key = id.split(":")[1];
+      if (!key) return { id, label: profile.companyName, value: COMPANY_TEXT_FIELDS.map((f) => ({ label: f.label, value: profile[f.key] as string })) };
+      const synth = SYNTHESIZED_BLOCKS.find((b) => b.key === key);
+      if (synth) return { id, label: synth.label, value: synth.build(profile) };
+      if (!(key in profile)) return null;
+      const spec = COMPANY_TEXT_FIELDS.find((f) => f.key === key);
+      return { id, label: spec ? spec.label : key, value: profile[key as keyof CompanyProfile] };
+    },
+    applyEdit(id, instruction) {
+      const key = id.split(":")[1] as keyof CompanyProfile | "whoYouAre" | "whatMakesYouDifferent" | undefined;
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          if (key) {
+            const synth = SYNTHESIZED_BLOCKS.find((b) => b.key === key);
+            if (synth) {
+              let changed = 0;
+              synth.fields.forEach((fieldKey) => {
+                const oldValue = profile[fieldKey] as string;
+                const revised = reviseText(oldValue, instruction);
+                if (revised !== oldValue) {
+                  onChange(fieldKey, revised);
+                  onLogField(fieldKey, oldValue, revised, "ai", instruction);
+                  changed++;
+                }
+              });
+              return resolve({ changedSummary: changed > 0 ? `updated "${synth.label}" (${changed} field(s)).` : "no visible change." });
+            }
+            const spec = COMPANY_TEXT_FIELDS.find((f) => f.key === key);
+            if (!spec) return resolve({ changedSummary: "this is a list field — ask a question about it instead, list fields aren't editable via the copilot yet." });
+            const oldValue = profile[key as keyof CompanyProfile] as string;
+            const revised = reviseText(oldValue, instruction);
+            if (revised === oldValue) return resolve({ changedSummary: "no visible change." });
+            onChange(key as keyof CompanyProfile, revised);
+            onLogField(spec.label, oldValue, revised, "ai", instruction);
+            return resolve({ changedSummary: `updated "${spec.label}".` });
+          }
+          let changed = 0;
+          COMPANY_TEXT_FIELDS.forEach((f) => {
+            const oldValue = profile[f.key] as string;
+            const revised = reviseText(oldValue, instruction);
+            if (revised !== oldValue) {
+              onChange(f.key, revised);
+              onLogField(f.label, oldValue, revised, "ai", instruction);
+              changed++;
+            }
+          });
+          resolve({ changedSummary: changed > 0 ? `updated ${changed} field(s).` : "no text fields changed." });
+        }, key ? 800 : 1200);
+      });
+    },
+  });
 
   if (view === "summary") {
     return (
@@ -90,6 +179,7 @@ export function CompanySection({ reviewed, onToggleReviewed }: { reviewed: boole
   }
 
   return (
+    <ReferenceableSection id="company" label={profile.companyName}>
     <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 22 }}>
       <button type="button" onClick={() => setView("summary")}
         style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12.5, fontWeight: 600, color: "var(--color-muted)", background: "transparent", border: "none", cursor: "pointer", padding: 0, fontFamily: "inherit" }}>
@@ -127,65 +217,74 @@ export function CompanySection({ reviewed, onToggleReviewed }: { reviewed: boole
 
       <CardSection icon="briefcase" title="Company Basics">
         <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
-          {BASIC_FIELDS.map((field) => <ProfileTextField key={field.key} field={field} profile={profile} onChange={patch} />)}
+          {BASIC_FIELDS.map((field) => <ProfileTextField key={field.key} field={field} profile={profile} onChange={patch} onLogField={onLogField} />)}
         </div>
       </CardSection>
 
       <CardSection icon="message" title="Elevator Pitch">
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          {PITCH_FIELDS.map((field) => <ProfileTextField key={field.key} field={field} profile={profile} onChange={patch} />)}
+          {PITCH_FIELDS.map((field) => <ProfileTextField key={field.key} field={field} profile={profile} onChange={patch} onLogField={onLogField} />)}
         </div>
       </CardSection>
 
       <CardSection icon="compass" title="Positioning Statement">
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          {POSITIONING_FIELDS.map((field) => <ProfileTextField key={field.key} field={field} profile={profile} onChange={patch} />)}
+          {POSITIONING_FIELDS.map((field) => <ProfileTextField key={field.key} field={field} profile={profile} onChange={patch} onLogField={onLogField} />)}
         </div>
       </CardSection>
 
       <CardSection icon="brain" title="Deep Dive">
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          {DEEP_DIVE_FIELDS.map((field) => <ProfileTextField key={field.key} field={field} profile={profile} onChange={patch} />)}
+          {DEEP_DIVE_FIELDS.map((field) => <ProfileTextField key={field.key} field={field} profile={profile} onChange={patch} onLogField={onLogField} />)}
         </div>
       </CardSection>
 
       <CardSection icon="target" title="Market & Positioning">
         <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
           {CHIP_FIELDS.map(({ key, label }) => (
-            <div key={key}>
+            <ReferenceableField key={key} id={`company:${key}`} label={label}>
               <FieldLabel>{label}</FieldLabel>
               <ChipList items={profile[key] as string[]} onChange={(v) => patch(key, v)} />
-            </div>
+            </ReferenceableField>
           ))}
         </div>
       </CardSection>
 
       <CardSection icon="handshake" title="Deal & Sales Cycle">
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          <div>
-            <FieldLabel>Deal Overview</FieldLabel>
-            <EditableField value={profile.dealOverview} onChange={(v) => patch("dealOverview", v)} multiline rows={3} />
-          </div>
-          <div>
-            <FieldLabel>Sales Cycle</FieldLabel>
-            <EditableField value={profile.salesCycle} onChange={(v) => patch("salesCycle", v)} multiline rows={3} />
-          </div>
+          <ReferenceableField id="company:dealOverview" label="Deal Overview">
+            <HistoryTextField label="Deal Overview" value={profile.dealOverview} onChange={(v) => patch("dealOverview", v)} multiline rows={3}
+              onLogChange={(c) => onLogField("Deal Overview", c.oldValue, c.newValue, c.source, c.prompt)} />
+          </ReferenceableField>
+          <ReferenceableField id="company:salesCycle" label="Sales Cycle">
+            <HistoryTextField label="Sales Cycle" value={profile.salesCycle} onChange={(v) => patch("salesCycle", v)} multiline rows={3}
+              onLogChange={(c) => onLogField("Sales Cycle", c.oldValue, c.newValue, c.source, c.prompt)} />
+          </ReferenceableField>
         </div>
       </CardSection>
     </div>
+    </ReferenceableSection>
   );
 }
 
-/* ─── Summary — one-page editorial overview, read-only ─────────────
-   Business Profile's ~20 discrete fields collapse into a handful of
-   flowing paragraphs; tag lists stay as compact read-only chips.
-   "View Details" drops into the full editable form above. */
+/* ─── Summary — matches docs/field_reference/summary-view-spec.md,
+   Step 1 (Company Profile). Primary blocks 1–5 sit above the fold, laid
+   out as a wide left column; Secondary blocks 6–8 sit in a narrower
+   right rail, tucked behind AccordionBlock's show-more — a desktop
+   layout that spends the page's real width on the tiering the spec
+   already defines, instead of one long single-column scroll. Blocks 9
+   (dreamCustomer) and 10 (goalTimeline — not in this mock model) are
+   intentionally absent here: Hidden — still live in the full detail
+   form above and addressable via Copilot.
+   "View Details" drops into that full editable form. */
 function CompanySummary({ profile, onViewDetails }: {
   profile: CompanyProfile;
   onViewDetails: () => void;
 }) {
   return (
-    <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 14 }}>
+    <ReferenceableSection id="company" label={profile.companyName}>
+    <div style={{ width: "100%", maxWidth: 1320, display: "flex", flexDirection: "column", gap: 14 }}>
+      {/* Block 1 — Header Strip (Primary, Field-Join) */}
       <div style={{ background: "var(--color-page)", border: "1px solid var(--color-border)", borderRadius: 14, padding: "16px 26px", boxShadow: "var(--shadow-card)" }}>
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 20, flexWrap: "wrap" }}>
           <div style={{ minWidth: 0 }}>
@@ -196,16 +295,19 @@ function CompanySummary({ profile, onViewDetails }: {
                 {profile.website}
               </a>
             </div>
-            <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 7, fontSize: 12, color: "var(--color-muted)", margin: "5px 0 8px" }}>
-              <span>{profile.category}</span>
+            <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 7, fontSize: 12, color: "var(--color-muted)", margin: "5px 0 0" }}>
+              <ReferenceableField id="company:category" label="Category">
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>{profile.category}<LowConfidenceMark value={COMPANY_CONFIDENCE.category} /></span>
+              </ReferenceableField>
               <span style={{ opacity: 0.4 }}>·</span>
-              <span>{profile.companySize}</span>
+              <ReferenceableField id="company:companySize" label="Company Size">
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>{profile.companySize}<LowConfidenceMark value={COMPANY_CONFIDENCE.companySize} /></span>
+              </ReferenceableField>
               <span style={{ opacity: 0.4 }}>·</span>
-              <span>{profile.annualRevenue}</span>
+              <ReferenceableField id="company:annualRevenue" label="Annual Revenue">
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>{profile.annualRevenue}<LowConfidenceMark value={COMPANY_CONFIDENCE.annualRevenue} /></span>
+              </ReferenceableField>
             </div>
-            <p style={{ fontSize: 15, color: "var(--color-heading)", lineHeight: 1.6, margin: 0, maxWidth: 640, fontStyle: "italic" }}>
-              &ldquo;{profile.elevatorPitch}&rdquo;
-            </p>
           </div>
           <div style={{ flexShrink: 0 }}>
             <button type="button" className="kc-primary-btn" title="View Details" style={{ ...KC_PRIMARY_BTN, padding: 0, width: 36, height: 36, justifyContent: "center" }} onClick={onViewDetails}>
@@ -215,51 +317,107 @@ function CompanySummary({ profile, onViewDetails }: {
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1.3fr 1fr", gap: 14, alignItems: "start" }}>
-        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-          <CardSection icon="message" title="Positioning">
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              <p style={PROSE}>{positioningStatement(profile)}</p>
-              <p style={PROSE}>{profile.coreProblem}</p>
-              <p style={{ ...PROSE, color: "var(--color-muted)", fontStyle: "italic" }}>{profile.proof}</p>
+      {/* Primary blocks (left, wide) + Secondary blocks (right rail) —
+          collapses to a single column below 1024px, see .kc-company-grid
+          in ui.tsx's KC_STYLES. */}
+      <div className="kc-company-grid" style={{ display: "grid", gridTemplateColumns: "minmax(0, 1.6fr) minmax(300px, 1fr)", gap: 20, alignItems: "start" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 14, minWidth: 0 }}>
+          {/* Block 2 — Who You Are & The Problem You Solve (Primary, AI-Synthesized) */}
+          <ReferenceableField id="company:whoYouAre" label="Company Overview">
+            <CardSection icon="message" title="Company Overview">
+              <p style={PROSE}>{whoYouAreParagraph(profile)}</p>
+            </CardSection>
+          </ReferenceableField>
+
+          {/* Block 3 — What Makes You Different (Primary, AI-Synthesized) */}
+          <ReferenceableField id="company:whatMakesYouDifferent" label="Competitive Differentiation">
+            <CardSection icon="compass" title="Competitive Differentiation">
+              <p style={{ ...PROSE, display: "flex", alignItems: "flex-start", gap: 6 }}>
+                {differentiationParagraph(profile)}
+                <LowConfidenceMark value={COMPANY_CONFIDENCE.differentiators} />
+              </p>
+            </CardSection>
+          </ReferenceableField>
+
+          {/* Block 4 — What You Sell (Primary, Field-Join) */}
+          <CardSection icon="grid" title="Products & Offerings">
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <ReferenceableField id="company:productServiceSummary" label="Product / Service Summary">
+                <p style={PROSE}>{profile.productServiceSummary}</p>
+              </ReferenceableField>
+              <ReferenceableField id="company:products" label="Products">
+                <TagRow items={profile.products} />
+              </ReferenceableField>
             </div>
           </CardSection>
 
-          <CardSection icon="handshake" title="Deal & Sales Cycle">
-            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              <p style={PROSE}>{profile.dealOverview} {profile.salesCycle}</p>
-              <div>
-                <FieldLabel>Buying Motion</FieldLabel>
-                <p style={{ ...PROSE, margin: 0 }}>{profile.buyingMotion}</p>
+          {/* Block 5 — Proof & Credibility (Primary, Field-Join) */}
+          <CardSection icon="handshake" title="Proof & Credibility">
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
+                <ReferenceableField id="company:keySellingPoints" label="Key Selling Points">
+                  <FieldLabel>Key Selling Points</FieldLabel>
+                  <TagRow items={profile.keySellingPoints} />
+                </ReferenceableField>
+                <ReferenceableField id="company:notableCustomers" label="Notable Customers">
+                  <FieldLabel>Notable Customers</FieldLabel>
+                  <TagRow items={profile.notableCustomers} />
+                </ReferenceableField>
               </div>
+              <ReferenceableField id="company:proof" label="Proof">
+                <p style={{ ...PROSE, display: "flex", alignItems: "flex-start", gap: 6, color: "var(--color-muted)", fontStyle: "italic" }}>
+                  &ldquo;{profile.proof}&rdquo;
+                  <LowConfidenceMark value={COMPANY_CONFIDENCE.proof} />
+                </p>
+              </ReferenceableField>
             </div>
           </CardSection>
         </div>
 
-        <CardSection icon="grid" title="Product & Market">
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            <p style={PROSE}>{profile.productServiceSummary} {profile.differentiators}</p>
+        <div style={{ display: "flex", flexDirection: "column", gap: 14, minWidth: 0 }}>
+          {/* Blocks 6–8 — Secondary (expandable) */}
+          <AccordionBlock icon="globe" title="Market Context">
+            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+              <ReferenceableField id="company:industries" label="Industries">
+                <FieldLabel>Industries</FieldLabel>
+                <TagRow items={profile.industries} />
+              </ReferenceableField>
+              <ReferenceableField id="company:competitors" label="Competitors">
+                <FieldLabel>Competitors</FieldLabel>
+                <TagRow items={profile.competitors} />
+              </ReferenceableField>
+            </div>
+          </AccordionBlock>
 
-            <div style={{ borderLeft: "3px solid var(--color-brand)", borderRadius: 8, padding: "9px 13px" }}>
-              <FieldLabel>Dream Customer</FieldLabel>
-              <p style={{ ...PROSE, margin: 0 }}>{profile.dreamCustomer}</p>
+          <AccordionBlock icon="dollar" title="Deal Snapshot">
+            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+              <ReferenceableField id="company:buyingMotion" label="Buying Motion">
+                <FieldLabel>Buying Motion</FieldLabel>
+                <p style={{ ...PROSE, margin: 0 }}>{profile.buyingMotion}</p>
+              </ReferenceableField>
+              <ReferenceableField id="company:dealOverview" label="Deal Overview">
+                <FieldLabel>Deal Overview</FieldLabel>
+                <p style={{ ...PROSE, margin: 0 }}>{profile.dealOverview}</p>
+              </ReferenceableField>
+              <ReferenceableField id="company:salesCycle" label="Sales Cycle">
+                <FieldLabel>Sales Cycle</FieldLabel>
+                <p style={{ ...PROSE, margin: 0 }}>{profile.salesCycle}</p>
+              </ReferenceableField>
             </div>
+          </AccordionBlock>
 
-            <div>
-              <FieldLabel>Industries</FieldLabel>
-              <TagRow items={profile.industries} />
-            </div>
-            <div>
-              <FieldLabel>Competitors</FieldLabel>
-              <TagRow items={profile.competitors} />
-            </div>
-            <div>
-              <FieldLabel>Notable Customers</FieldLabel>
-              <TagRow items={profile.notableCustomers} />
-            </div>
-          </div>
-        </CardSection>
+          <AccordionBlock icon="shield" title="Risks to Address">
+            <ReferenceableField id="company:trustRisksObjections" label="Trust Risks / Objections">
+              <ul style={{ margin: 0, padding: "0 0 0 16px", display: "flex", flexDirection: "column", gap: 5 }}>
+                {profile.trustRisksObjections.map((risk, i) => (
+                  <li key={i} style={{ fontSize: 12.5, color: "var(--color-heading)", lineHeight: 1.5 }}>{risk}</li>
+                ))}
+              </ul>
+            </ReferenceableField>
+          </AccordionBlock>
+        </div>
       </div>
     </div>
+    </ReferenceableSection>
   );
 }

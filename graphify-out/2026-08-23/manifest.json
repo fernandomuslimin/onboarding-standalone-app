@@ -30,8 +30,8 @@
     "semantic_hash": "02ad44ca7f3d56ee33d2045f8de87a58"
   },
   "/Users/fernandomuslimin/Projects/B2BROCKET.AI/Source Code/onboarding-standalone-app/src/onboarding-shell.tsx": {
-    "mtime": 1787668479.579217,
-    "ast_hash": "d0c7bf26ea090b57dd9200326f4934cb",
+    "mtime": 1787415964.3044198,
+    "ast_hash": "e808f24c0aaede631b7f6216202da767",
     "semantic_hash": ""
   },
   "/Users/fernandomuslimin/Projects/B2BROCKET.AI/Source Code/onboarding-standalone-app/src/knowledge-center/data.ts": {
@@ -55,13 +55,13 @@
     "semantic_hash": "7762d189a0f5068a5e2b0f068ad5ca19"
   },
   "/Users/fernandomuslimin/Projects/B2BROCKET.AI/Source Code/onboarding-standalone-app/src/knowledge-center/Company.tsx": {
-    "mtime": 1787536957.22493,
-    "ast_hash": "a3b6c18723fc4d8c2dd1554fe6a0a946",
+    "mtime": 1787415799.0306995,
+    "ast_hash": "e1d3219f8ba17377c9dd25961f627aba",
     "semantic_hash": ""
   },
   "/Users/fernandomuslimin/Projects/B2BROCKET.AI/Source Code/onboarding-standalone-app/src/knowledge-center/ui.tsx": {
-    "mtime": 1787536975.7976847,
-    "ast_hash": "66237913fc70d3b58d93b987937a3437",
+    "mtime": 1787407087.236623,
+    "ast_hash": "587baafcedb96cd8a5f24dcfaf437180",
     "semantic_hash": ""
   },
   "/Users/fernandomuslimin/Projects/B2BROCKET.AI/Source Code/onboarding-standalone-app/index.html": {
@@ -120,8 +120,8 @@
     "semantic_hash": ""
   },
   "/Users/fernandomuslimin/Projects/B2BROCKET.AI/Source Code/onboarding-standalone-app/src/knowledge-center/Explorer.tsx": {
-    "mtime": 1787417763.985583,
-    "ast_hash": "0ece9da5c8a4d22a22bed14606fcdd4e",
+    "mtime": 1787237488.2548003,
+    "ast_hash": "c3b056bb1ceba1f252c46c97bded8215",
     "semantic_hash": ""
   },
   "/Users/fernandomuslimin/Projects/B2BROCKET.AI/Source Code/onboarding-standalone-app/src/knowledge-center/ProductDetailPane.tsx": {
@@ -140,8 +140,8 @@
     "semantic_hash": ""
   },
   "/Users/fernandomuslimin/Projects/B2BROCKET.AI/Source Code/onboarding-standalone-app/src/knowledge-center/PersonaDetailPane.tsx": {
-    "mtime": 1787417858.2306793,
-    "ast_hash": "96468b220a743480e2788d84711c7173",
+    "mtime": 1787415826.736346,
+    "ast_hash": "1d047e0425035242e2be575a8796dbbf",
     "semantic_hash": ""
   },
   "/Users/fernandomuslimin/Projects/B2BROCKET.AI/Source Code/onboarding-standalone-app/src/knowledge-center/Diagram.tsx": {
@@ -165,8 +165,8 @@
     "semantic_hash": ""
   },
   "/Users/fernandomuslimin/Projects/B2BROCKET.AI/Source Code/onboarding-standalone-app/src/knowledge-center/Overview.tsx": {
-    "mtime": 1787417799.7742002,
-    "ast_hash": "60879893c153340784cc6d2cb45b4a6e",
+    "mtime": 1787416679.0962493,
+    "ast_hash": "c9549c745fe6bfcc2c93371385bd8ea2",
     "semantic_hash": ""
   },
   "/Users/fernandomuslimin/Projects/B2BROCKET.AI/Source Code/onboarding-standalone-app/src/knowledge-center/HistoryDrawer.tsx": {
