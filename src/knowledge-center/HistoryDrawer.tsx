@@ -1,7 +1,7 @@
-import { HistoryEntry, TreeNodeType } from "./data";
+import { HistoryEntityType, HistoryEntry } from "./data";
 import { Drawer, EmptyState } from "./ui";
 
-const ENTITY_LABEL: Record<TreeNodeType, string> = { product: "Product", icp: "ICP", persona: "Persona" };
+const ENTITY_LABEL: Record<HistoryEntityType, string> = { company: "Company", product: "Product", icp: "ICP", persona: "Persona" };
 
 function displayValue(value: string | string[]): string {
   return Array.isArray(value) ? (value.length ? value.join(", ") : "—") : value || "—";

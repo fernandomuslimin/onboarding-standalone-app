@@ -1,8 +1,19 @@
 import { useState } from "react";
 import { HistorySource, PRODUCTS, PersonaDetail, PersonaField, personaPerformance } from "./data";
-import { CardSection, ChipList, Drawer, EditableField, EmptyState, FieldLabel, HistoryTextField, Icon, IconName, KC_DANGER_BTN, KC_PRIMARY_BTN, StatTile, formatCurrencyShort } from "./ui";
+import { AccordionBlock, CardSection, ChipList, Drawer, EditableField, EmptyState, FieldLabel, FieldValue, HistoryTextField, Icon, IconName, KC_DANGER_BTN, KC_PRIMARY_BTN, MatchBadge, StatTile, TagRow, formatCurrencyShort } from "./ui";
 import { ComboRow, ComboTableHeader, overallFit } from "./ComboRow";
 import { CampaignSequenceView } from "./CampaignSequenceView";
+import { ReferenceableField, ReferenceableSection } from "../copilot/Referenceable";
+
+const PROSE: React.CSSProperties = { fontSize: 13.5, color: "var(--color-body)", lineHeight: 1.55, margin: 0 };
+
+function sectionField(persona: PersonaDetail, heading: string, label: string): string | string[] | undefined {
+  return persona.sections.find((s) => s.heading === heading)?.fields.find((f) => f.label === label)?.value;
+}
+function sectionFieldList(persona: PersonaDetail, heading: string, label: string): string[] {
+  const v = sectionField(persona, heading, label);
+  return Array.isArray(v) ? v : v ? [v] : [];
+}
 
 const SECTION_ICON: Record<string, IconName> = {
   "Overview": "compass",
@@ -79,6 +90,137 @@ function PerformanceSection({ persona }: { persona: PersonaDetail }) {
   );
 }
 
+/* ─── Summary — matches summary-view-spec.md Step 4 (Persona). Primary
+   blocks 1–9 sit above the fold; block 10 (Qualification Snapshot) is
+   Secondary, behind AccordionBlock. Blocks 11–21 (deeper pain/risk
+   context, decision-making detail, buyer psychology, extended
+   messaging/outreach, remaining qualification tiers, etc.) and block
+   22 (scoring input) are Hidden — Copilot only / internal-only — and
+   stay out of this summary; they're still fully present and editable
+   in the full detail view below. */
+function PersonaSummaryView({ persona, onViewDetails }: {
+  persona: PersonaDetail; onViewDetails: () => void;
+}) {
+  const objections = sectionFieldList(persona, "Messaging Guidance", "Objections They Raise");
+  const bestChannel = sectionField(persona, "Outreach Strategy", "Best Channel");
+  const bestTime = sectionField(persona, "Outreach Strategy", "Best Time To Reach");
+
+  return (
+    <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 14 }}>
+      {/* Block 1 — Header (Primary, Field-Join) */}
+      <div style={{ background: "var(--color-page)", border: "1px solid var(--color-border)", borderRadius: 14, padding: "16px 26px", boxShadow: "var(--shadow-card)" }}>
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 20, flexWrap: "wrap" }}>
+          <div style={{ minWidth: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+              <h2 style={{ fontSize: 21, fontWeight: 800, margin: 0 }}>{persona.name}</h2>
+              <MatchBadge value={persona.matchPct} />
+            </div>
+            <div style={{ marginTop: 6 }}>
+              <TagRow items={[persona.department]} />
+            </div>
+          </div>
+          <button type="button" className="kc-primary-btn" title="View Details" style={{ ...KC_PRIMARY_BTN, padding: 0, width: 36, height: 36, justifyContent: "center", flexShrink: 0 }} onClick={onViewDetails}>
+            <Icon name="edit" size={14} />
+          </button>
+        </div>
+      </div>
+
+      {/* Block 2 — Who They Are (Primary, Verbatim Passthrough) */}
+      <CardSection icon="compass" title="Overview">
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <p style={PROSE}>{persona.subtitle}</p>
+          <ReferenceableField id={`persona:${persona.id}:section:Overview:field:Role Summary`} label="Role Summary">
+            <p style={PROSE}>{sectionField(persona, "Overview", "Role Summary")}</p>
+          </ReferenceableField>
+        </div>
+      </CardSection>
+
+      {/* Block 3 — What They're Responsible For (Primary, Field-Join) */}
+      <CardSection icon="briefcase" title="Key Responsibilities">
+        <ReferenceableField id={`persona:${persona.id}:section:Responsibilities:field:Core Responsibilities`} label="Core Responsibilities">
+          <FieldValue value={sectionFieldList(persona, "Responsibilities", "Core Responsibilities")} />
+        </ReferenceableField>
+      </CardSection>
+
+      {/* Block 4 — Goals (Primary, Field-Join) */}
+      <CardSection icon="flag" title="Goals">
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          <ReferenceableField id={`persona:${persona.id}:section:Goals:field:Primary Goal`} label="Primary Goal">
+            <FieldLabel confidence={persona.sections.find((s) => s.heading === "Goals")?.fields.find((f) => f.label === "Primary Goal")?.confidence}>Primary Goal</FieldLabel>
+            <FieldValue value={sectionField(persona, "Goals", "Primary Goal") ?? ""} />
+          </ReferenceableField>
+          <ReferenceableField id={`persona:${persona.id}:section:Goals:field:Secondary Goals`} label="Secondary Goals">
+            <FieldLabel>Secondary Goals</FieldLabel>
+            <FieldValue value={sectionFieldList(persona, "Goals", "Secondary Goals")} />
+          </ReferenceableField>
+        </div>
+      </CardSection>
+
+      {/* Block 5 — Primary Pain (Primary, Verbatim Passthrough) */}
+      <CardSection icon="target" title="Primary Pain">
+        <ReferenceableField id={`persona:${persona.id}:section:Pain Points:field:Primary Pain`} label="Primary Pain">
+          <p style={PROSE}>{sectionField(persona, "Pain Points", "Primary Pain")}</p>
+        </ReferenceableField>
+      </CardSection>
+
+      {/* Block 6 — Current Tools (Primary, Field-Join) */}
+      <CardSection icon="layers" title="Current Tools">
+        <ReferenceableField id={`persona:${persona.id}:section:Current Solutions:field:Tools In Use`} label="Tools In Use">
+          <TagRow items={sectionFieldList(persona, "Current Solutions", "Tools In Use")} />
+        </ReferenceableField>
+      </CardSection>
+
+      {/* Block 7 — Best Way to Reach Them (Primary, Field-Join) */}
+      <CardSection icon="route" title="Preferred Outreach Channels">
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
+          <ReferenceableField id={`persona:${persona.id}:section:Outreach Strategy:field:Best Channel`} label="Best Channel">
+            <FieldLabel>Best Channel</FieldLabel>
+            <FieldValue value={bestChannel ?? "—"} />
+          </ReferenceableField>
+          <ReferenceableField id={`persona:${persona.id}:section:Outreach Strategy:field:Best Time To Reach`} label="Best Time To Reach">
+            <FieldLabel>Best Time to Reach</FieldLabel>
+            <FieldValue value={bestTime ?? "—"} />
+          </ReferenceableField>
+        </div>
+      </CardSection>
+
+      {/* Block 8 — Objections to Expect (Primary, Field-Join) */}
+      {objections.length > 0 && (
+        <CardSection icon="shield" title="Anticipated Objections">
+          <ReferenceableField id={`persona:${persona.id}:section:Messaging Guidance:field:Objections They Raise`} label="Objections They Raise">
+            <ul style={{ margin: 0, padding: "0 0 0 16px", display: "flex", flexDirection: "column", gap: 5 }}>
+              {objections.map((o, i) => (
+                <li key={i} style={{ fontSize: 12.5, color: "var(--color-heading)", lineHeight: 1.5, fontStyle: "italic" }}>{o}</li>
+              ))}
+            </ul>
+          </ReferenceableField>
+        </CardSection>
+      )}
+
+      {/* Block 9 — Opening Hook (Primary, Verbatim Passthrough) */}
+      <CardSection icon="message" title="Opening Hook">
+        <ReferenceableField id={`persona:${persona.id}:section:Messaging Guidance:field:Opening Hook`} label="Opening Hook">
+          <p style={{ ...PROSE, fontStyle: "italic" }}>&ldquo;{sectionField(persona, "Messaging Guidance", "Opening Hook")}&rdquo;</p>
+        </ReferenceableField>
+      </CardSection>
+
+      {/* Block 10 — Qualification Snapshot (Secondary) */}
+      <AccordionBlock icon="check" title="Qualification Snapshot">
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          <ReferenceableField id={`persona:${persona.id}:section:Qualification:field:Warm Lead`} label="Warm Lead">
+            <FieldLabel>Warm Lead</FieldLabel>
+            <FieldValue value={sectionField(persona, "Qualification", "Warm Lead") ?? "—"} />
+          </ReferenceableField>
+          <ReferenceableField id={`persona:${persona.id}:section:Qualification:field:Meeting-Ready`} label="Meeting-Ready">
+            <FieldLabel>Meeting-Ready</FieldLabel>
+            <FieldValue value={sectionField(persona, "Qualification", "Meeting-Ready") ?? "—"} />
+          </ReferenceableField>
+        </div>
+      </AccordionBlock>
+    </div>
+  );
+}
+
 export function PersonaDetailPane({ persona, onPatchName, onPatchField, onDelete, onLogField }: {
   persona: PersonaDetail;
   onPatchName: (name: string) => void;
@@ -87,13 +229,31 @@ export function PersonaDetailPane({ persona, onPatchName, onPatchField, onDelete
   onLogField: LogField;
 }) {
   const [savedAt, setSavedAt] = useState<string | null>(null);
+  const [view, setView] = useState<"summary" | "detail">("summary");
+
+  if (view === "summary") {
+    return (
+      <ReferenceableSection id={`persona:${persona.id}`} label={persona.name}>
+        <PersonaSummaryView persona={persona} onViewDetails={() => setView("detail")} />
+      </ReferenceableSection>
+    );
+  }
 
   return (
+    <ReferenceableSection id={`persona:${persona.id}`} label={persona.name}>
     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+      <button type="button" onClick={() => setView("summary")}
+        style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12.5, fontWeight: 600, color: "var(--color-muted)", background: "transparent", border: "none", cursor: "pointer", padding: 0, fontFamily: "inherit" }}>
+        <Icon name="chevron-left" size={13} />
+        Back to summary
+      </button>
+
       <div style={{ background: "var(--color-page)", border: "1px solid var(--color-border)", borderRadius: 14, padding: "18px 22px", boxShadow: "var(--shadow-card)" }}>
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 14, marginBottom: 8 }}>
-          <EditableField value={persona.name} onChange={onPatchName}
-            onCommit={(oldValue, newValue) => onLogField("Name", oldValue, newValue, "manual")} />
+          <ReferenceableField id={`persona:${persona.id}:name`} label="Name">
+            <EditableField value={persona.name} onChange={onPatchName}
+              onCommit={(oldValue, newValue) => onLogField("Name", oldValue, newValue, "manual")} />
+          </ReferenceableField>
           <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
             <button type="button" className="kc-primary-btn" style={KC_PRIMARY_BTN} onClick={() => setSavedAt(new Date().toLocaleTimeString())}>
               <Icon name="check" size={14} />
@@ -111,9 +271,11 @@ export function PersonaDetailPane({ persona, onPatchName, onPatchField, onDelete
         <CardSection key={section.heading} icon={SECTION_ICON[section.heading] ?? "list"} title={section.heading}>
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             {section.fields.map((field, fi) => (
-              <PersonaFieldRow key={field.label} field={field} onChange={(v) => onPatchField(si, fi, v)}
-                onLogField={(fieldLabel, oldValue, newValue, source, prompt) =>
-                  onLogField(`${section.heading}: ${fieldLabel}`, oldValue, newValue, source, prompt)} />
+              <ReferenceableField key={field.label} id={`persona:${persona.id}:section:${section.heading}:field:${field.label}`} label={`${section.heading}: ${field.label}`}>
+                <PersonaFieldRow field={field} onChange={(v) => onPatchField(si, fi, v)}
+                  onLogField={(fieldLabel, oldValue, newValue, source, prompt) =>
+                    onLogField(`${section.heading}: ${fieldLabel}`, oldValue, newValue, source, prompt)} />
+              </ReferenceableField>
             ))}
           </div>
         </CardSection>
@@ -130,5 +292,6 @@ export function PersonaDetailPane({ persona, onPatchName, onPatchField, onDelete
         </button>
       </div>
     </div>
+    </ReferenceableSection>
   );
 }

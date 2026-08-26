@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import { HistorySource } from "./data";
+import { ReferenceableSection } from "../copilot/Referenceable";
 
 /* ════════════════════════════════════════════════════════════════════
    Knowledge Center — shared UI primitives
@@ -105,8 +106,8 @@ export function ProgressBar({ pct, height = 6 }: { pct: number; height?: number 
 }
 
 /* ─── Card section (icon + heading wrapper) ────────────────────── */
-export function CardSection({ icon, title, children, right }: { icon: IconName; title: string; children: React.ReactNode; right?: React.ReactNode }) {
-  return (
+export function CardSection({ icon, title, sectionId, children, right }: { icon: IconName; title: string; sectionId?: string; children: React.ReactNode; right?: React.ReactNode }) {
+  const card = (
     <div style={{ background: "var(--color-page)", border: "1px solid var(--color-border)", borderRadius: 14, padding: "20px 22px", boxShadow: "var(--shadow-card)" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16, gap: 12 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
@@ -120,6 +121,53 @@ export function CardSection({ icon, title, children, right }: { icon: IconName; 
       {children}
     </div>
   );
+  if (!sectionId) return card;
+  return <ReferenceableSection id={sectionId} label={title} style={{ borderRadius: 14 }}>{card}</ReferenceableSection>;
+}
+
+/* ─── Low-confidence indicator ───────────────────────────────────
+   A small dot for Primary summary blocks whose source confidence is
+   below threshold — cheaper than a full ConfidenceBadge, meant to sit
+   inline next to a value without competing with it for attention. */
+export function LowConfidenceMark({ value, threshold = 70 }: { value?: number; threshold?: number }) {
+  if (value == null || value >= threshold) return null;
+  return (
+    <span title={`Lower-confidence field (${value}%) — worth a second look`}
+      style={{ display: "inline-block", width: 6, height: 6, borderRadius: "50%", background: "var(--color-warning)", flexShrink: 0 }} />
+  );
+}
+
+/* ─── Accordion block (Secondary/expandable summary sections) ────
+   Same shell as CardSection but collapsed by default — used for
+   summary-view blocks the spec marks "Secondary (expandable)": on
+   the page, but tucked behind a show-more so Primary blocks stay
+   above the fold. */
+export function AccordionBlock({ icon, title, sectionId, children, defaultOpen = false }: {
+  icon: IconName; title: string; sectionId?: string; children: React.ReactNode; defaultOpen?: boolean;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  const card = (
+    <div style={{ background: "var(--color-page)", border: "1px solid var(--color-border)", borderRadius: 14, boxShadow: "var(--shadow-card)", overflow: "hidden" }}>
+      <button type="button" onClick={() => setOpen((o) => !o)} className="kc-list-row"
+        style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: sectionId ? "14px 38px 14px 20px" : "14px 20px", background: "transparent", border: "none", cursor: "pointer", fontFamily: KC_FONT, textAlign: "left" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
+          <div style={{ width: 26, height: 26, borderRadius: 8, background: "var(--color-brand-tint)", color: "var(--color-brand)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <Icon name={icon} size={14} />
+          </div>
+          <h3 style={{ fontSize: 14.5, fontWeight: 700, margin: 0 }}>{title}</h3>
+        </div>
+        <span style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11.5, fontWeight: 700, color: "var(--color-muted)" }}>
+          {open ? "Show less" : "Show more"}
+          <span style={{ display: "flex", transform: open ? "rotate(180deg)" : "none", transition: "transform 150ms var(--ease-apple)" }}>
+            <Icon name="chevron-down" size={13} />
+          </span>
+        </span>
+      </button>
+      {open && <div style={{ padding: "0 22px 20px" }}>{children}</div>}
+    </div>
+  );
+  if (!sectionId) return card;
+  return <ReferenceableSection id={sectionId} label={title} style={{ borderRadius: 14 }}>{card}</ReferenceableSection>;
 }
 
 /* ─── Currency formatting ────────────────────────────────────────── */
@@ -145,12 +193,11 @@ export function StatTile({ icon, label, value }: { icon: IconName; label: string
 }
 
 /* ─── Field label ───────────────────────────────────────────────── */
-export function FieldLabel({ children, confidence, aiTrigger }: { children: React.ReactNode; confidence?: number; aiTrigger?: React.ReactNode }) {
+export function FieldLabel({ children, confidence }: { children: React.ReactNode; confidence?: number }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 5 }}>
       <span style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.05em", textTransform: "uppercase" }}>{children}</span>
       <ConfidenceBadge value={confidence} />
-      {aiTrigger}
     </div>
   );
 }
@@ -196,16 +243,18 @@ export function EditableField({ value, onChange, multiline = false, rows = 2, on
   return <input className="kc-input" value={value} onChange={(e) => onChange(e.target.value)} onFocus={handleFocus} onBlur={handleBlur} style={style} />;
 }
 
-/* ─── Ask-AI mock revise ──────────────────────────────────────────
+/* ─── Mock revise ──────────────────────────────────────────────────
    Field-scoped heuristic rewrite — no live model call (mirrors the
    mocked AI patterns used elsewhere in the app). Kept local to this
    file rather than shared with onboarding-shell.tsx's own copy, since
-   that file belongs to a different, disconnected part of the app. */
+   that file belongs to a different, disconnected part of the app.
+   Exported so the copilot's Knowledge Center adapter slices can reuse
+   it instead of reimplementing revision logic. */
 function firstSentence(s: string): string {
   const m = s.match(/^.*?[.!?](?=\s|$)/);
   return m ? m[0] : s;
 }
-function reviseText(text: string, instruction: string): string {
+export function reviseText(text: string, instruction: string): string {
   const lower = instruction.toLowerCase();
   if (/shorter|concise|tighten|trim/.test(lower)) return firstSentence(text);
   if (/more formal|formal tone/.test(lower)) return text.replace(/—/g, ",");
@@ -215,76 +264,12 @@ function reviseText(text: string, instruction: string): string {
   return `${text.replace(/[.\s]+$/, "")} — ${instruction}`;
 }
 
-/* ─── Ask-AI trigger — small icon + instruction popover, sits next to
-   a FieldLabel via its `aiTrigger` slot. `onApplied` fires the moment
-   the mocked revise is applied, carrying the prompt text so callers
-   can log an "ai"-sourced history entry alongside the plain onChange. */
-export function AskAI({ value, onChange, onApplied }: {
-  value: string; onChange: (v: string) => void;
-  onApplied: (oldValue: string, newValue: string, prompt: string) => void;
-}) {
-  const [open, setOpen] = useState(false);
-  const [instruction, setInstruction] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [undoValue, setUndoValue] = useState<string | null>(null);
-
-  function apply() {
-    const text = instruction.trim();
-    if (!text || busy) return;
-    setBusy(true);
-    setTimeout(() => {
-      const revised = reviseText(value, text);
-      if (revised !== value) {
-        setUndoValue(value);
-        onChange(revised);
-        onApplied(value, revised, text);
-      }
-      setBusy(false);
-      setOpen(false);
-      setInstruction("");
-    }, 800);
-  }
-  function cancel() { setOpen(false); setInstruction(""); }
-
-  return (
-    <span style={{ position: "relative", display: "inline-flex", alignItems: "center", gap: 6 }}>
-      <button type="button" onClick={() => setOpen((o) => !o)} title="Ask AI to revise this"
-        style={{ background: "none", border: "none", cursor: "pointer", padding: 2, lineHeight: 0, opacity: open ? 1 : 0.55, fontFamily: "inherit" }}>
-        <svg width={9} height={9} viewBox="0 0 24 24" fill="none" stroke="var(--color-brand)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72Z" />
-          <path d="m14 7 3 3" /><path d="M5 6v4" /><path d="M19 14v4" />
-        </svg>
-      </button>
-      {undoValue !== null && !open && (
-        <button type="button" onClick={() => { onChange(undoValue); setUndoValue(null); }}
-          style={{ fontSize: 10, fontWeight: 600, color: "var(--color-brand)", background: "none", border: "none", cursor: "pointer", textDecoration: "underline", padding: 0, fontFamily: "inherit" }}>
-          Undo
-        </button>
-      )}
-      {open && (
-        <div style={{ position: "absolute", top: "calc(100% + 6px)", left: 0, zIndex: 5, display: "flex", gap: 6, background: "var(--color-page)", border: "1px solid var(--color-border)", borderRadius: 10, padding: 6, boxShadow: "var(--shadow-elevated)", width: 240 }}>
-          <input
-            autoFocus value={instruction} onChange={(e) => setInstruction(e.target.value)}
-            onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); apply(); } if (e.key === "Escape") { e.preventDefault(); cancel(); } }}
-            placeholder="Tell AI what to change…" disabled={busy}
-            style={{ flex: 1, minWidth: 0, fontSize: 11.5, border: "1px solid var(--color-border)", borderRadius: 7, padding: "5px 7px", outline: "none", fontFamily: "inherit", background: "var(--color-surface)", color: "var(--color-heading)" }}
-          />
-          <button type="button" onClick={apply} disabled={busy || !instruction.trim()}
-            style={{ flexShrink: 0, fontSize: 11, fontWeight: 600, borderRadius: 7, border: "none", padding: "0 10px", background: "var(--color-brand)", color: "#fff", cursor: busy || !instruction.trim() ? "default" : "pointer", opacity: busy || !instruction.trim() ? 0.6 : 1, fontFamily: "inherit" }}>
-            {busy ? "…" : "Go"}
-          </button>
-        </div>
-      )}
-    </span>
-  );
-}
-
 /* ─── Text field with history tracking ───────────────────────────
-   Bundles FieldLabel + EditableField + AskAI for the common case: a
-   single labeled, editable text field whose manual and AI-driven
-   edits both need to be logged. `onLogChange` receives one entry per
-   commit (blur for manual edits, apply for AI edits) — callers just
-   fill in the entity/field context around it. */
+   Bundles FieldLabel + EditableField for the common case: a single
+   labeled, editable text field whose manual edits need to be logged.
+   AI-driven edits now flow through the floating copilot instead of a
+   per-field trigger here. `onLogChange` receives one entry per commit
+   (blur) — callers just fill in the entity/field context around it. */
 export function HistoryTextField({ label, value, onChange, confidence, multiline, rows, onLogChange }: {
   label: string; value: string; onChange: (v: string) => void; confidence?: number;
   multiline?: boolean; rows?: number;
@@ -292,12 +277,7 @@ export function HistoryTextField({ label, value, onChange, confidence, multiline
 }) {
   return (
     <div>
-      <FieldLabel confidence={confidence} aiTrigger={
-        <AskAI value={value} onChange={onChange}
-          onApplied={(oldValue, newValue, prompt) => onLogChange({ oldValue, newValue, source: "ai", prompt })} />
-      }>
-        {label}
-      </FieldLabel>
+      <FieldLabel confidence={confidence}>{label}</FieldLabel>
       <EditableField value={value} onChange={onChange} multiline={multiline} rows={rows}
         onCommit={(oldValue, newValue) => onLogChange({ oldValue, newValue, source: "manual" })} />
     </div>
@@ -477,6 +457,9 @@ export const KC_STYLES = `
 .kc-scrollbar::-webkit-scrollbar-thumb { background: var(--color-border-strong); border-radius: 999px; }
 @media (max-width: 900px) {
   .kc-sidebar { display: none !important; }
+}
+@media (max-width: 1024px) {
+  .kc-company-grid { grid-template-columns: 1fr !important; }
 }
 @keyframes kc-drawer-slide-in { from { transform: translateX(100%); } to { transform: translateX(0); } }
 @keyframes kc-drawer-fade-in { from { opacity: 0; } to { opacity: 1; } }

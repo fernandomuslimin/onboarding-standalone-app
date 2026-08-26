@@ -374,10 +374,15 @@ export function treeKey(type: TreeNodeType, id: string): string {
 /* ─── Field edit history ────────────────────────────────────────── */
 export type HistorySource = "manual" | "ai";
 
+// Widens TreeNodeType with "company" for history purposes only — the
+// company profile is a single record, never part of tree selection,
+// so it stays out of TreeNodeType itself.
+export type HistoryEntityType = TreeNodeType | "company";
+
 export interface HistoryEntry {
   id: string;
   timestamp: number;
-  entityType: TreeNodeType;
+  entityType: HistoryEntityType;
   entityId: string;
   entityLabel: string;    // name at time of change, so a later rename/delete doesn't orphan the entry
   fieldLabel: string;

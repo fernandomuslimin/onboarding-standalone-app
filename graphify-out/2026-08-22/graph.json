@@ -1302,7 +1302,7 @@
       "label": "PAGE_STYLE",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L91",
+      "source_location": "L73",
       "id": "src_onboarding_shell_page_style",
       "community": 0,
       "norm_label": "page_style"
@@ -1311,7 +1311,7 @@
       "label": "CARD",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L101",
+      "source_location": "L83",
       "id": "src_onboarding_shell_card",
       "community": 0,
       "norm_label": "card"
@@ -1320,7 +1320,7 @@
       "label": "INPUT",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L112",
+      "source_location": "L94",
       "id": "src_onboarding_shell_input",
       "community": 0,
       "norm_label": "input"
@@ -1329,7 +1329,7 @@
       "label": "LABEL",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L126",
+      "source_location": "L108",
       "id": "src_onboarding_shell_label",
       "community": 0,
       "norm_label": "label"
@@ -1338,7 +1338,7 @@
       "label": "PRIMARY_BTN",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L135",
+      "source_location": "L117",
       "id": "src_onboarding_shell_primary_btn",
       "community": 0,
       "norm_label": "primary_btn"
@@ -1347,7 +1347,7 @@
       "label": "GHOST_BTN",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L153",
+      "source_location": "L135",
       "id": "src_onboarding_shell_ghost_btn",
       "community": 0,
       "norm_label": "ghost_btn"
@@ -1356,7 +1356,7 @@
       "label": "BACK_BTN",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L171",
+      "source_location": "L153",
       "id": "src_onboarding_shell_back_btn",
       "community": 0,
       "norm_label": "back_btn"
@@ -1365,7 +1365,7 @@
       "label": "BackButton()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L188",
+      "source_location": "L170",
       "id": "src_onboarding_shell_backbutton",
       "community": 0,
       "norm_label": "backbutton()"
@@ -1374,7 +1374,7 @@
       "label": "NoGoingBackNotice()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L200",
+      "source_location": "L182",
       "id": "src_onboarding_shell_nogoingbacknotice",
       "community": 0,
       "norm_label": "nogoingbacknotice()"
@@ -1383,7 +1383,7 @@
       "label": "Product",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L213",
+      "source_location": "L195",
       "id": "src_onboarding_shell_product",
       "community": 0,
       "norm_label": "product"
@@ -1392,7 +1392,7 @@
       "label": "PackageKey",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L221",
+      "source_location": "L203",
       "id": "src_onboarding_shell_packagekey",
       "community": 0,
       "norm_label": "packagekey"
@@ -1401,7 +1401,7 @@
       "label": "PACKAGES",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L223",
+      "source_location": "L205",
       "id": "src_onboarding_shell_packages",
       "community": 0,
       "norm_label": "packages"
@@ -1410,7 +1410,7 @@
       "label": "Sender",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L229",
+      "source_location": "L211",
       "id": "src_onboarding_shell_sender",
       "community": 0,
       "norm_label": "sender"
@@ -1419,7 +1419,7 @@
       "label": "Invitee",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L235",
+      "source_location": "L217",
       "id": "src_onboarding_shell_invitee",
       "community": 0,
       "norm_label": "invitee"
@@ -1428,7 +1428,7 @@
       "label": "isValidUrl()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L241",
+      "source_location": "L223",
       "id": "src_onboarding_shell_isvalidurl",
       "community": 4,
       "norm_label": "isvalidurl()"
@@ -1437,7 +1437,7 @@
       "label": "isValidEmail()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L253",
+      "source_location": "L235",
       "id": "src_onboarding_shell_isvalidemail",
       "community": 11,
       "norm_label": "isvalidemail()"
@@ -1446,7 +1446,7 @@
       "label": "isValidDomain()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L257",
+      "source_location": "L239",
       "id": "src_onboarding_shell_isvaliddomain",
       "community": 8,
       "norm_label": "isvaliddomain()"
@@ -1455,7 +1455,7 @@
       "label": "redistributePct()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L262",
+      "source_location": "L244",
       "id": "src_onboarding_shell_redistributepct",
       "community": 0,
       "norm_label": "redistributepct()"
@@ -1464,7 +1464,7 @@
       "label": "focusStyle()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L269",
+      "source_location": "L251",
       "id": "src_onboarding_shell_focusstyle",
       "community": 4,
       "norm_label": "focusstyle()"
@@ -1473,7 +1473,7 @@
       "label": "DOMAIN_PREFIXES",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L274",
+      "source_location": "L256",
       "id": "src_onboarding_shell_domain_prefixes",
       "community": 0,
       "norm_label": "domain_prefixes"
@@ -1482,7 +1482,7 @@
       "label": "DOMAIN_SUFFIXES",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L275",
+      "source_location": "L257",
       "id": "src_onboarding_shell_domain_suffixes",
       "community": 0,
       "norm_label": "domain_suffixes"
@@ -1491,7 +1491,7 @@
       "label": "extractDomain()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L277",
+      "source_location": "L259",
       "id": "src_onboarding_shell_extractdomain",
       "community": 10,
       "norm_label": "extractdomain()"
@@ -1500,7 +1500,7 @@
       "label": "extractBase()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L283",
+      "source_location": "L265",
       "id": "src_onboarding_shell_extractbase",
       "community": 13,
       "norm_label": "extractbase()"
@@ -1509,7 +1509,7 @@
       "label": "generateDomainSuggestions()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L289",
+      "source_location": "L271",
       "id": "src_onboarding_shell_generatedomainsuggestions",
       "community": 0,
       "norm_label": "generatedomainsuggestions()"
@@ -1518,7 +1518,7 @@
       "label": "AvailStatus",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L303",
+      "source_location": "L285",
       "id": "src_onboarding_shell_availstatus",
       "community": 0,
       "norm_label": "availstatus"
@@ -1527,7 +1527,7 @@
       "label": "getMailboxesForDomain()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L305",
+      "source_location": "L287",
       "id": "src_onboarding_shell_getmailboxesfordomain",
       "community": 0,
       "norm_label": "getmailboxesfordomain()"
@@ -1536,7 +1536,7 @@
       "label": "Spinner()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L318",
+      "source_location": "L300",
       "id": "src_onboarding_shell_spinner",
       "community": 0,
       "norm_label": "spinner()"
@@ -1545,7 +1545,7 @@
       "label": "StepIcon()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L329",
+      "source_location": "L311",
       "id": "src_onboarding_shell_stepicon",
       "community": 0,
       "norm_label": "stepicon()"
@@ -1554,7 +1554,7 @@
       "label": "PageChrome()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L337",
+      "source_location": "L319",
       "id": "src_onboarding_shell_pagechrome",
       "community": 0,
       "norm_label": "pagechrome()"
@@ -1563,7 +1563,7 @@
       "label": "PHASES",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L352",
+      "source_location": "L334",
       "id": "src_onboarding_shell_phases",
       "community": 0,
       "norm_label": "phases"
@@ -1572,34 +1572,25 @@
       "label": "PhaseStepper()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L359",
+      "source_location": "L341",
       "id": "src_onboarding_shell_phasestepper",
       "community": 0,
       "norm_label": "phasestepper()"
     },
     {
-      "label": "HERO_TILES",
+      "label": "WELCOME_ITEMS",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L394",
-      "id": "src_onboarding_shell_hero_tiles",
+      "source_location": "L372",
+      "id": "src_onboarding_shell_welcome_items",
       "community": 0,
-      "norm_label": "hero_tiles"
-    },
-    {
-      "label": "Ripple",
-      "file_type": "code",
-      "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L415",
-      "id": "src_onboarding_shell_ripple",
-      "community": 0,
-      "norm_label": "ripple"
+      "norm_label": "welcome_items"
     },
     {
       "label": "StepBrandWelcome()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L417",
+      "source_location": "L395",
       "id": "src_onboarding_shell_stepbrandwelcome",
       "community": 0,
       "norm_label": "stepbrandwelcome()"
@@ -1608,7 +1599,7 @@
       "label": "INFRA_INTRO_BULLETS",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L524",
+      "source_location": "L444",
       "id": "src_onboarding_shell_infra_intro_bullets",
       "community": 0,
       "norm_label": "infra_intro_bullets"
@@ -1617,7 +1608,7 @@
       "label": "StepInfraIntro()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L530",
+      "source_location": "L450",
       "id": "src_onboarding_shell_stepinfraintro",
       "community": 0,
       "norm_label": "stepinfraintro()"
@@ -1626,7 +1617,7 @@
       "label": "StepWebsite()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L558",
+      "source_location": "L478",
       "id": "src_onboarding_shell_stepwebsite",
       "community": 4,
       "norm_label": "stepwebsite()"
@@ -1635,7 +1626,7 @@
       "label": "PRODUCTS_MODE_OPTIONS",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L646",
+      "source_location": "L566",
       "id": "src_onboarding_shell_products_mode_options",
       "community": 0,
       "norm_label": "products_mode_options"
@@ -1644,7 +1635,7 @@
       "label": "StepProducts()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L651",
+      "source_location": "L571",
       "id": "src_onboarding_shell_stepproducts",
       "community": 4,
       "norm_label": "stepproducts()"
@@ -1653,7 +1644,7 @@
       "label": "StepResearchSummary()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L884",
+      "source_location": "L804",
       "id": "src_onboarding_shell_stepresearchsummary",
       "community": 10,
       "norm_label": "stepresearchsummary()"
@@ -1662,7 +1653,7 @@
       "label": "StepStartingResearch()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L954",
+      "source_location": "L874",
       "id": "src_onboarding_shell_stepstartingresearch",
       "community": 0,
       "norm_label": "stepstartingresearch()"
@@ -1671,7 +1662,7 @@
       "label": "StepPrimaryDomain()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L993",
+      "source_location": "L913",
       "id": "src_onboarding_shell_stepprimarydomain",
       "community": 8,
       "norm_label": "stepprimarydomain()"
@@ -1680,7 +1671,7 @@
       "label": "StepVolume()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1084",
+      "source_location": "L1004",
       "id": "src_onboarding_shell_stepvolume",
       "community": 0,
       "norm_label": "stepvolume()"
@@ -1689,7 +1680,7 @@
       "label": "StepSenders()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1118",
+      "source_location": "L1038",
       "id": "src_onboarding_shell_stepsenders",
       "community": 0,
       "norm_label": "stepsenders()"
@@ -1698,7 +1689,7 @@
       "label": "StepInfraSummary()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1260",
+      "source_location": "L1180",
       "id": "src_onboarding_shell_stepinfrasummary",
       "community": 0,
       "norm_label": "stepinfrasummary()"
@@ -1707,7 +1698,7 @@
       "label": "CONNECTIONS_INTRO_BULLETS",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1306",
+      "source_location": "L1226",
       "id": "src_onboarding_shell_connections_intro_bullets",
       "community": 0,
       "norm_label": "connections_intro_bullets"
@@ -1716,7 +1707,7 @@
       "label": "StepConnectionsIntro()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1313",
+      "source_location": "L1233",
       "id": "src_onboarding_shell_stepconnectionsintro",
       "community": 0,
       "norm_label": "stepconnectionsintro()"
@@ -1725,7 +1716,7 @@
       "label": "StepConnect()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1341",
+      "source_location": "L1261",
       "id": "src_onboarding_shell_stepconnect",
       "community": 4,
       "norm_label": "stepconnect()"
@@ -1734,7 +1725,7 @@
       "label": "StepConnectLinkedIn()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1404",
+      "source_location": "L1324",
       "id": "src_onboarding_shell_stepconnectlinkedin",
       "community": 0,
       "norm_label": "stepconnectlinkedin()"
@@ -1743,7 +1734,7 @@
       "label": "StepConnectCalendar()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1455",
+      "source_location": "L1375",
       "id": "src_onboarding_shell_stepconnectcalendar",
       "community": 0,
       "norm_label": "stepconnectcalendar()"
@@ -1752,7 +1743,7 @@
       "label": "INVITE_ROLES",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1524",
+      "source_location": "L1444",
       "id": "src_onboarding_shell_invite_roles",
       "community": 0,
       "norm_label": "invite_roles"
@@ -1761,7 +1752,7 @@
       "label": "StepInvite()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1530",
+      "source_location": "L1450",
       "id": "src_onboarding_shell_stepinvite",
       "community": 11,
       "norm_label": "stepinvite()"
@@ -1770,7 +1761,7 @@
       "label": "StepConnectionsSummary()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1633",
+      "source_location": "L1553",
       "id": "src_onboarding_shell_stepconnectionssummary",
       "community": 0,
       "norm_label": "stepconnectionssummary()"
@@ -1779,7 +1770,7 @@
       "label": "REVIEW_INTRO_BULLETS",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1677",
+      "source_location": "L1597",
       "id": "src_onboarding_shell_review_intro_bullets",
       "community": 0,
       "norm_label": "review_intro_bullets"
@@ -1788,7 +1779,7 @@
       "label": "StepReviewIntro()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1683",
+      "source_location": "L1603",
       "id": "src_onboarding_shell_stepreviewintro",
       "community": 0,
       "norm_label": "stepreviewintro()"
@@ -1797,7 +1788,7 @@
       "label": "StepReviewOrder()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1713",
+      "source_location": "L1633",
       "id": "src_onboarding_shell_steprevieworder",
       "community": 13,
       "norm_label": "steprevieworder()"
@@ -1806,7 +1797,7 @@
       "label": "RESEARCH_ITEMS",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1808",
+      "source_location": "L1728",
       "id": "src_onboarding_shell_research_items",
       "community": 0,
       "norm_label": "research_items"
@@ -1815,7 +1806,7 @@
       "label": "StepResearch()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1816",
+      "source_location": "L1736",
       "id": "src_onboarding_shell_stepresearch",
       "community": 4,
       "norm_label": "stepresearch()"
@@ -1824,7 +1815,7 @@
       "label": "ResearchSectionCard()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1869",
+      "source_location": "L1789",
       "id": "src_onboarding_shell_researchsectioncard",
       "community": 0,
       "norm_label": "researchsectioncard()"
@@ -1833,16 +1824,52 @@
       "label": "BulletList()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1885",
+      "source_location": "L1804",
       "id": "src_onboarding_shell_bulletlist",
       "community": 0,
       "norm_label": "bulletlist()"
     },
     {
+      "label": "SecondaryAccordion()",
+      "file_type": "code",
+      "source_file": "src/onboarding-shell.tsx",
+      "source_location": "L1824",
+      "id": "src_onboarding_shell_secondaryaccordion",
+      "community": 0,
+      "norm_label": "secondaryaccordion()"
+    },
+    {
+      "label": "EditableText()",
+      "file_type": "code",
+      "source_file": "src/onboarding-shell.tsx",
+      "source_location": "L1852",
+      "id": "src_onboarding_shell_editabletext",
+      "community": 0,
+      "norm_label": "editabletext()"
+    },
+    {
+      "label": "EditableBulletList()",
+      "file_type": "code",
+      "source_file": "src/onboarding-shell.tsx",
+      "source_location": "L1949",
+      "id": "src_onboarding_shell_editablebulletlist",
+      "community": 0,
+      "norm_label": "editablebulletlist()"
+    },
+    {
+      "label": "AIRevise()",
+      "file_type": "code",
+      "source_file": "src/onboarding-shell.tsx",
+      "source_location": "L1982",
+      "id": "src_onboarding_shell_airevise",
+      "community": 0,
+      "norm_label": "airevise()"
+    },
+    {
       "label": "firstSentence()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1900",
+      "source_location": "L2038",
       "id": "src_onboarding_shell_firstsentence",
       "community": 5,
       "norm_label": "firstsentence()"
@@ -1851,7 +1878,7 @@
       "label": "reviseText()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1907",
+      "source_location": "L2045",
       "id": "src_onboarding_shell_revisetext",
       "community": 5,
       "norm_label": "revisetext()"
@@ -1860,16 +1887,52 @@
       "label": "titleCase()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1917",
+      "source_location": "L2055",
       "id": "src_onboarding_shell_titlecase",
       "community": 5,
       "norm_label": "titlecase()"
     },
     {
+      "label": "WhatYouSellBundle",
+      "file_type": "code",
+      "source_file": "src/onboarding-shell.tsx",
+      "source_location": "L2061",
+      "id": "src_onboarding_shell_whatyousellbundle",
+      "community": 0,
+      "norm_label": "whatyousellbundle"
+    },
+    {
+      "label": "reviseWhatYouSellBundle()",
+      "file_type": "code",
+      "source_file": "src/onboarding-shell.tsx",
+      "source_location": "L2062",
+      "id": "src_onboarding_shell_revisewhatyousellbundle",
+      "community": 5,
+      "norm_label": "revisewhatyousellbundle()"
+    },
+    {
+      "label": "ProofBundle",
+      "file_type": "code",
+      "source_file": "src/onboarding-shell.tsx",
+      "source_location": "L2070",
+      "id": "src_onboarding_shell_proofbundle",
+      "community": 0,
+      "norm_label": "proofbundle"
+    },
+    {
+      "label": "reviseProofBundle()",
+      "file_type": "code",
+      "source_file": "src/onboarding-shell.tsx",
+      "source_location": "L2071",
+      "id": "src_onboarding_shell_reviseproofbundle",
+      "community": 5,
+      "norm_label": "reviseproofbundle()"
+    },
+    {
       "label": "reviseSectionContent()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1924",
+      "source_location": "L2084",
       "id": "src_onboarding_shell_revisesectioncontent",
       "community": 5,
       "norm_label": "revisesectioncontent()"
@@ -1878,7 +1941,7 @@
       "label": "reviseProductServicesBundle()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1940",
+      "source_location": "L2100",
       "id": "src_onboarding_shell_reviseproductservicesbundle",
       "community": 0,
       "norm_label": "reviseproductservicesbundle()"
@@ -1887,7 +1950,7 @@
       "label": "IcpBundle",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1957",
+      "source_location": "L2117",
       "id": "src_onboarding_shell_icpbundle",
       "community": 0,
       "norm_label": "icpbundle"
@@ -1896,7 +1959,7 @@
       "label": "reviseIcpBundle()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1958",
+      "source_location": "L2118",
       "id": "src_onboarding_shell_reviseicpbundle",
       "community": 5,
       "norm_label": "reviseicpbundle()"
@@ -1905,7 +1968,7 @@
       "label": "revisePersonasBundle()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1985",
+      "source_location": "L2145",
       "id": "src_onboarding_shell_revisepersonasbundle",
       "community": 0,
       "norm_label": "revisepersonasbundle()"
@@ -1914,7 +1977,7 @@
       "label": "CompanyResearchData",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2000",
+      "source_location": "L2160",
       "id": "src_onboarding_shell_companyresearchdata",
       "community": 0,
       "norm_label": "companyresearchdata"
@@ -1923,7 +1986,7 @@
       "label": "buildInitialCompanyResearch()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2027",
+      "source_location": "L2187",
       "id": "src_onboarding_shell_buildinitialcompanyresearch",
       "community": 0,
       "norm_label": "buildinitialcompanyresearch()"
@@ -1932,16 +1995,16 @@
       "label": "StepCompanyResearch()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2057",
+      "source_location": "L2217",
       "id": "src_onboarding_shell_stepcompanyresearch",
-      "community": 4,
+      "community": 24,
       "norm_label": "stepcompanyresearch()"
     },
     {
       "label": "PSContent",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2294",
+      "source_location": "L2423",
       "id": "src_onboarding_shell_pscontent",
       "community": 0,
       "norm_label": "pscontent"
@@ -1950,7 +2013,7 @@
       "label": "PSSection",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2295",
+      "source_location": "L2424",
       "id": "src_onboarding_shell_pssection",
       "community": 0,
       "norm_label": "pssection"
@@ -1959,7 +2022,7 @@
       "label": "PSField()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2297",
+      "source_location": "L2426",
       "id": "src_onboarding_shell_psfield",
       "community": 0,
       "norm_label": "psfield()"
@@ -1968,7 +2031,7 @@
       "label": "PSProductState",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2319",
+      "source_location": "L2448",
       "id": "src_onboarding_shell_psproductstate",
       "community": 0,
       "norm_label": "psproductstate"
@@ -1977,7 +2040,7 @@
       "label": "buildInitialPSProduct()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2321",
+      "source_location": "L2450",
       "id": "src_onboarding_shell_buildinitialpsproduct",
       "community": 28,
       "norm_label": "buildinitialpsproduct()"
@@ -1986,7 +2049,7 @@
       "label": "PersonaData",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2360",
+      "source_location": "L2489",
       "id": "src_onboarding_shell_personadata",
       "community": 0,
       "norm_label": "personadata"
@@ -1995,7 +2058,7 @@
       "label": "PERSONAS_DEFAULT",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2369",
+      "source_location": "L2498",
       "id": "src_onboarding_shell_personas_default",
       "community": 0,
       "norm_label": "personas_default"
@@ -2004,7 +2067,7 @@
       "label": "CampaignStep",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2438",
+      "source_location": "L2567",
       "id": "src_onboarding_shell_campaignstep",
       "community": 0,
       "norm_label": "campaignstep"
@@ -2013,7 +2076,7 @@
       "label": "Campaign",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2439",
+      "source_location": "L2568",
       "id": "src_onboarding_shell_campaign",
       "community": 0,
       "norm_label": "campaign"
@@ -2022,7 +2085,7 @@
       "label": "CAMPAIGNS",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2441",
+      "source_location": "L2570",
       "id": "src_onboarding_shell_campaigns",
       "community": 0,
       "norm_label": "campaigns"
@@ -2031,7 +2094,7 @@
       "label": "ChannelIcon()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2486",
+      "source_location": "L2615",
       "id": "src_onboarding_shell_channelicon",
       "community": 0,
       "norm_label": "channelicon()"
@@ -2040,7 +2103,7 @@
       "label": "StepCardContent()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2501",
+      "source_location": "L2630",
       "id": "src_onboarding_shell_stepcardcontent",
       "community": 0,
       "norm_label": "stepcardcontent()"
@@ -2049,7 +2112,7 @@
       "label": "StepOutreachCampaign()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2515",
+      "source_location": "L2644",
       "id": "src_onboarding_shell_stepoutreachcampaign",
       "community": 4,
       "norm_label": "stepoutreachcampaign()"
@@ -2058,7 +2121,7 @@
       "label": "StepAllSet()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2742",
+      "source_location": "L2871",
       "id": "src_onboarding_shell_stepallset",
       "community": 0,
       "norm_label": "stepallset()"
@@ -2067,7 +2130,7 @@
       "label": "LaunchTimelineItem",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2763",
+      "source_location": "L2892",
       "id": "src_onboarding_shell_launchtimelineitem",
       "community": 0,
       "norm_label": "launchtimelineitem"
@@ -2076,7 +2139,7 @@
       "label": "LAUNCH_TIMELINE",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2765",
+      "source_location": "L2894",
       "id": "src_onboarding_shell_launch_timeline",
       "community": 0,
       "norm_label": "launch_timeline"
@@ -2085,16 +2148,16 @@
       "label": "StepClearedForLaunch()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2774",
+      "source_location": "L2903",
       "id": "src_onboarding_shell_stepclearedforlaunch",
-      "community": 4,
+      "community": 1,
       "norm_label": "stepclearedforlaunch()"
     },
     {
       "label": "Recommendation",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2815",
+      "source_location": "L2944",
       "id": "src_onboarding_shell_recommendation",
       "community": 0,
       "norm_label": "recommendation"
@@ -2103,16 +2166,34 @@
       "label": "RECOMMENDATION_BADGE",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2816",
+      "source_location": "L2945",
       "id": "src_onboarding_shell_recommendation_badge",
       "community": 0,
       "norm_label": "recommendation_badge"
     },
     {
+      "label": "RECOMMENDATION_ORDER",
+      "file_type": "code",
+      "source_file": "src/onboarding-shell.tsx",
+      "source_location": "L2950",
+      "id": "src_onboarding_shell_recommendation_order",
+      "community": 0,
+      "norm_label": "recommendation_order"
+    },
+    {
+      "label": "nextRecommendation()",
+      "file_type": "code",
+      "source_file": "src/onboarding-shell.tsx",
+      "source_location": "L2951",
+      "id": "src_onboarding_shell_nextrecommendation",
+      "community": 0,
+      "norm_label": "nextrecommendation()"
+    },
+    {
       "label": "IcpCandidate",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2833",
+      "source_location": "L2964",
       "id": "src_onboarding_shell_icpcandidate",
       "community": 0,
       "norm_label": "icpcandidate"
@@ -2121,7 +2202,7 @@
       "label": "ICP_CANDIDATES_DEFAULT",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2858",
+      "source_location": "L2989",
       "id": "src_onboarding_shell_icp_candidates_default",
       "community": 0,
       "norm_label": "icp_candidates_default"
@@ -2130,7 +2211,7 @@
       "label": "SECTION_ICON_PATH",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2928",
+      "source_location": "L3059",
       "id": "src_onboarding_shell_section_icon_path",
       "community": 0,
       "norm_label": "section_icon_path"
@@ -2139,7 +2220,7 @@
       "label": "SectionIcon()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2951",
+      "source_location": "L3082",
       "id": "src_onboarding_shell_sectionicon",
       "community": 0,
       "norm_label": "sectionicon()"
@@ -2148,7 +2229,7 @@
       "label": "CollapsibleReviewSection()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2959",
+      "source_location": "L3090",
       "id": "src_onboarding_shell_collapsiblereviewsection",
       "community": 0,
       "norm_label": "collapsiblereviewsection()"
@@ -2157,7 +2238,7 @@
       "label": "ProductServicesPanel()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3029",
+      "source_location": "L3160",
       "id": "src_onboarding_shell_productservicespanel",
       "community": 0,
       "norm_label": "productservicespanel()"
@@ -2166,7 +2247,7 @@
       "label": "IcpCandidateCard()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3080",
+      "source_location": "L3211",
       "id": "src_onboarding_shell_icpcandidatecard",
       "community": 0,
       "norm_label": "icpcandidatecard()"
@@ -2175,7 +2256,7 @@
       "label": "IcpPanel()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3172",
+      "source_location": "L3308",
       "id": "src_onboarding_shell_icppanel",
       "community": 0,
       "norm_label": "icppanel()"
@@ -2184,7 +2265,7 @@
       "label": "PersonasPanel()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3197",
+      "source_location": "L3337",
       "id": "src_onboarding_shell_personaspanel",
       "community": 0,
       "norm_label": "personaspanel()"
@@ -2193,7 +2274,7 @@
       "label": "ReviewSectionKey",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3296",
+      "source_location": "L3437",
       "id": "src_onboarding_shell_reviewsectionkey",
       "community": 0,
       "norm_label": "reviewsectionkey"
@@ -2202,7 +2283,7 @@
       "label": "REVIEW_SECTION_ORDER",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3297",
+      "source_location": "L3438",
       "id": "src_onboarding_shell_review_section_order",
       "community": 0,
       "norm_label": "review_section_order"
@@ -2211,7 +2292,7 @@
       "label": "nextReviewSection()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3298",
+      "source_location": "L3439",
       "id": "src_onboarding_shell_nextreviewsection",
       "community": 0,
       "norm_label": "nextreviewsection()"
@@ -2220,7 +2301,7 @@
       "label": "ProductReviewState",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3303",
+      "source_location": "L3444",
       "id": "src_onboarding_shell_productreviewstate",
       "community": 0,
       "norm_label": "productreviewstate"
@@ -2229,7 +2310,7 @@
       "label": "buildInitialProductReview()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3313",
+      "source_location": "L3454",
       "id": "src_onboarding_shell_buildinitialproductreview",
       "community": 28,
       "norm_label": "buildinitialproductreview()"
@@ -2238,7 +2319,7 @@
       "label": "REVIEW_SECTION_LABEL",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3325",
+      "source_location": "L3466",
       "id": "src_onboarding_shell_review_section_label",
       "community": 0,
       "norm_label": "review_section_label"
@@ -2247,7 +2328,7 @@
       "label": "SectionProgressBar()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3327",
+      "source_location": "L3468",
       "id": "src_onboarding_shell_sectionprogressbar",
       "community": 0,
       "norm_label": "sectionprogressbar()"
@@ -2256,16 +2337,16 @@
       "label": "StepProductReview()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3347",
+      "source_location": "L3488",
       "id": "src_onboarding_shell_stepproductreview",
-      "community": 4,
+      "community": 24,
       "norm_label": "stepproductreview()"
     },
     {
       "label": "StepName",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3656",
+      "source_location": "L3791",
       "id": "src_onboarding_shell_stepname",
       "community": 0,
       "norm_label": "stepname"
@@ -2274,7 +2355,7 @@
       "label": "STEP_ORDER",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3663",
+      "source_location": "L3798",
       "id": "src_onboarding_shell_step_order",
       "community": 0,
       "norm_label": "step_order"
@@ -2283,7 +2364,7 @@
       "label": "ALL_STEPS",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3670",
+      "source_location": "L3805",
       "id": "src_onboarding_shell_all_steps",
       "community": 0,
       "norm_label": "all_steps"
@@ -2292,7 +2373,7 @@
       "label": "RESUME_THRESHOLD",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3682",
+      "source_location": "L3817",
       "id": "src_onboarding_shell_resume_threshold",
       "community": 0,
       "norm_label": "resume_threshold"
@@ -2301,7 +2382,7 @@
       "label": "OnboardingDraft",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3684",
+      "source_location": "L3819",
       "id": "src_onboarding_shell_onboardingdraft",
       "community": 0,
       "norm_label": "onboardingdraft"
@@ -2310,7 +2391,7 @@
       "label": "loadDraft()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3702",
+      "source_location": "L3837",
       "id": "src_onboarding_shell_loaddraft",
       "community": 0,
       "norm_label": "loaddraft()"
@@ -2319,7 +2400,7 @@
       "label": "saveDraft()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3711",
+      "source_location": "L3846",
       "id": "src_onboarding_shell_savedraft",
       "community": 0,
       "norm_label": "savedraft()"
@@ -2328,7 +2409,7 @@
       "label": "clearDraft()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3714",
+      "source_location": "L3849",
       "id": "src_onboarding_shell_cleardraft",
       "community": 0,
       "norm_label": "cleardraft()"
@@ -2337,7 +2418,7 @@
       "label": "lastPhaseLabel()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3719",
+      "source_location": "L3854",
       "id": "src_onboarding_shell_lastphaselabel",
       "community": 9,
       "norm_label": "lastphaselabel()"
@@ -2346,7 +2427,7 @@
       "label": "timeAgo()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3729",
+      "source_location": "L3864",
       "id": "src_onboarding_shell_timeago",
       "community": 9,
       "norm_label": "timeago()"
@@ -2355,7 +2436,7 @@
       "label": "StepResume()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3738",
+      "source_location": "L3873",
       "id": "src_onboarding_shell_stepresume",
       "community": 9,
       "norm_label": "stepresume()"
@@ -2364,7 +2445,7 @@
       "label": "OnboardingShell()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3757",
+      "source_location": "L3892",
       "id": "src_onboarding_shell_onboardingshell",
       "community": 4,
       "norm_label": "onboardingshell()"
@@ -2429,7 +2510,7 @@
       "source_file": "src/copilot/CopilotContext.tsx",
       "source_location": "L73",
       "id": "copilot_copilotcontext_usecopilot",
-      "community": 21,
+      "community": 24,
       "norm_label": "usecopilot()"
     },
     {
@@ -2438,7 +2519,7 @@
       "source_file": "src/copilot/CopilotContext.tsx",
       "source_location": "L82",
       "id": "copilot_copilotcontext_useregistercopilotadapter",
-      "community": 4,
+      "community": 24,
       "norm_label": "useregistercopilotadapter()"
     },
     {
@@ -2492,7 +2573,7 @@
       "source_file": "src/copilot/Referenceable.tsx",
       "source_location": "L1",
       "id": "src_copilot_referenceable_tsx",
-      "community": 21,
+      "community": 32,
       "norm_label": "referenceable.tsx"
     },
     {
@@ -2501,25 +2582,25 @@
       "source_file": "src/copilot/Referenceable.tsx",
       "source_location": "L20",
       "id": "copilot_referenceable_referenceablebase",
-      "community": 21,
+      "community": 24,
       "norm_label": "referenceablebase()"
     },
     {
       "label": "ReferenceableSection()",
       "file_type": "code",
       "source_file": "src/copilot/Referenceable.tsx",
-      "source_location": "L61",
+      "source_location": "L60",
       "id": "copilot_referenceable_referenceablesection",
-      "community": 21,
+      "community": 32,
       "norm_label": "referenceablesection()"
     },
     {
       "label": "ReferenceableField()",
       "file_type": "code",
       "source_file": "src/copilot/Referenceable.tsx",
-      "source_location": "L65",
+      "source_location": "L64",
       "id": "copilot_referenceable_referenceablefield",
-      "community": 21,
+      "community": 32,
       "norm_label": "referenceablefield()"
     },
     {
@@ -2528,7 +2609,7 @@
       "source_file": "src/copilot/CopilotWidget.tsx",
       "source_location": "L1",
       "id": "src_copilot_copilotwidget_tsx",
-      "community": 21,
+      "community": 24,
       "norm_label": "copilotwidget.tsx"
     },
     {
@@ -2537,7 +2618,7 @@
       "source_file": "src/copilot/CopilotWidget.tsx",
       "source_location": "L6",
       "id": "copilot_copilotwidget_message",
-      "community": 21,
+      "community": 24,
       "norm_label": "message"
     },
     {
@@ -2546,7 +2627,7 @@
       "source_file": "src/copilot/CopilotWidget.tsx",
       "source_location": "L17",
       "id": "copilot_copilotwidget_copilotwidget",
-      "community": 21,
+      "community": 24,
       "norm_label": "copilotwidget()"
     },
     {
@@ -2654,7 +2735,7 @@
       "source_file": "src/knowledge-center/data.ts",
       "source_location": "L39",
       "id": "knowledge_center_data_companyprofile",
-      "community": 33,
+      "community": 21,
       "norm_label": "companyprofile"
     },
     {
@@ -2672,7 +2753,7 @@
       "source_file": "src/knowledge-center/data.ts",
       "source_location": "L73",
       "id": "knowledge_center_data_company_profile",
-      "community": 33,
+      "community": 21,
       "norm_label": "company_profile"
     },
     {
@@ -2681,7 +2762,7 @@
       "source_file": "src/knowledge-center/data.ts",
       "source_location": "L102",
       "id": "knowledge_center_data_productfield",
-      "community": 21,
+      "community": 32,
       "norm_label": "productfield"
     },
     {
@@ -2708,7 +2789,7 @@
       "source_file": "src/knowledge-center/data.ts",
       "source_location": "L230",
       "id": "knowledge_center_data_company_size_buckets",
-      "community": 21,
+      "community": 32,
       "norm_label": "company_size_buckets"
     },
     {
@@ -2717,7 +2798,7 @@
       "source_file": "src/knowledge-center/data.ts",
       "source_location": "L231",
       "id": "knowledge_center_data_funding_stage_buckets",
-      "community": 21,
+      "community": 32,
       "norm_label": "funding_stage_buckets"
     },
     {
@@ -2744,7 +2825,7 @@
       "source_file": "src/knowledge-center/data.ts",
       "source_location": "L368",
       "id": "knowledge_center_data_treenodetype",
-      "community": 24,
+      "community": 30,
       "norm_label": "treenodetype"
     },
     {
@@ -2753,7 +2834,7 @@
       "source_file": "src/knowledge-center/data.ts",
       "source_location": "L370",
       "id": "knowledge_center_data_treekey",
-      "community": 30,
+      "community": 2,
       "norm_label": "treekey()"
     },
     {
@@ -2762,7 +2843,7 @@
       "source_file": "src/knowledge-center/data.ts",
       "source_location": "L375",
       "id": "knowledge_center_data_historysource",
-      "community": 33,
+      "community": 32,
       "norm_label": "historysource"
     },
     {
@@ -2771,7 +2852,7 @@
       "source_file": "src/knowledge-center/data.ts",
       "source_location": "L380",
       "id": "knowledge_center_data_historyentitytype",
-      "community": 24,
+      "community": 33,
       "norm_label": "historyentitytype"
     },
     {
@@ -2780,7 +2861,7 @@
       "source_file": "src/knowledge-center/data.ts",
       "source_location": "L382",
       "id": "knowledge_center_data_historyentry",
-      "community": 24,
+      "community": 33,
       "norm_label": "historyentry"
     },
     {
@@ -2789,7 +2870,7 @@
       "source_file": "src/knowledge-center/data.ts",
       "source_location": "L395",
       "id": "knowledge_center_data_icpsforproduct",
-      "community": 30,
+      "community": 2,
       "norm_label": "icpsforproduct()"
     },
     {
@@ -2798,7 +2879,7 @@
       "source_file": "src/knowledge-center/data.ts",
       "source_location": "L399",
       "id": "knowledge_center_data_personasforicp",
-      "community": 30,
+      "community": 2,
       "norm_label": "personasforicp()"
     },
     {
@@ -2807,7 +2888,7 @@
       "source_file": "src/knowledge-center/data.ts",
       "source_location": "L404",
       "id": "knowledge_center_data_personafield",
-      "community": 21,
+      "community": 36,
       "norm_label": "personafield"
     },
     {
@@ -2888,7 +2969,7 @@
       "source_file": "src/knowledge-center/data.ts",
       "source_location": "L1058",
       "id": "knowledge_center_data_campaigncombosforpersona",
-      "community": 33,
+      "community": 30,
       "norm_label": "campaigncombosforpersona()"
     },
     {
@@ -2897,7 +2978,7 @@
       "source_file": "src/knowledge-center/data.ts",
       "source_location": "L1062",
       "id": "knowledge_center_data_personaperformance",
-      "community": 33,
+      "community": 30,
       "norm_label": "personaperformance()"
     },
     {
@@ -3041,7 +3122,7 @@
       "source_file": "src/knowledge-center/Explorer.tsx",
       "source_location": "L1",
       "id": "src_knowledge_center_explorer_tsx",
-      "community": 24,
+      "community": 33,
       "norm_label": "explorer.tsx"
     },
     {
@@ -3050,43 +3131,34 @@
       "source_file": "src/knowledge-center/Explorer.tsx",
       "source_location": "L18",
       "id": "knowledge_center_explorer_icp_text_fields",
-      "community": 24,
+      "community": 33,
       "norm_label": "icp_text_fields"
-    },
-    {
-      "label": "ICP_LIST_FIELDS",
-      "file_type": "code",
-      "source_file": "src/knowledge-center/Explorer.tsx",
-      "source_location": "L34",
-      "id": "knowledge_center_explorer_icp_list_fields",
-      "community": 24,
-      "norm_label": "icp_list_fields"
     },
     {
       "label": "ExplorerView",
       "file_type": "code",
       "source_file": "src/knowledge-center/Explorer.tsx",
-      "source_location": "L47",
+      "source_location": "L30",
       "id": "knowledge_center_explorer_explorerview",
-      "community": 24,
+      "community": 33,
       "norm_label": "explorerview"
     },
     {
       "label": "VIEWS",
       "file_type": "code",
       "source_file": "src/knowledge-center/Explorer.tsx",
-      "source_location": "L49",
+      "source_location": "L32",
       "id": "knowledge_center_explorer_views",
-      "community": 24,
+      "community": 33,
       "norm_label": "views"
     },
     {
       "label": "Explorer()",
       "file_type": "code",
       "source_file": "src/knowledge-center/Explorer.tsx",
-      "source_location": "L55",
+      "source_location": "L38",
       "id": "knowledge_center_explorer_explorer",
-      "community": 30,
+      "community": 2,
       "norm_label": "explorer()"
     },
     {
@@ -3095,7 +3167,7 @@
       "source_file": "src/knowledge-center/Dashboard.tsx",
       "source_location": "L1",
       "id": "src_knowledge_center_dashboard_tsx",
-      "community": 33,
+      "community": 30,
       "norm_label": "dashboard.tsx"
     },
     {
@@ -3104,7 +3176,7 @@
       "source_file": "src/knowledge-center/Dashboard.tsx",
       "source_location": "L11",
       "id": "knowledge_center_dashboard_tier",
-      "community": 33,
+      "community": 30,
       "norm_label": "tier"
     },
     {
@@ -3113,7 +3185,7 @@
       "source_file": "src/knowledge-center/Dashboard.tsx",
       "source_location": "L16",
       "id": "knowledge_center_dashboard_tier_share",
-      "community": 33,
+      "community": 30,
       "norm_label": "tier_share"
     },
     {
@@ -3122,7 +3194,7 @@
       "source_file": "src/knowledge-center/Dashboard.tsx",
       "source_location": "L23",
       "id": "knowledge_center_dashboard_tier_meta",
-      "community": 33,
+      "community": 30,
       "norm_label": "tier_meta"
     },
     {
@@ -3131,7 +3203,7 @@
       "source_file": "src/knowledge-center/Dashboard.tsx",
       "source_location": "L29",
       "id": "knowledge_center_dashboard_tier_order",
-      "community": 33,
+      "community": 30,
       "norm_label": "tier_order"
     },
     {
@@ -3140,7 +3212,7 @@
       "source_file": "src/knowledge-center/Dashboard.tsx",
       "source_location": "L31",
       "id": "knowledge_center_dashboard_tierfor",
-      "community": 33,
+      "community": 30,
       "norm_label": "tierfor()"
     },
     {
@@ -3158,7 +3230,7 @@
       "source_file": "src/knowledge-center/Dashboard.tsx",
       "source_location": "L48",
       "id": "knowledge_center_dashboard_tierchip",
-      "community": 33,
+      "community": 30,
       "norm_label": "tierchip()"
     },
     {
@@ -3167,7 +3239,7 @@
       "source_file": "src/knowledge-center/Dashboard.tsx",
       "source_location": "L64",
       "id": "knowledge_center_dashboard_performancecard",
-      "community": 33,
+      "community": 30,
       "norm_label": "performancecard()"
     },
     {
@@ -3176,7 +3248,7 @@
       "source_file": "src/knowledge-center/Dashboard.tsx",
       "source_location": "L90",
       "id": "knowledge_center_dashboard_knowledgedashboard",
-      "community": 33,
+      "community": 30,
       "norm_label": "knowledgedashboard()"
     },
     {
@@ -3185,7 +3257,7 @@
       "source_file": "src/knowledge-center/ProductDetailPane.tsx",
       "source_location": "L1",
       "id": "src_knowledge_center_productdetailpane_tsx",
-      "community": 21,
+      "community": 32,
       "norm_label": "productdetailpane.tsx"
     },
     {
@@ -3194,7 +3266,7 @@
       "source_file": "src/knowledge-center/ProductDetailPane.tsx",
       "source_location": "L6",
       "id": "knowledge_center_productdetailpane_emptyproduct",
-      "community": 24,
+      "community": 33,
       "norm_label": "emptyproduct()"
     },
     {
@@ -3203,7 +3275,7 @@
       "source_file": "src/knowledge-center/ProductDetailPane.tsx",
       "source_location": "L10",
       "id": "knowledge_center_productdetailpane_logfield",
-      "community": 21,
+      "community": 32,
       "norm_label": "logfield"
     },
     {
@@ -3212,7 +3284,7 @@
       "source_file": "src/knowledge-center/ProductDetailPane.tsx",
       "source_location": "L12",
       "id": "knowledge_center_productdetailpane_productcard",
-      "community": 21,
+      "community": 32,
       "norm_label": "productcard()"
     },
     {
@@ -3221,7 +3293,7 @@
       "source_file": "src/knowledge-center/ProductDetailPane.tsx",
       "source_location": "L43",
       "id": "knowledge_center_productdetailpane_productdetailpane",
-      "community": 24,
+      "community": 32,
       "norm_label": "productdetailpane()"
     },
     {
@@ -3275,124 +3347,151 @@
       "source_file": "src/knowledge-center/Overview.tsx",
       "source_location": "L1",
       "id": "src_knowledge_center_overview_tsx",
-      "community": 30,
+      "community": 2,
       "norm_label": "overview.tsx"
     },
     {
       "label": "LogField",
       "file_type": "code",
       "source_file": "src/knowledge-center/Overview.tsx",
-      "source_location": "L9",
+      "source_location": "L8",
       "id": "knowledge_center_overview_logfield",
-      "community": 30,
+      "community": 2,
       "norm_label": "logfield"
     },
     {
       "label": "PROSE",
       "file_type": "code",
       "source_file": "src/knowledge-center/Overview.tsx",
-      "source_location": "L11",
+      "source_location": "L10",
       "id": "knowledge_center_overview_prose",
-      "community": 30,
+      "community": 2,
       "norm_label": "prose"
     },
     {
       "label": "LabeledField",
       "file_type": "code",
       "source_file": "src/knowledge-center/Overview.tsx",
-      "source_location": "L13",
+      "source_location": "L12",
       "id": "knowledge_center_overview_labeledfield",
-      "community": 30,
+      "community": 2,
       "norm_label": "labeledfield"
     },
     {
       "label": "fieldValue()",
       "file_type": "code",
       "source_file": "src/knowledge-center/Overview.tsx",
-      "source_location": "L15",
+      "source_location": "L14",
       "id": "knowledge_center_overview_fieldvalue",
-      "community": 30,
+      "community": 2,
       "norm_label": "fieldvalue()"
     },
     {
       "label": "fieldConfidence()",
       "file_type": "code",
       "source_file": "src/knowledge-center/Overview.tsx",
-      "source_location": "L18",
+      "source_location": "L17",
       "id": "knowledge_center_overview_fieldconfidence",
-      "community": 30,
+      "community": 2,
       "norm_label": "fieldconfidence()"
     },
     {
       "label": "fieldList()",
       "file_type": "code",
       "source_file": "src/knowledge-center/Overview.tsx",
-      "source_location": "L21",
+      "source_location": "L20",
       "id": "knowledge_center_overview_fieldlist",
-      "community": 30,
+      "community": 2,
       "norm_label": "fieldlist()"
     },
     {
       "label": "ProductPillRow()",
       "file_type": "code",
       "source_file": "src/knowledge-center/Overview.tsx",
-      "source_location": "L26",
+      "source_location": "L25",
       "id": "knowledge_center_overview_productpillrow",
-      "community": 30,
+      "community": 2,
       "norm_label": "productpillrow()"
     },
     {
       "label": "SectionHeaderRow()",
       "file_type": "code",
       "source_file": "src/knowledge-center/Overview.tsx",
-      "source_location": "L61",
+      "source_location": "L60",
       "id": "knowledge_center_overview_sectionheaderrow",
-      "community": 30,
+      "community": 2,
       "norm_label": "sectionheaderrow()"
     },
     {
       "label": "ProductSummaryCard()",
       "file_type": "code",
       "source_file": "src/knowledge-center/Overview.tsx",
-      "source_location": "L81",
+      "source_location": "L80",
       "id": "knowledge_center_overview_productsummarycard",
-      "community": 30,
+      "community": 2,
       "norm_label": "productsummarycard()"
     },
     {
       "label": "PersonaMiniSummary()",
       "file_type": "code",
       "source_file": "src/knowledge-center/Overview.tsx",
-      "source_location": "L217",
+      "source_location": "L204",
       "id": "knowledge_center_overview_personaminisummary",
-      "community": 30,
+      "community": 2,
       "norm_label": "personaminisummary()"
     },
     {
       "label": "PersonaGroup()",
       "file_type": "code",
       "source_file": "src/knowledge-center/Overview.tsx",
-      "source_location": "L226",
+      "source_location": "L213",
       "id": "knowledge_center_overview_personagroup",
-      "community": 30,
+      "community": 2,
       "norm_label": "personagroup()"
     },
     {
       "label": "IcpSummaryCard()",
       "file_type": "code",
       "source_file": "src/knowledge-center/Overview.tsx",
-      "source_location": "L269",
+      "source_location": "L256",
       "id": "knowledge_center_overview_icpsummarycard",
-      "community": 30,
+      "community": 2,
       "norm_label": "icpsummarycard()"
+    },
+    {
+      "label": "OverviewTab",
+      "file_type": "code",
+      "source_file": "src/knowledge-center/Overview.tsx",
+      "source_location": "L371",
+      "id": "knowledge_center_overview_overviewtab",
+      "community": 2,
+      "norm_label": "overviewtab"
+    },
+    {
+      "label": "OVERVIEW_TABS",
+      "file_type": "code",
+      "source_file": "src/knowledge-center/Overview.tsx",
+      "source_location": "L372",
+      "id": "knowledge_center_overview_overview_tabs",
+      "community": 2,
+      "norm_label": "overview_tabs"
+    },
+    {
+      "label": "OverviewTabBar()",
+      "file_type": "code",
+      "source_file": "src/knowledge-center/Overview.tsx",
+      "source_location": "L377",
+      "id": "knowledge_center_overview_overviewtabbar",
+      "community": 2,
+      "norm_label": "overviewtabbar()"
     },
     {
       "label": "KnowledgeOverview()",
       "file_type": "code",
       "source_file": "src/knowledge-center/Overview.tsx",
-      "source_location": "L401",
+      "source_location": "L396",
       "id": "knowledge_center_overview_knowledgeoverview",
-      "community": 30,
+      "community": 2,
       "norm_label": "knowledgeoverview()"
     },
     {
@@ -3401,7 +3500,7 @@
       "source_file": "src/knowledge-center/IcpDetailPane.tsx",
       "source_location": "L1",
       "id": "src_knowledge_center_icpdetailpane_tsx",
-      "community": 21,
+      "community": 32,
       "norm_label": "icpdetailpane.tsx"
     },
     {
@@ -3410,7 +3509,7 @@
       "source_file": "src/knowledge-center/IcpDetailPane.tsx",
       "source_location": "L6",
       "id": "knowledge_center_icpdetailpane_emptyicp",
-      "community": 21,
+      "community": 33,
       "norm_label": "emptyicp()"
     },
     {
@@ -3419,7 +3518,7 @@
       "source_file": "src/knowledge-center/IcpDetailPane.tsx",
       "source_location": "L18",
       "id": "knowledge_center_icpdetailpane_logfield",
-      "community": 21,
+      "community": 32,
       "norm_label": "logfield"
     },
     {
@@ -3428,7 +3527,7 @@
       "source_file": "src/knowledge-center/IcpDetailPane.tsx",
       "source_location": "L20",
       "id": "knowledge_center_icpdetailpane_percentstat",
-      "community": 21,
+      "community": 32,
       "norm_label": "percentstat()"
     },
     {
@@ -3437,7 +3536,7 @@
       "source_file": "src/knowledge-center/IcpDetailPane.tsx",
       "source_location": "L35",
       "id": "knowledge_center_icpdetailpane_icpdetailpane",
-      "community": 21,
+      "community": 33,
       "norm_label": "icpdetailpane()"
     },
     {
@@ -3446,7 +3545,7 @@
       "source_file": "src/knowledge-center/Tree.tsx",
       "source_location": "L1",
       "id": "src_knowledge_center_tree_tsx",
-      "community": 30,
+      "community": 2,
       "norm_label": "tree.tsx"
     },
     {
@@ -3455,7 +3554,7 @@
       "source_file": "src/knowledge-center/Tree.tsx",
       "source_location": "L3",
       "id": "knowledge_center_tree_treeselection",
-      "community": 24,
+      "community": 30,
       "norm_label": "treeselection"
     },
     {
@@ -3482,7 +3581,7 @@
       "source_file": "src/knowledge-center/HistoryDrawer.tsx",
       "source_location": "L1",
       "id": "src_knowledge_center_historydrawer_tsx",
-      "community": 24,
+      "community": 33,
       "norm_label": "historydrawer.tsx"
     },
     {
@@ -3491,7 +3590,7 @@
       "source_file": "src/knowledge-center/HistoryDrawer.tsx",
       "source_location": "L4",
       "id": "knowledge_center_historydrawer_entity_label",
-      "community": 24,
+      "community": 33,
       "norm_label": "entity_label"
     },
     {
@@ -3500,7 +3599,7 @@
       "source_file": "src/knowledge-center/HistoryDrawer.tsx",
       "source_location": "L6",
       "id": "knowledge_center_historydrawer_displayvalue",
-      "community": 24,
+      "community": 33,
       "norm_label": "displayvalue()"
     },
     {
@@ -3509,7 +3608,7 @@
       "source_file": "src/knowledge-center/HistoryDrawer.tsx",
       "source_location": "L10",
       "id": "knowledge_center_historydrawer_historyrow",
-      "community": 24,
+      "community": 33,
       "norm_label": "historyrow()"
     },
     {
@@ -3518,7 +3617,7 @@
       "source_file": "src/knowledge-center/HistoryDrawer.tsx",
       "source_location": "L46",
       "id": "knowledge_center_historydrawer_historydrawer",
-      "community": 24,
+      "community": 33,
       "norm_label": "historydrawer()"
     },
     {
@@ -3527,7 +3626,7 @@
       "source_file": "src/knowledge-center/PersonaDetailPane.tsx",
       "source_location": "L1",
       "id": "src_knowledge_center_personadetailpane_tsx",
-      "community": 21,
+      "community": 36,
       "norm_label": "personadetailpane.tsx"
     },
     {
@@ -3536,7 +3635,7 @@
       "source_file": "src/knowledge-center/PersonaDetailPane.tsx",
       "source_location": "L8",
       "id": "knowledge_center_personadetailpane_prose",
-      "community": 21,
+      "community": 36,
       "norm_label": "prose"
     },
     {
@@ -3545,7 +3644,7 @@
       "source_file": "src/knowledge-center/PersonaDetailPane.tsx",
       "source_location": "L10",
       "id": "knowledge_center_personadetailpane_sectionfield",
-      "community": 21,
+      "community": 36,
       "norm_label": "sectionfield()"
     },
     {
@@ -3554,7 +3653,7 @@
       "source_file": "src/knowledge-center/PersonaDetailPane.tsx",
       "source_location": "L13",
       "id": "knowledge_center_personadetailpane_sectionfieldlist",
-      "community": 21,
+      "community": 36,
       "norm_label": "sectionfieldlist()"
     },
     {
@@ -3563,7 +3662,7 @@
       "source_file": "src/knowledge-center/PersonaDetailPane.tsx",
       "source_location": "L18",
       "id": "knowledge_center_personadetailpane_section_icon",
-      "community": 21,
+      "community": 36,
       "norm_label": "section_icon"
     },
     {
@@ -3572,7 +3671,7 @@
       "source_file": "src/knowledge-center/PersonaDetailPane.tsx",
       "source_location": "L36",
       "id": "knowledge_center_personadetailpane_emptypersona",
-      "community": 24,
+      "community": 33,
       "norm_label": "emptypersona()"
     },
     {
@@ -3581,7 +3680,7 @@
       "source_file": "src/knowledge-center/PersonaDetailPane.tsx",
       "source_location": "L40",
       "id": "knowledge_center_personadetailpane_logfield",
-      "community": 21,
+      "community": 36,
       "norm_label": "logfield"
     },
     {
@@ -3590,7 +3689,7 @@
       "source_file": "src/knowledge-center/PersonaDetailPane.tsx",
       "source_location": "L42",
       "id": "knowledge_center_personadetailpane_personafieldrow",
-      "community": 21,
+      "community": 36,
       "norm_label": "personafieldrow()"
     },
     {
@@ -3599,7 +3698,7 @@
       "source_file": "src/knowledge-center/PersonaDetailPane.tsx",
       "source_location": "L61",
       "id": "knowledge_center_personadetailpane_performancesection",
-      "community": 33,
+      "community": 30,
       "norm_label": "performancesection()"
     },
     {
@@ -3608,16 +3707,16 @@
       "source_file": "src/knowledge-center/PersonaDetailPane.tsx",
       "source_location": "L101",
       "id": "knowledge_center_personadetailpane_personasummaryview",
-      "community": 21,
+      "community": 36,
       "norm_label": "personasummaryview()"
     },
     {
       "label": "PersonaDetailPane()",
       "file_type": "code",
       "source_file": "src/knowledge-center/PersonaDetailPane.tsx",
-      "source_location": "L224",
+      "source_location": "L212",
       "id": "knowledge_center_personadetailpane_personadetailpane",
-      "community": 24,
+      "community": 33,
       "norm_label": "personadetailpane()"
     },
     {
@@ -3747,37 +3846,10 @@
       "norm_label": "company_text_fields"
     },
     {
-      "label": "SYNTHESIZED_BLOCKS",
-      "file_type": "code",
-      "source_file": "src/knowledge-center/Company.tsx",
-      "source_location": "L101",
-      "id": "knowledge_center_company_synthesized_blocks",
-      "community": 21,
-      "norm_label": "synthesized_blocks"
-    },
-    {
-      "label": "COMPANY_BLOCKS",
-      "file_type": "code",
-      "source_file": "src/knowledge-center/Company.tsx",
-      "source_location": "L112",
-      "id": "knowledge_center_company_company_blocks",
-      "community": 21,
-      "norm_label": "company_blocks"
-    },
-    {
-      "label": "companyBlockId()",
-      "file_type": "code",
-      "source_file": "src/knowledge-center/Company.tsx",
-      "source_location": "L119",
-      "id": "knowledge_center_company_companyblockid",
-      "community": 21,
-      "norm_label": "companyblockid()"
-    },
-    {
       "label": "CompanySection()",
       "file_type": "code",
       "source_file": "src/knowledge-center/Company.tsx",
-      "source_location": "L121",
+      "source_location": "L94",
       "id": "knowledge_center_company_companysection",
       "community": 21,
       "norm_label": "companysection()"
@@ -3786,7 +3858,7 @@
       "label": "CompanySummary()",
       "file_type": "code",
       "source_file": "src/knowledge-center/Company.tsx",
-      "source_location": "L327",
+      "source_location": "L249",
       "id": "knowledge_center_company_companysummary",
       "community": 21,
       "norm_label": "companysummary()"
@@ -3797,7 +3869,7 @@
       "source_file": "src/knowledge-center/Diagram.tsx",
       "source_location": "L1",
       "id": "src_knowledge_center_diagram_tsx",
-      "community": 33,
+      "community": 30,
       "norm_label": "diagram.tsx"
     },
     {
@@ -3806,7 +3878,7 @@
       "source_file": "src/knowledge-center/Diagram.tsx",
       "source_location": "L7",
       "id": "knowledge_center_diagram_logfield",
-      "community": 33,
+      "community": 30,
       "norm_label": "logfield"
     },
     {
@@ -3815,7 +3887,7 @@
       "source_file": "src/knowledge-center/Diagram.tsx",
       "source_location": "L9",
       "id": "knowledge_center_diagram_branch_colors",
-      "community": 33,
+      "community": 30,
       "norm_label": "branch_colors"
     },
     {
@@ -3824,7 +3896,7 @@
       "source_file": "src/knowledge-center/Diagram.tsx",
       "source_location": "L62",
       "id": "knowledge_center_diagram_row_height",
-      "community": 33,
+      "community": 30,
       "norm_label": "row_height"
     },
     {
@@ -3833,7 +3905,7 @@
       "source_file": "src/knowledge-center/Diagram.tsx",
       "source_location": "L67",
       "id": "knowledge_center_diagram_boxshadowfor",
-      "community": 33,
+      "community": 30,
       "norm_label": "boxshadowfor()"
     },
     {
@@ -3842,7 +3914,7 @@
       "source_file": "src/knowledge-center/Diagram.tsx",
       "source_location": "L73",
       "id": "knowledge_center_diagram_activetransform",
-      "community": 33,
+      "community": 30,
       "norm_label": "activetransform()"
     },
     {
@@ -3851,7 +3923,7 @@
       "source_file": "src/knowledge-center/Diagram.tsx",
       "source_location": "L77",
       "id": "knowledge_center_diagram_avatar",
-      "community": 33,
+      "community": 30,
       "norm_label": "avatar()"
     },
     {
@@ -3860,7 +3932,7 @@
       "source_file": "src/knowledge-center/Diagram.tsx",
       "source_location": "L86",
       "id": "knowledge_center_diagram_addghost",
-      "community": 33,
+      "community": 30,
       "norm_label": "addghost()"
     },
     {
@@ -3869,7 +3941,7 @@
       "source_file": "src/knowledge-center/Diagram.tsx",
       "source_location": "L102",
       "id": "knowledge_center_diagram_productbox",
-      "community": 33,
+      "community": 30,
       "norm_label": "productbox()"
     },
     {
@@ -3878,7 +3950,7 @@
       "source_file": "src/knowledge-center/Diagram.tsx",
       "source_location": "L121",
       "id": "knowledge_center_diagram_icpbox",
-      "community": 33,
+      "community": 30,
       "norm_label": "icpbox()"
     },
     {
@@ -3887,7 +3959,7 @@
       "source_file": "src/knowledge-center/Diagram.tsx",
       "source_location": "L140",
       "id": "knowledge_center_diagram_card_tints",
-      "community": 33,
+      "community": 30,
       "norm_label": "card_tints"
     },
     {
@@ -3896,7 +3968,7 @@
       "source_file": "src/knowledge-center/Diagram.tsx",
       "source_location": "L145",
       "id": "knowledge_center_diagram_personacard",
-      "community": 33,
+      "community": 30,
       "norm_label": "personacard()"
     },
     {
@@ -3905,7 +3977,7 @@
       "source_file": "src/knowledge-center/Diagram.tsx",
       "source_location": "L201",
       "id": "knowledge_center_diagram_productnavrow",
-      "community": 33,
+      "community": 30,
       "norm_label": "productnavrow()"
     },
     {
@@ -3914,7 +3986,7 @@
       "source_file": "src/knowledge-center/Diagram.tsx",
       "source_location": "L226",
       "id": "knowledge_center_diagram_productnav",
-      "community": 33,
+      "community": 30,
       "norm_label": "productnav()"
     },
     {
@@ -3923,7 +3995,7 @@
       "source_file": "src/knowledge-center/Diagram.tsx",
       "source_location": "L258",
       "id": "knowledge_center_diagram_zoomcontrols",
-      "community": 33,
+      "community": 30,
       "norm_label": "zoomcontrols()"
     },
     {
@@ -3932,7 +4004,7 @@
       "source_file": "src/knowledge-center/Diagram.tsx",
       "source_location": "L285",
       "id": "knowledge_center_diagram_knowledgediagram",
-      "community": 33,
+      "community": 30,
       "norm_label": "knowledgediagram()"
     },
     {
@@ -3941,14 +4013,14 @@
       "source_file": "src/knowledge-center/ui.tsx",
       "source_location": "L1",
       "id": "src_knowledge_center_ui_tsx",
-      "community": 21,
+      "community": 37,
       "norm_label": "ui.tsx"
     },
     {
       "label": "IconName",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L14",
+      "source_location": "L13",
       "id": "knowledge_center_ui_iconname",
       "community": 1,
       "norm_label": "iconname"
@@ -3957,25 +4029,25 @@
       "label": "ICON_PATHS",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L21",
+      "source_location": "L20",
       "id": "knowledge_center_ui_icon_paths",
-      "community": 21,
+      "community": 37,
       "norm_label": "icon_paths"
     },
     {
       "label": "FILLED_ICONS",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L61",
+      "source_location": "L60",
       "id": "knowledge_center_ui_filled_icons",
-      "community": 21,
+      "community": 37,
       "norm_label": "filled_icons"
     },
     {
       "label": "Icon()",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L63",
+      "source_location": "L62",
       "id": "knowledge_center_ui_icon",
       "community": 1,
       "norm_label": "icon()"
@@ -3984,97 +4056,97 @@
       "label": "ConfidenceBadge()",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L79",
+      "source_location": "L78",
       "id": "knowledge_center_ui_confidencebadge",
-      "community": 21,
+      "community": 37,
       "norm_label": "confidencebadge()"
     },
     {
       "label": "MatchBadge()",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L91",
+      "source_location": "L90",
       "id": "knowledge_center_ui_matchbadge",
-      "community": 30,
+      "community": 2,
       "norm_label": "matchbadge()"
     },
     {
       "label": "ProgressBar()",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L99",
+      "source_location": "L98",
       "id": "knowledge_center_ui_progressbar",
-      "community": 21,
+      "community": 32,
       "norm_label": "progressbar()"
     },
     {
       "label": "CardSection()",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L109",
+      "source_location": "L108",
       "id": "knowledge_center_ui_cardsection",
-      "community": 21,
+      "community": 1,
       "norm_label": "cardsection()"
     },
     {
       "label": "LowConfidenceMark()",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L132",
+      "source_location": "L129",
       "id": "knowledge_center_ui_lowconfidencemark",
-      "community": 21,
+      "community": 37,
       "norm_label": "lowconfidencemark()"
     },
     {
       "label": "AccordionBlock()",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L145",
+      "source_location": "L142",
       "id": "knowledge_center_ui_accordionblock",
-      "community": 21,
+      "community": 36,
       "norm_label": "accordionblock()"
     },
     {
       "label": "formatCurrencyShort()",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L174",
+      "source_location": "L169",
       "id": "knowledge_center_ui_formatcurrencyshort",
-      "community": 33,
+      "community": 30,
       "norm_label": "formatcurrencyshort()"
     },
     {
       "label": "StatTile()",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L181",
+      "source_location": "L176",
       "id": "knowledge_center_ui_stattile",
-      "community": 33,
+      "community": 30,
       "norm_label": "stattile()"
     },
     {
       "label": "FieldLabel()",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L196",
+      "source_location": "L191",
       "id": "knowledge_center_ui_fieldlabel",
-      "community": 21,
+      "community": 37,
       "norm_label": "fieldlabel()"
     },
     {
       "label": "FieldValue()",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L206",
+      "source_location": "L201",
       "id": "knowledge_center_ui_fieldvalue",
-      "community": 21,
+      "community": 37,
       "norm_label": "fieldvalue()"
     },
     {
       "label": "EditableField()",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L224",
+      "source_location": "L219",
       "id": "knowledge_center_ui_editablefield",
       "community": 21,
       "norm_label": "editablefield()"
@@ -4083,34 +4155,34 @@
       "label": "firstSentence()",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L253",
+      "source_location": "L248",
       "id": "knowledge_center_ui_firstsentence",
-      "community": 21,
+      "community": 37,
       "norm_label": "firstsentence()"
     },
     {
       "label": "reviseText()",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L257",
+      "source_location": "L252",
       "id": "knowledge_center_ui_revisetext",
-      "community": 21,
+      "community": 37,
       "norm_label": "revisetext()"
     },
     {
       "label": "HistoryTextField()",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L273",
+      "source_location": "L268",
       "id": "knowledge_center_ui_historytextfield",
-      "community": 21,
+      "community": 32,
       "norm_label": "historytextfield()"
     },
     {
       "label": "ChipList()",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L288",
+      "source_location": "L283",
       "id": "knowledge_center_ui_chiplist",
       "community": 21,
       "norm_label": "chiplist()"
@@ -4119,70 +4191,70 @@
       "label": "TagRow()",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L322",
+      "source_location": "L317",
       "id": "knowledge_center_ui_tagrow",
-      "community": 21,
+      "community": 37,
       "norm_label": "tagrow()"
     },
     {
       "label": "CheckboxPills()",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L333",
+      "source_location": "L328",
       "id": "knowledge_center_ui_checkboxpills",
-      "community": 21,
+      "community": 32,
       "norm_label": "checkboxpills()"
     },
     {
       "label": "KC_PRIMARY_BTN",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L356",
+      "source_location": "L351",
       "id": "knowledge_center_ui_kc_primary_btn",
-      "community": 30,
+      "community": 2,
       "norm_label": "kc_primary_btn"
     },
     {
       "label": "KC_GHOST_BTN",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L362",
+      "source_location": "L357",
       "id": "knowledge_center_ui_kc_ghost_btn",
-      "community": 21,
+      "community": 1,
       "norm_label": "kc_ghost_btn"
     },
     {
       "label": "KC_DANGER_BTN",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L368",
+      "source_location": "L363",
       "id": "knowledge_center_ui_kc_danger_btn",
-      "community": 21,
+      "community": 32,
       "norm_label": "kc_danger_btn"
     },
     {
       "label": "IconButton()",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L374",
+      "source_location": "L369",
       "id": "knowledge_center_ui_iconbutton",
-      "community": 30,
+      "community": 2,
       "norm_label": "iconbutton()"
     },
     {
       "label": "EmptyState()",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L384",
+      "source_location": "L379",
       "id": "knowledge_center_ui_emptystate",
-      "community": 24,
+      "community": 33,
       "norm_label": "emptystate()"
     },
     {
       "label": "Pagination()",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L398",
+      "source_location": "L393",
       "id": "knowledge_center_ui_pagination",
       "community": 1,
       "norm_label": "pagination()"
@@ -4191,9 +4263,9 @@
       "label": "Drawer()",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L426",
+      "source_location": "L421",
       "id": "knowledge_center_ui_drawer",
-      "community": 24,
+      "community": 33,
       "norm_label": "drawer()"
     },
     {
@@ -4328,7 +4400,7 @@
       "source_file": "docs/field_reference/summary-view-spec.md",
       "source_location": "L1",
       "id": "docs_field_reference_summary_view_spec_md",
-      "community": 23,
+      "community": 38,
       "norm_label": "summary-view-spec.md"
     },
     {
@@ -4337,7 +4409,7 @@
       "source_file": "docs/field_reference/summary-view-spec.md",
       "source_location": "L1",
       "id": "field_reference_summary_view_spec_onboarding_review_wizard_summary_view_specification",
-      "community": 23,
+      "community": 38,
       "norm_label": "onboarding review wizard \u2014 summary view specification"
     },
     {
@@ -4346,140 +4418,140 @@
       "source_file": "docs/field_reference/summary-view-spec.md",
       "source_location": "L3",
       "id": "field_reference_summary_view_spec_purpose",
-      "community": 23,
+      "community": 38,
       "norm_label": "purpose"
     },
     {
       "label": "Mechanisms",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L20",
+      "source_location": "L16",
       "id": "field_reference_summary_view_spec_mechanisms",
-      "community": 23,
+      "community": 38,
       "norm_label": "mechanisms"
     },
     {
       "label": "Priority tiers",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L33",
+      "source_location": "L29",
       "id": "field_reference_summary_view_spec_priority_tiers",
-      "community": 23,
+      "community": 38,
       "norm_label": "priority tiers"
     },
     {
       "label": "General implementation notes",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L48",
+      "source_location": "L38",
       "id": "field_reference_summary_view_spec_general_implementation_notes",
-      "community": 23,
+      "community": 38,
       "norm_label": "general implementation notes"
     },
     {
       "label": "Step 1 \u2014 Company Profile",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L58",
+      "source_location": "L48",
       "id": "field_reference_summary_view_spec_step_1_company_profile",
-      "community": 23,
+      "community": 35,
       "norm_label": "step 1 \u2014 company profile"
     },
     {
       "label": "1. Header Strip",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L64",
+      "source_location": "L52",
       "id": "field_reference_summary_view_spec_1_header_strip",
-      "community": 23,
+      "community": 35,
       "norm_label": "1. header strip"
     },
     {
       "label": "2. Who You Are & The Problem You Solve",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L72",
+      "source_location": "L59",
       "id": "field_reference_summary_view_spec_2_who_you_are_the_problem_you_solve",
-      "community": 23,
+      "community": 35,
       "norm_label": "2. who you are & the problem you solve"
     },
     {
       "label": "3. What Makes You Different",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L80",
+      "source_location": "L66",
       "id": "field_reference_summary_view_spec_3_what_makes_you_different",
-      "community": 23,
+      "community": 35,
       "norm_label": "3. what makes you different"
     },
     {
       "label": "4. What You Sell",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L88",
+      "source_location": "L73",
       "id": "field_reference_summary_view_spec_4_what_you_sell",
-      "community": 23,
+      "community": 35,
       "norm_label": "4. what you sell"
     },
     {
       "label": "5. Proof & Credibility",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L96",
+      "source_location": "L80",
       "id": "field_reference_summary_view_spec_5_proof_credibility",
-      "community": 23,
+      "community": 35,
       "norm_label": "5. proof & credibility"
     },
     {
       "label": "6. Market Context",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L104",
+      "source_location": "L87",
       "id": "field_reference_summary_view_spec_6_market_context",
-      "community": 23,
+      "community": 35,
       "norm_label": "6. market context"
     },
     {
       "label": "7. Deal Snapshot",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L112",
+      "source_location": "L94",
       "id": "field_reference_summary_view_spec_7_deal_snapshot",
-      "community": 23,
+      "community": 35,
       "norm_label": "7. deal snapshot"
     },
     {
       "label": "8. Risks to Address",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L120",
+      "source_location": "L101",
       "id": "field_reference_summary_view_spec_8_risks_to_address",
-      "community": 23,
+      "community": 35,
       "norm_label": "8. risks to address"
     },
     {
       "label": "9. Dream Customer \u2014 **Not Shown**",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L128",
+      "source_location": "L108",
       "id": "field_reference_summary_view_spec_9_dream_customer_not_shown",
-      "community": 23,
+      "community": 35,
       "norm_label": "9. dream customer \u2014 **not shown**"
     },
     {
       "label": "10. Scoring Input \u2014 **Not Shown**",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L134",
+      "source_location": "L113",
       "id": "field_reference_summary_view_spec_10_scoring_input_not_shown",
-      "community": 23,
+      "community": 35,
       "norm_label": "10. scoring input \u2014 **not shown**"
     },
     {
       "label": "Step 2 \u2014 Product",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L142",
+      "source_location": "L120",
       "id": "field_reference_summary_view_spec_step_2_product",
       "community": 23,
       "norm_label": "step 2 \u2014 product"
@@ -4488,7 +4560,7 @@
       "label": "1. Header",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L148",
+      "source_location": "L124",
       "id": "field_reference_summary_view_spec_1_header",
       "community": 23,
       "norm_label": "1. header"
@@ -4497,7 +4569,7 @@
       "label": "2. Elevator Pitch",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L155",
+      "source_location": "L130",
       "id": "field_reference_summary_view_spec_2_elevator_pitch",
       "community": 23,
       "norm_label": "2. elevator pitch"
@@ -4506,7 +4578,7 @@
       "label": "3. What It Does & Solves",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L163",
+      "source_location": "L137",
       "id": "field_reference_summary_view_spec_3_what_it_does_solves",
       "community": 23,
       "norm_label": "3. what it does & solves"
@@ -4515,7 +4587,7 @@
       "label": "4. Key Capabilities",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L170",
+      "source_location": "L143",
       "id": "field_reference_summary_view_spec_4_key_capabilities",
       "community": 23,
       "norm_label": "4. key capabilities"
@@ -4524,7 +4596,7 @@
       "label": "5. Who It's For",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L177",
+      "source_location": "L149",
       "id": "field_reference_summary_view_spec_5_who_it_s_for",
       "community": 23,
       "norm_label": "5. who it's for"
@@ -4533,7 +4605,7 @@
       "label": "6. Proof It Works",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L185",
+      "source_location": "L156",
       "id": "field_reference_summary_view_spec_6_proof_it_works",
       "community": 23,
       "norm_label": "6. proof it works"
@@ -4542,7 +4614,7 @@
       "label": "7. Competitive Snapshot",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L192",
+      "source_location": "L162",
       "id": "field_reference_summary_view_spec_7_competitive_snapshot",
       "community": 23,
       "norm_label": "7. competitive snapshot"
@@ -4551,7 +4623,7 @@
       "label": "8. Deal Basics",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L199",
+      "source_location": "L168",
       "id": "field_reference_summary_view_spec_8_deal_basics",
       "community": 23,
       "norm_label": "8. deal basics"
@@ -4560,7 +4632,7 @@
       "label": "9. Objections & Switch Triggers",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L206",
+      "source_location": "L174",
       "id": "field_reference_summary_view_spec_9_objections_switch_triggers",
       "community": 23,
       "norm_label": "9. objections & switch triggers"
@@ -4569,7 +4641,7 @@
       "label": "10. Messaging Guidance \u2014 **Not Shown**",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L213",
+      "source_location": "L180",
       "id": "field_reference_summary_view_spec_10_messaging_guidance_not_shown",
       "community": 23,
       "norm_label": "10. messaging guidance \u2014 **not shown**"
@@ -4578,7 +4650,7 @@
       "label": "11. Extended Commercials \u2014 **Not Shown**",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L219",
+      "source_location": "L185",
       "id": "field_reference_summary_view_spec_11_extended_commercials_not_shown",
       "community": 23,
       "norm_label": "11. extended commercials \u2014 **not shown**"
@@ -4587,7 +4659,7 @@
       "label": "12. Additional Proof \u2014 **Not Shown**",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L225",
+      "source_location": "L190",
       "id": "field_reference_summary_view_spec_12_additional_proof_not_shown",
       "community": 23,
       "norm_label": "12. additional proof \u2014 **not shown**"
@@ -4596,7 +4668,7 @@
       "label": "13. Scoring Input \u2014 **Not Shown**",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L230",
+      "source_location": "L194",
       "id": "field_reference_summary_view_spec_13_scoring_input_not_shown",
       "community": 23,
       "norm_label": "13. scoring input \u2014 **not shown**"
@@ -4605,115 +4677,115 @@
       "label": "Step 3 \u2014 ICP (Ideal Customer Profile)",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L237",
+      "source_location": "L200",
       "id": "field_reference_summary_view_spec_step_3_icp_ideal_customer_profile",
-      "community": 23,
+      "community": 34,
       "norm_label": "step 3 \u2014 icp (ideal customer profile)"
     },
     {
       "label": "1. Header",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L248",
-      "id": "field_reference_summary_view_spec_1_header_248",
-      "community": 23,
+      "source_location": "L204",
+      "id": "field_reference_summary_view_spec_1_header_204",
+      "community": 34,
       "norm_label": "1. header"
     },
     {
       "label": "2. Who This Is & Why They Fit",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L256",
+      "source_location": "L211",
       "id": "field_reference_summary_view_spec_2_who_this_is_why_they_fit",
-      "community": 23,
+      "community": 34,
       "norm_label": "2. who this is & why they fit"
     },
     {
       "label": "3. Firmographic Snapshot",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L264",
+      "source_location": "L218",
       "id": "field_reference_summary_view_spec_3_firmographic_snapshot",
-      "community": 23,
+      "community": 34,
       "norm_label": "3. firmographic snapshot"
     },
     {
       "label": "4. Pains & Goals",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L271",
+      "source_location": "L224",
       "id": "field_reference_summary_view_spec_4_pains_goals",
-      "community": 23,
+      "community": 34,
       "norm_label": "4. pains & goals"
     },
     {
       "label": "5. Buying Signals",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L279",
+      "source_location": "L231",
       "id": "field_reference_summary_view_spec_5_buying_signals",
-      "community": 23,
+      "community": 34,
       "norm_label": "5. buying signals"
     },
     {
       "label": "6. Real Companies Like This",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L286",
+      "source_location": "L237",
       "id": "field_reference_summary_view_spec_6_real_companies_like_this",
-      "community": 23,
+      "community": 34,
       "norm_label": "6. real companies like this"
     },
     {
       "label": "7. Candidate Personas",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L294",
+      "source_location": "L244",
       "id": "field_reference_summary_view_spec_7_candidate_personas",
-      "community": 23,
+      "community": 34,
       "norm_label": "7. candidate personas"
     },
     {
       "label": "8. Market Size",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L302",
+      "source_location": "L251",
       "id": "field_reference_summary_view_spec_8_market_size",
-      "community": 23,
+      "community": 34,
       "norm_label": "8. market size"
     },
     {
       "label": "9. Deeper Firmographics",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L309",
+      "source_location": "L257",
       "id": "field_reference_summary_view_spec_9_deeper_firmographics",
-      "community": 23,
+      "community": 34,
       "norm_label": "9. deeper firmographics"
     },
     {
       "label": "10. Targeting Filters \u2014 **Not Shown**",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L316",
+      "source_location": "L263",
       "id": "field_reference_summary_view_spec_10_targeting_filters_not_shown",
-      "community": 23,
+      "community": 34,
       "norm_label": "10. targeting filters \u2014 **not shown**"
     },
     {
       "label": "11. Scoring Input \u2014 **Not Shown**",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L321",
+      "source_location": "L267",
       "id": "field_reference_summary_view_spec_11_scoring_input_not_shown",
-      "community": 23,
+      "community": 34,
       "norm_label": "11. scoring input \u2014 **not shown**"
     },
     {
       "label": "Step 4 \u2014 Persona",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L328",
+      "source_location": "L273",
       "id": "field_reference_summary_view_spec_step_4_persona",
       "community": 31,
       "norm_label": "step 4 \u2014 persona"
@@ -4722,8 +4794,8 @@
       "label": "1. Header",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L334",
-      "id": "field_reference_summary_view_spec_1_header_334",
+      "source_location": "L277",
+      "id": "field_reference_summary_view_spec_1_header_277",
       "community": 31,
       "norm_label": "1. header"
     },
@@ -4731,7 +4803,7 @@
       "label": "2. Who They Are",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L341",
+      "source_location": "L283",
       "id": "field_reference_summary_view_spec_2_who_they_are",
       "community": 31,
       "norm_label": "2. who they are"
@@ -4740,7 +4812,7 @@
       "label": "3. What They're Responsible For",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L349",
+      "source_location": "L290",
       "id": "field_reference_summary_view_spec_3_what_they_re_responsible_for",
       "community": 31,
       "norm_label": "3. what they're responsible for"
@@ -4749,7 +4821,7 @@
       "label": "4. Goals",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L356",
+      "source_location": "L296",
       "id": "field_reference_summary_view_spec_4_goals",
       "community": 31,
       "norm_label": "4. goals"
@@ -4758,7 +4830,7 @@
       "label": "5. Primary Pain",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L363",
+      "source_location": "L302",
       "id": "field_reference_summary_view_spec_5_primary_pain",
       "community": 31,
       "norm_label": "5. primary pain"
@@ -4767,7 +4839,7 @@
       "label": "6. Current Tools",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L371",
+      "source_location": "L309",
       "id": "field_reference_summary_view_spec_6_current_tools",
       "community": 31,
       "norm_label": "6. current tools"
@@ -4776,7 +4848,7 @@
       "label": "7. Best Way to Reach Them",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L378",
+      "source_location": "L315",
       "id": "field_reference_summary_view_spec_7_best_way_to_reach_them",
       "community": 31,
       "norm_label": "7. best way to reach them"
@@ -4785,7 +4857,7 @@
       "label": "8. Objections to Expect",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L385",
+      "source_location": "L321",
       "id": "field_reference_summary_view_spec_8_objections_to_expect",
       "community": 31,
       "norm_label": "8. objections to expect"
@@ -4794,7 +4866,7 @@
       "label": "9. Opening Hook",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L393",
+      "source_location": "L328",
       "id": "field_reference_summary_view_spec_9_opening_hook",
       "community": 31,
       "norm_label": "9. opening hook"
@@ -4803,7 +4875,7 @@
       "label": "10. Qualification Snapshot",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L400",
+      "source_location": "L334",
       "id": "field_reference_summary_view_spec_10_qualification_snapshot",
       "community": 31,
       "norm_label": "10. qualification snapshot"
@@ -4812,7 +4884,7 @@
       "label": "11. Deeper Pain & Risk Context \u2014 **Not Shown**",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L408",
+      "source_location": "L341",
       "id": "field_reference_summary_view_spec_11_deeper_pain_risk_context_not_shown",
       "community": 31,
       "norm_label": "11. deeper pain & risk context \u2014 **not shown**"
@@ -4821,7 +4893,7 @@
       "label": "12. Challenges \u2014 **Not Shown**",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L413",
+      "source_location": "L345",
       "id": "field_reference_summary_view_spec_12_challenges_not_shown",
       "community": 31,
       "norm_label": "12. challenges \u2014 **not shown**"
@@ -4830,7 +4902,7 @@
       "label": "13. Decision-Making Detail \u2014 **Not Shown**",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L418",
+      "source_location": "L349",
       "id": "field_reference_summary_view_spec_13_decision_making_detail_not_shown",
       "community": 31,
       "norm_label": "13. decision-making detail \u2014 **not shown**"
@@ -4839,7 +4911,7 @@
       "label": "14. Current-Solution Detail \u2014 **Not Shown**",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L423",
+      "source_location": "L353",
       "id": "field_reference_summary_view_spec_14_current_solution_detail_not_shown",
       "community": 31,
       "norm_label": "14. current-solution detail \u2014 **not shown**"
@@ -4848,7 +4920,7 @@
       "label": "15. Buying Signals Detail \u2014 **Not Shown**",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L428",
+      "source_location": "L357",
       "id": "field_reference_summary_view_spec_15_buying_signals_detail_not_shown",
       "community": 31,
       "norm_label": "15. buying signals detail \u2014 **not shown**"
@@ -4857,7 +4929,7 @@
       "label": "16. Buyer Psychology \u2014 **Not Shown**",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L433",
+      "source_location": "L361",
       "id": "field_reference_summary_view_spec_16_buyer_psychology_not_shown",
       "community": 31,
       "norm_label": "16. buyer psychology \u2014 **not shown**"
@@ -4866,7 +4938,7 @@
       "label": "17. Extended Messaging Guidance \u2014 **Not Shown**",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L438",
+      "source_location": "L365",
       "id": "field_reference_summary_view_spec_17_extended_messaging_guidance_not_shown",
       "community": 31,
       "norm_label": "17. extended messaging guidance \u2014 **not shown**"
@@ -4875,7 +4947,7 @@
       "label": "18. Account Intelligence \u2014 **Not Shown**",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L443",
+      "source_location": "L369",
       "id": "field_reference_summary_view_spec_18_account_intelligence_not_shown",
       "community": 31,
       "norm_label": "18. account intelligence \u2014 **not shown**"
@@ -4884,7 +4956,7 @@
       "label": "19. Prospecting & Search Detail \u2014 **Not Shown**",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L448",
+      "source_location": "L373",
       "id": "field_reference_summary_view_spec_19_prospecting_search_detail_not_shown",
       "community": 31,
       "norm_label": "19. prospecting & search detail \u2014 **not shown**"
@@ -4893,7 +4965,7 @@
       "label": "20. Extended Outreach Strategy \u2014 **Not Shown**",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L453",
+      "source_location": "L377",
       "id": "field_reference_summary_view_spec_20_extended_outreach_strategy_not_shown",
       "community": 31,
       "norm_label": "20. extended outreach strategy \u2014 **not shown**"
@@ -4902,7 +4974,7 @@
       "label": "21. Remaining Qualification Tiers \u2014 **Not Shown**",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L458",
+      "source_location": "L381",
       "id": "field_reference_summary_view_spec_21_remaining_qualification_tiers_not_shown",
       "community": 31,
       "norm_label": "21. remaining qualification tiers \u2014 **not shown**"
@@ -4911,172 +4983,19 @@
       "label": "22. Scoring Input \u2014 **Not Shown**",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L463",
+      "source_location": "L385",
       "id": "field_reference_summary_view_spec_22_scoring_input_not_shown",
       "community": 31,
       "norm_label": "22. scoring input \u2014 **not shown**"
     },
     {
-      "label": "Implementation status",
-      "file_type": "document",
-      "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L470",
-      "id": "field_reference_summary_view_spec_implementation_status",
-      "community": 23,
-      "norm_label": "implementation status"
-    },
-    {
       "label": "Open items to resolve before/during implementation",
       "file_type": "document",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L501",
+      "source_location": "L391",
       "id": "field_reference_summary_view_spec_open_items_to_resolve_before_during_implementation",
-      "community": 23,
+      "community": 38,
       "norm_label": "open items to resolve before/during implementation"
-    },
-    {
-      "label": "1. Header",
-      "file_type": "document",
-      "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L204",
-      "community": 23,
-      "norm_label": "1. header",
-      "id": "field_reference_summary_view_spec_1_header_204"
-    },
-    {
-      "label": "1. Header",
-      "file_type": "document",
-      "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L277",
-      "community": 31,
-      "norm_label": "1. header",
-      "id": "field_reference_summary_view_spec_1_header_277"
-    },
-    {
-      "label": "SecondaryAccordion()",
-      "file_type": "code",
-      "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1905",
-      "community": 0,
-      "norm_label": "secondaryaccordion()",
-      "id": "src_onboarding_shell_secondaryaccordion"
-    },
-    {
-      "label": "WELCOME_ITEMS",
-      "file_type": "code",
-      "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L367",
-      "community": 0,
-      "norm_label": "welcome_items",
-      "id": "src_onboarding_shell_welcome_items"
-    },
-    {
-      "label": "EditableText()",
-      "file_type": "code",
-      "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1865",
-      "community": 0,
-      "norm_label": "editabletext()",
-      "id": "src_onboarding_shell_editabletext"
-    },
-    {
-      "label": "EditableBulletList()",
-      "file_type": "code",
-      "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1964",
-      "community": 0,
-      "norm_label": "editablebulletlist()",
-      "id": "src_onboarding_shell_editablebulletlist"
-    },
-    {
-      "label": "AIRevise()",
-      "file_type": "code",
-      "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1997",
-      "community": 0,
-      "norm_label": "airevise()",
-      "id": "src_onboarding_shell_airevise"
-    },
-    {
-      "label": "WhatYouSellBundle",
-      "file_type": "code",
-      "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2076",
-      "community": 0,
-      "norm_label": "whatyousellbundle",
-      "id": "src_onboarding_shell_whatyousellbundle"
-    },
-    {
-      "label": "reviseWhatYouSellBundle()",
-      "file_type": "code",
-      "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2077",
-      "community": 5,
-      "norm_label": "revisewhatyousellbundle()",
-      "id": "src_onboarding_shell_revisewhatyousellbundle"
-    },
-    {
-      "label": "ProofBundle",
-      "file_type": "code",
-      "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2085",
-      "community": 0,
-      "norm_label": "proofbundle",
-      "id": "src_onboarding_shell_proofbundle"
-    },
-    {
-      "label": "reviseProofBundle()",
-      "file_type": "code",
-      "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2086",
-      "community": 5,
-      "norm_label": "reviseproofbundle()",
-      "id": "src_onboarding_shell_reviseproofbundle"
-    },
-    {
-      "label": "RECOMMENDATION_ORDER",
-      "file_type": "code",
-      "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2984",
-      "community": 0,
-      "norm_label": "recommendation_order",
-      "id": "src_onboarding_shell_recommendation_order"
-    },
-    {
-      "label": "nextRecommendation()",
-      "file_type": "code",
-      "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2985",
-      "community": 0,
-      "norm_label": "nextrecommendation()",
-      "id": "src_onboarding_shell_nextrecommendation"
-    },
-    {
-      "label": "OverviewTab",
-      "file_type": "code",
-      "source_file": "src/knowledge-center/Overview.tsx",
-      "source_location": "L371",
-      "community": 30,
-      "norm_label": "overviewtab",
-      "id": "knowledge_center_overview_overviewtab"
-    },
-    {
-      "label": "OVERVIEW_TABS",
-      "file_type": "code",
-      "source_file": "src/knowledge-center/Overview.tsx",
-      "source_location": "L372",
-      "community": 30,
-      "norm_label": "overview_tabs",
-      "id": "knowledge_center_overview_overview_tabs"
-    },
-    {
-      "label": "OverviewTabBar()",
-      "file_type": "code",
-      "source_file": "src/knowledge-center/Overview.tsx",
-      "source_location": "L377",
-      "community": 30,
-      "norm_label": "overviewtabbar()",
-      "id": "knowledge_center_overview_overviewtabbar"
     },
     {
       "label": "RESEARCH_SECTION_LABEL",
@@ -5173,7 +5092,7 @@
       "file_type": "code",
       "source_file": "src/knowledge-center/Overview.tsx",
       "source_location": "L16",
-      "community": 30,
+      "community": 2,
       "norm_label": "personafield()",
       "id": "knowledge_center_overview_personafield"
     },
@@ -5182,7 +5101,7 @@
       "file_type": "code",
       "source_file": "src/knowledge-center/Overview.tsx",
       "source_location": "L20",
-      "community": 30,
+      "community": 2,
       "norm_label": "persona_summary_fields",
       "id": "knowledge_center_overview_persona_summary_fields"
     },
@@ -5191,7 +5110,7 @@
       "file_type": "code",
       "source_file": "src/knowledge-center/Overview.tsx",
       "source_location": "L26",
-      "community": 30,
+      "community": 2,
       "norm_label": "product_highlight_labels",
       "id": "knowledge_center_overview_product_highlight_labels"
     },
@@ -5200,7 +5119,7 @@
       "file_type": "code",
       "source_file": "src/knowledge-center/Overview.tsx",
       "source_location": "L107",
-      "community": 30,
+      "community": 2,
       "norm_label": "personasummary()",
       "id": "knowledge_center_overview_personasummary"
     },
@@ -5227,7 +5146,7 @@
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
       "source_location": "L222",
-      "community": 21,
+      "community": 37,
       "norm_label": "askai()",
       "id": "knowledge_center_ui_askai"
     },
@@ -5515,7 +5434,7 @@
       "file_type": "code",
       "source_file": "src/knowledge-center/IcpDetailPane.tsx",
       "source_location": "L17",
-      "community": 21,
+      "community": 32,
       "norm_label": "icpcompletion()",
       "id": "knowledge_center_icpdetailpane_icpcompletion"
     },
@@ -5524,7 +5443,7 @@
       "file_type": "code",
       "source_file": "src/knowledge-center/PersonaDetailPane.tsx",
       "source_location": "L29",
-      "community": 21,
+      "community": 36,
       "norm_label": "personacompletion()",
       "id": "knowledge_center_personadetailpane_personacompletion"
     },
@@ -5533,7 +5452,7 @@
       "file_type": "code",
       "source_file": "src/knowledge-center/Tree.tsx",
       "source_location": "L6",
-      "community": 30,
+      "community": 2,
       "norm_label": "row_base",
       "id": "knowledge_center_tree_row_base"
     },
@@ -5542,7 +5461,7 @@
       "file_type": "code",
       "source_file": "src/knowledge-center/Tree.tsx",
       "source_location": "L12",
-      "community": 30,
+      "community": 2,
       "norm_label": "chevron()",
       "id": "knowledge_center_tree_chevron"
     },
@@ -5551,7 +5470,7 @@
       "file_type": "code",
       "source_file": "src/knowledge-center/Tree.tsx",
       "source_location": "L20",
-      "community": 30,
+      "community": 2,
       "norm_label": "emptybranch()",
       "id": "knowledge_center_tree_emptybranch"
     },
@@ -5560,7 +5479,7 @@
       "file_type": "code",
       "source_file": "src/knowledge-center/Tree.tsx",
       "source_location": "L26",
-      "community": 30,
+      "community": 2,
       "norm_label": "personarow()",
       "id": "knowledge_center_tree_personarow"
     },
@@ -5569,7 +5488,7 @@
       "file_type": "code",
       "source_file": "src/knowledge-center/Tree.tsx",
       "source_location": "L45",
-      "community": 30,
+      "community": 2,
       "norm_label": "icprow()",
       "id": "knowledge_center_tree_icprow"
     },
@@ -5578,7 +5497,7 @@
       "file_type": "code",
       "source_file": "src/knowledge-center/Tree.tsx",
       "source_location": "L83",
-      "community": 30,
+      "community": 2,
       "norm_label": "productrow()",
       "id": "knowledge_center_tree_productrow"
     },
@@ -5587,7 +5506,7 @@
       "file_type": "code",
       "source_file": "src/knowledge-center/Tree.tsx",
       "source_location": "L122",
-      "community": 30,
+      "community": 2,
       "norm_label": "knowledgetree()",
       "id": "knowledge_center_tree_knowledgetree"
     },
@@ -5767,7 +5686,7 @@
       "file_type": "code",
       "source_file": "src/knowledge-center/Dashboard.tsx",
       "source_location": "L49",
-      "community": 33,
+      "community": 30,
       "norm_label": "header_cell",
       "id": "knowledge_center_dashboard_header_cell"
     },
@@ -5776,7 +5695,7 @@
       "file_type": "code",
       "source_file": "src/knowledge-center/Dashboard.tsx",
       "source_location": "L53",
-      "community": 33,
+      "community": 30,
       "norm_label": "num_cell",
       "id": "knowledge_center_dashboard_num_cell"
     },
@@ -5785,7 +5704,7 @@
       "file_type": "code",
       "source_file": "src/knowledge-center/Dashboard.tsx",
       "source_location": "L74",
-      "community": 33,
+      "community": 30,
       "norm_label": "row()",
       "id": "knowledge_center_dashboard_row"
     },
@@ -5794,7 +5713,7 @@
       "file_type": "code",
       "source_file": "src/knowledge-center/Diagram.tsx",
       "source_location": "L41",
-      "community": 33,
+      "community": 30,
       "norm_label": "levels",
       "id": "knowledge_center_diagram_levels"
     },
@@ -5803,7 +5722,7 @@
       "file_type": "code",
       "source_file": "src/knowledge-center/Diagram.tsx",
       "source_location": "L48",
-      "community": 33,
+      "community": 30,
       "norm_label": "stickylabel()",
       "id": "knowledge_center_diagram_stickylabel"
     },
@@ -5812,7 +5731,7 @@
       "file_type": "code",
       "source_file": "src/knowledge-center/Diagram.tsx",
       "source_location": "L37",
-      "community": 33,
+      "community": 30,
       "norm_label": "row_labels",
       "id": "knowledge_center_diagram_row_labels"
     },
@@ -7748,16 +7667,6 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L386",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_onboarding_shell_tsx",
-      "target": "src_onboarding_shell_hero_tiles"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/onboarding-shell.tsx",
       "source_location": "L2989",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -8603,16 +8512,6 @@
       "confidence_score": 1.0,
       "source": "src_onboarding_shell_tsx",
       "target": "src_onboarding_shell_revisewhatyousellbundle"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L407",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_onboarding_shell_tsx",
-      "target": "src_onboarding_shell_ripple"
     },
     {
       "relation": "contains",
@@ -10104,17 +10003,6 @@
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
-      "source_file": "src/knowledge-center/Overview.tsx",
-      "source_location": "L7",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_knowledge_center_overview_tsx",
-      "target": "src_copilot_referenceable_tsx"
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
       "source_file": "src/knowledge-center/PersonaDetailPane.tsx",
       "source_location": "L6",
       "weight": 1.0,
@@ -10131,17 +10019,6 @@
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "src_knowledge_center_productdetailpane_tsx",
-      "target": "src_copilot_referenceable_tsx"
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L3",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_knowledge_center_ui_tsx",
       "target": "src_copilot_referenceable_tsx"
     },
     {
@@ -10170,17 +10047,6 @@
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
-      "source_file": "src/knowledge-center/Overview.tsx",
-      "source_location": "L7",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_knowledge_center_overview_tsx",
-      "target": "copilot_referenceable_referenceablesection"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
       "source_file": "src/knowledge-center/PersonaDetailPane.tsx",
       "source_location": "L6",
       "weight": 1.0,
@@ -10203,17 +10069,6 @@
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
-      "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L3",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_knowledge_center_ui_tsx",
-      "target": "copilot_referenceable_referenceablesection"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
       "source_file": "src/knowledge-center/Company.tsx",
       "source_location": "L4",
       "weight": 1.0,
@@ -10230,17 +10085,6 @@
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "src_knowledge_center_icpdetailpane_tsx",
-      "target": "copilot_referenceable_referenceablefield"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/knowledge-center/Overview.tsx",
-      "source_location": "L7",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_knowledge_center_overview_tsx",
       "target": "copilot_referenceable_referenceablefield"
     },
     {
@@ -13072,16 +12916,6 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/knowledge-center/Explorer.tsx",
-      "source_location": "L34",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_knowledge_center_explorer_tsx",
-      "target": "knowledge_center_explorer_icp_list_fields"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/knowledge-center/Explorer.tsx",
       "source_location": "L18",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -14063,9 +13897,9 @@
       "source_file": "src/knowledge-center/Overview.tsx",
       "source_location": "L372",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "src_knowledge_center_overview_tsx",
-      "target": "knowledge_center_overview_overview_tabs"
+      "target": "knowledge_center_overview_overview_tabs",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -14073,9 +13907,9 @@
       "source_file": "src/knowledge-center/Overview.tsx",
       "source_location": "L371",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "src_knowledge_center_overview_tsx",
-      "target": "knowledge_center_overview_overviewtab"
+      "target": "knowledge_center_overview_overviewtab",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -14083,9 +13917,9 @@
       "source_file": "src/knowledge-center/Overview.tsx",
       "source_location": "L377",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "src_knowledge_center_overview_tsx",
-      "target": "knowledge_center_overview_overviewtabbar"
+      "target": "knowledge_center_overview_overviewtabbar",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -14282,9 +14116,9 @@
       "source_file": "src/knowledge-center/Overview.tsx",
       "source_location": "L3",
       "weight": 1.0,
-      "confidence_score": 1.0,
       "source": "src_knowledge_center_overview_tsx",
-      "target": "knowledge_center_ui_iconname"
+      "target": "knowledge_center_ui_iconname",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -15314,31 +15148,11 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/knowledge-center/Company.tsx",
-      "source_location": "L112",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_knowledge_center_company_tsx",
-      "target": "knowledge_center_company_company_blocks"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/knowledge-center/Company.tsx",
       "source_location": "L85",
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "src_knowledge_center_company_tsx",
       "target": "knowledge_center_company_company_text_fields"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/knowledge-center/Company.tsx",
-      "source_location": "L119",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_knowledge_center_company_tsx",
-      "target": "knowledge_center_company_companyblockid"
     },
     {
       "relation": "contains",
@@ -15449,16 +15263,6 @@
       "confidence_score": 1.0,
       "source": "src_knowledge_center_company_tsx",
       "target": "knowledge_center_company_prose"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/knowledge-center/Company.tsx",
-      "source_location": "L101",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_knowledge_center_company_tsx",
-      "target": "knowledge_center_company_synthesized_blocks"
     },
     {
       "relation": "contains",
@@ -15698,17 +15502,6 @@
       "confidence_score": 1.0,
       "source": "knowledge_center_company_companysummary",
       "target": "knowledge_center_company_differentiationparagraph"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src/knowledge-center/Company.tsx",
-      "source_location": "L390",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "knowledge_center_company_companysummary",
-      "target": "knowledge_center_company_companyblockid"
     },
     {
       "relation": "references",
@@ -16612,16 +16405,6 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L470",
-      "weight": 1.0,
-      "source": "field_reference_summary_view_spec_onboarding_review_wizard_summary_view_specification",
-      "target": "field_reference_summary_view_spec_implementation_status",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/field_reference/summary-view-spec.md",
       "source_location": "L16",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -16962,16 +16745,6 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L248",
-      "weight": 1.0,
-      "source": "field_reference_summary_view_spec_step_3_icp_ideal_customer_profile",
-      "target": "field_reference_summary_view_spec_1_header_248",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/field_reference/summary-view-spec.md",
       "source_location": "L211",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -17157,16 +16930,6 @@
       "confidence_score": 1.0,
       "source": "field_reference_summary_view_spec_step_4_persona",
       "target": "field_reference_summary_view_spec_1_header_277"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "docs/field_reference/summary-view-spec.md",
-      "source_location": "L334",
-      "weight": 1.0,
-      "source": "field_reference_summary_view_spec_step_4_persona",
-      "target": "field_reference_summary_view_spec_1_header_334",
-      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -17459,5 +17222,5 @@
       "source_file": "src/knowledge-center/KnowledgeCenter.tsx"
     }
   ],
-  "built_at_commit": "a5048fd77acb1f2427352aada251fc06cc7e5eae"
+  "built_at_commit": "fcffbc8a3daffa254f67bd243c24133ab78757cc"
 }

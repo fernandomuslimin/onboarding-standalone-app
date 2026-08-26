@@ -30,8 +30,8 @@
     "semantic_hash": "02ad44ca7f3d56ee33d2045f8de87a58"
   },
   "/Users/fernandomuslimin/Projects/B2BROCKET.AI/Source Code/onboarding-standalone-app/src/onboarding-shell.tsx": {
-    "mtime": 1787684951.6416397,
-    "ast_hash": "e1c2b0c2efa79f982527fa3966fa71ea",
+    "mtime": 1787557315.3589373,
+    "ast_hash": "9deaab3db71f0404b7aee765ade2d34e",
     "semantic_hash": ""
   },
   "/Users/fernandomuslimin/Projects/B2BROCKET.AI/Source Code/onboarding-standalone-app/src/knowledge-center/data.ts": {
@@ -55,13 +55,13 @@
     "semantic_hash": "7762d189a0f5068a5e2b0f068ad5ca19"
   },
   "/Users/fernandomuslimin/Projects/B2BROCKET.AI/Source Code/onboarding-standalone-app/src/knowledge-center/Company.tsx": {
-    "mtime": 1787677944.5178168,
-    "ast_hash": "933e948ac9043ba0c4f8e8b7382ad3d6",
+    "mtime": 1787536957.22493,
+    "ast_hash": "a3b6c18723fc4d8c2dd1554fe6a0a946",
     "semantic_hash": ""
   },
   "/Users/fernandomuslimin/Projects/B2BROCKET.AI/Source Code/onboarding-standalone-app/src/knowledge-center/ui.tsx": {
-    "mtime": 1787675878.758511,
-    "ast_hash": "2d8a1d0638cc337b7ba67e01d57a14c0",
+    "mtime": 1787536975.7976847,
+    "ast_hash": "66237913fc70d3b58d93b987937a3437",
     "semantic_hash": ""
   },
   "/Users/fernandomuslimin/Projects/B2BROCKET.AI/Source Code/onboarding-standalone-app/index.html": {
@@ -205,8 +205,8 @@
     "semantic_hash": ""
   },
   "/Users/fernandomuslimin/Projects/B2BROCKET.AI/Source Code/onboarding-standalone-app/src/copilot/Referenceable.tsx": {
-    "mtime": 1787675060.421491,
-    "ast_hash": "4c2ed2e2e78927a4ecde96f44fc5a4a7",
+    "mtime": 1787234433.194907,
+    "ast_hash": "05ed94f9885d0a841f87b0487fd7d7c9",
     "semantic_hash": ""
   },
   "/Users/fernandomuslimin/Projects/B2BROCKET.AI/Source Code/onboarding-standalone-app/src/copilot/CopilotWidget.tsx": {
@@ -225,8 +225,8 @@
     "semantic_hash": ""
   },
   "/Users/fernandomuslimin/Projects/B2BROCKET.AI/Source Code/onboarding-standalone-app/docs/field_reference/summary-view-spec.md": {
-    "mtime": 1787719804.346149,
-    "ast_hash": "f5b8481df889d551f9f52d5bcedd75b8",
+    "mtime": 1787406026.7333097,
+    "ast_hash": "a661b23538a25c385574dd8abdf09274",
     "semantic_hash": ""
   },
   "/Users/fernandomuslimin/Projects/B2BROCKET.AI/Source Code/onboarding-standalone-app/docs/field_reference/B2B_Rocket_Field_Reference_Schema_Edition.pdf": {

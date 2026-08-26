@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import { COMPANY_PROFILE, IcpDetail, PersonaDetail, ProductDetail, icpsForProduct, personaPerformance, personasForIcp, treeKey } from "./data";
+import { CompanyProfile, HistorySource, IcpDetail, PersonaDetail, ProductDetail, icpsForProduct, personaPerformance, personasForIcp, treeKey } from "./data";
 import { Drawer, Icon, IconName, formatCurrencyShort } from "./ui";
 import { TreeSelection } from "./Tree";
 import { CompanySection } from "./Company";
+
+type LogField = (fieldLabel: string, oldValue: string | string[], newValue: string | string[], source: HistorySource, prompt?: string) => void;
 
 const BRANCH_COLORS = ["#5761fe", "#16a34a", "#db2777", "#d97706"];
 
@@ -282,13 +284,15 @@ function ZoomControls({ zoom, onZoomIn, onZoomOut, onReset }: {
 
 export function KnowledgeDiagram({
   products, icps, personas, selection, onSelect, reviewedKeys, onAddProduct, onAddIcp, onAddPersona,
-  companyReviewed, onToggleCompanyReviewed,
+  companyReviewed, onToggleCompanyReviewed, companyProfile, onPatchCompany, onLogCompanyField,
 }: {
   products: ProductDetail[]; icps: IcpDetail[]; personas: PersonaDetail[];
   selection: TreeSelection | null; onSelect: (sel: TreeSelection) => void;
   reviewedKeys: Set<string>;
   onAddProduct: () => void; onAddIcp: (productId: string) => void; onAddPersona: (icpId: string) => void;
   companyReviewed: boolean; onToggleCompanyReviewed: () => void;
+  companyProfile: CompanyProfile; onPatchCompany: (key: keyof CompanyProfile, value: string | string[]) => void;
+  onLogCompanyField: LogField;
 }) {
   const chartRef = useRef<HTMLDivElement>(null);
   const [activeProductId, setActiveProductId] = useState<string | null>(null);
@@ -362,7 +366,7 @@ export function KnowledgeDiagram({
                 background: "var(--color-heading)", color: "#fff", borderRadius: 12, padding: "12px 22px", fontSize: 14, fontWeight: 800,
                 boxShadow: boxShadowFor(companyOpen), transform: activeTransform(companyOpen),
               }}>
-              {COMPANY_PROFILE.companyName}
+              {companyProfile.companyName}
             </button>
 
             <ul className="kc-chart-tree">
@@ -418,7 +422,8 @@ export function KnowledgeDiagram({
       <ZoomControls zoom={zoom} onZoomIn={zoomIn} onZoomOut={zoomOut} onReset={zoomReset} />
 
       <Drawer open={companyOpen} onClose={() => setCompanyOpen(false)} title="Company Profile" width={900}>
-        <CompanySection reviewed={companyReviewed} onToggleReviewed={onToggleCompanyReviewed} />
+        <CompanySection reviewed={companyReviewed} onToggleReviewed={onToggleCompanyReviewed}
+          profile={companyProfile} onChange={onPatchCompany} onLogField={onLogCompanyField} />
       </Drawer>
     </div>
   );
