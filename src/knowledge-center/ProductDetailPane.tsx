@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { HistorySource, ProductDetail, ProductField } from "./data";
 import { ChipList, EditableField, FieldLabel, HistoryTextField, Icon, IconButton, KC_DANGER_BTN, KC_GHOST_BTN, KC_PRIMARY_BTN } from "./ui";
+import { ReferenceableField, ReferenceableSection } from "../copilot/Referenceable";
 
 export function emptyProduct(id: string): ProductDetail {
   return { id, name: "Untitled product", subtitle: "", description: "", matchPct: 0, fields: [] };
@@ -51,6 +52,7 @@ export function ProductDetailPane({ product, reviewed, onToggleReviewed, onPatch
   const [savedAt, setSavedAt] = useState<string | null>(null);
 
   return (
+    <ReferenceableSection id={`product:${product.id}`} label={product.name}>
     <div style={{ maxWidth: 980 }}>
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, marginBottom: 18 }}>
         <div style={{ minWidth: 0 }}>
@@ -72,7 +74,9 @@ export function ProductDetailPane({ product, reviewed, onToggleReviewed, onPatch
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 14 }}>
         {product.fields.map((field, i) => (
-          <ProductCard key={field.label} field={field} editing={editing} onChange={(v) => onPatchField(i, v)} onLogField={onLogField} />
+          <ReferenceableField key={field.label} id={`product:${product.id}:field:${field.label}`} label={field.label}>
+            <ProductCard field={field} editing={editing} onChange={(v) => onPatchField(i, v)} onLogField={onLogField} />
+          </ReferenceableField>
         ))}
       </div>
 
@@ -84,5 +88,6 @@ export function ProductDetailPane({ product, reviewed, onToggleReviewed, onPatch
       </div>
       {savedAt && <div style={{ fontSize: 11.5, color: "var(--color-success)", textAlign: "right" }}>Saved at {savedAt}</div>}
     </div>
+    </ReferenceableSection>
   );
 }

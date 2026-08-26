@@ -1,0 +1,212 @@
+# Graph Report - onboarding-standalone-app  (2026-08-22)
+
+## Corpus Check
+- 40 files · ~72,692 words
+- Verdict: corpus is large enough that graph structure adds value.
+
+## Summary
+- 641 nodes · 1080 edges · 39 communities (25 shown, 14 thin omitted)
+- Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 6 edges (avg confidence: 0.85)
+- Token cost: 0 input · 0 output
+
+## Graph Freshness
+- Built from commit: `fcffbc8a`
+- Run `git rev-parse HEAD` and compare to check if the graph is stale.
+- Run `graphify update .` after code changes (no API cost).
+
+## Community Hubs (Navigation)
+- [[_COMMUNITY_Onboarding Step Data & Editing|Onboarding Step Data & Editing]]
+- [[_COMMUNITY_Community 1|Community 1]]
+- [[_COMMUNITY_Knowledge Center UI Components|Knowledge Center UI Components]]
+- [[_COMMUNITY_Build Tooling & Dependencies|Build Tooling & Dependencies]]
+- [[_COMMUNITY_App Entry & Standalone Shim|App Entry & Standalone Shim]]
+- [[_COMMUNITY_AI Text Revision Helpers|AI Text Revision Helpers]]
+- [[_COMMUNITY_Website & Product Step Validation|Website & Product Step Validation]]
+- [[_COMMUNITY_Claude Permission Config|Claude Permission Config]]
+- [[_COMMUNITY_Domain Step Validation|Domain Step Validation]]
+- [[_COMMUNITY_Resume Flow Helpers|Resume Flow Helpers]]
+- [[_COMMUNITY_Research Summary Domain Extraction|Research Summary Domain Extraction]]
+- [[_COMMUNITY_Invite Step Validation|Invite Step Validation]]
+- [[_COMMUNITY_Score Cell Styling|Score Cell Styling]]
+- [[_COMMUNITY_Review Order Helpers|Review Order Helpers]]
+- [[_COMMUNITY_GitHub Pages Deploy Workflows|GitHub Pages Deploy Workflows]]
+- [[_COMMUNITY_Brand Logo Asset|Brand Logo Asset]]
+- [[_COMMUNITY_Claude Settings File|Claude Settings File]]
+- [[_COMMUNITY_Community 17|Community 17]]
+- [[_COMMUNITY_Community 18|Community 18]]
+- [[_COMMUNITY_Community 19|Community 19]]
+- [[_COMMUNITY_Community 20|Community 20]]
+- [[_COMMUNITY_Community 21|Community 21]]
+- [[_COMMUNITY_Community 23|Community 23]]
+- [[_COMMUNITY_Community 24|Community 24]]
+- [[_COMMUNITY_Community 25|Community 25]]
+- [[_COMMUNITY_Community 26|Community 26]]
+- [[_COMMUNITY_Community 27|Community 27]]
+- [[_COMMUNITY_Community 28|Community 28]]
+- [[_COMMUNITY_Community 29|Community 29]]
+- [[_COMMUNITY_Community 30|Community 30]]
+- [[_COMMUNITY_Community 31|Community 31]]
+- [[_COMMUNITY_Community 32|Community 32]]
+- [[_COMMUNITY_Community 33|Community 33]]
+- [[_COMMUNITY_Community 34|Community 34]]
+- [[_COMMUNITY_Community 35|Community 35]]
+- [[_COMMUNITY_Community 36|Community 36]]
+- [[_COMMUNITY_Community 37|Community 37]]
+- [[_COMMUNITY_Community 38|Community 38]]
+
+## God Nodes (most connected - your core abstractions)
+1. `Step 4 — Persona` - 23 edges
+2. `Icon()` - 21 edges
+3. `OnboardingShell()` - 17 edges
+4. `Step 2 — Product` - 14 edges
+5. `compilerOptions` - 13 edges
+6. `IcpDetail` - 13 edges
+7. `PersonaDetail` - 13 edges
+8. `ProductDetail` - 12 edges
+9. `KnowledgeCenter()` - 12 edges
+10. `Step 3 — ICP (Ideal Customer Profile)` - 12 edges
+
+## Surprising Connections (you probably didn't know these)
+- `Next.js Decoupling Shim (design rationale for standalone export)` --rationale_for--> `OnboardingShell()`  [EXTRACTED]
+  README.md → src/onboarding-shell.tsx
+- `index.html (dev entry HTML)` --references--> `src/main.tsx (React entry point)`  [EXTRACTED]
+  index.html → src/main.tsx
+- `src/main.tsx (React entry point)` --references--> `OnboardingShell()`  [EXTRACTED]
+  src/main.tsx → src/onboarding-shell.tsx
+- `overallScore()` --semantically_similar_to--> `overallFit()`  [INFERRED] [semantically similar]
+  src/knowledge-center/data.ts → src/knowledge-center/Campaign.tsx
+- `StepClearedForLaunch()` --references--> `KnowledgeCenter()`  [INFERRED]
+  src/onboarding-shell.tsx → src/knowledge-center/KnowledgeCenter.tsx
+
+## Hyperedges (group relationships)
+- **Onboarding Wizard Step Sequence** — src_onboarding_shell_onboardingshell, src_onboarding_shell_stepsplash, src_onboarding_shell_stepwelcome, src_onboarding_shell_stepwebsite, src_onboarding_shell_stepproducts, src_onboarding_shell_stepconnect, src_onboarding_shell_stepresearch, src_onboarding_shell_stepcompanyresearch, src_onboarding_shell_steptamicp, src_onboarding_shell_steppersonas, src_onboarding_shell_stepoutreachcampaign, src_onboarding_shell_stepclearedforlaunch, knowledge_center_knowledgecenter_knowledgecenter [EXTRACTED 1.00]
+- **Vite Build & Single-File Export Pipeline** — package_json, vite_config_ts, tsconfig_json, vite_config_singlefile_ts, onboarding_standalone_html [EXTRACTED 1.00]
+- **GitHub Pages Deployment Pipeline** — workflows_deploy, workflows_deploy_preview, package_json [INFERRED 0.85]
+- **List + Detail Master-Detail UI Pattern** — knowledge_center_icp_icpsection, knowledge_center_persona_personasection, knowledge_center_resources_resourcessection, knowledge_center_product_productsection [INFERRED 0.85]
+- **Product / ICP / Persona Combination Data Model** — knowledge_center_data_productdetail, knowledge_center_data_icpdetail, knowledge_center_data_personadetail, knowledge_center_data_scorechain, knowledge_center_data_campaigncombo [INFERRED 0.90]
+- **Reviewed-Sections Progress Tracking Flow** — knowledge_center_knowledgecenter_knowledgecenter, knowledge_center_company_companysection, knowledge_center_product_productsection, knowledge_center_icp_icpsection, knowledge_center_persona_personasection [EXTRACTED 1.00]
+
+## Communities (39 total, 14 thin omitted)
+
+### Community 0 - "Onboarding Step Data & Editing"
+Cohesion: 0.01
+Nodes (77): ALL_STEPS, AvailStatus, BACK_BTN, BRAND_HIGHLIGHTS, Campaign, CAMPAIGNS, CampaignStep, CARD (+69 more)
+
+### Community 1 - "Community 1"
+Cohesion: 0.07
+Nodes (57): CampaignSection(), CHANNEL_ICON, ComboRow(), HEADER_CELL, overallFit(), STATUS_STYLE, tone(), CampaignSequenceView() (+49 more)
+
+### Community 2 - "Knowledge Center UI Components"
+Cohesion: 0.09
+Nodes (25): icpsForProduct(), personasForIcp(), treeKey(), Explorer(), fieldConfidence(), fieldList(), fieldValue(), KnowledgeOverview() (+17 more)
+
+### Community 3 - "Build Tooling & Dependencies"
+Cohesion: 0.05
+Nodes (34): dependencies, react, react-dom, devDependencies, playwright, @types/react, @types/react-dom, typescript (+26 more)
+
+### Community 4 - "App Entry & Standalone Shim"
+Cohesion: 0.15
+Nodes (13): focusStyle(), isValidUrl(), Next.js Decoupling Shim (design rationale for standalone export), OnboardingShell(), StepConnect(), StepOutreachCampaign(), StepPersonas(), StepProducts() (+5 more)
+
+### Community 5 - "AI Text Revision Helpers"
+Cohesion: 0.21
+Nodes (12): firstSentence(), reviseCallPrepNotes(), reviseCompetitive(), reviseIcpBundle(), revisePositioning(), reviseProductBundle(), reviseProofBundle(), reviseSectionContent() (+4 more)
+
+### Community 6 - "Website & Product Step Validation"
+Cohesion: 0.06
+Nodes (35): reasoning, value, data, rules, sendingSchedule, sequence, reasoning, value (+27 more)
+
+### Community 7 - "Claude Permission Config"
+Cohesion: 0.50
+Nodes (3): permissions, allow, prefersReducedMotion
+
+### Community 8 - "Domain Step Validation"
+Cohesion: 0.67
+Nodes (3): isValidDomain(), StepForwardingDomain(), StepPrimaryDomain()
+
+### Community 9 - "Resume Flow Helpers"
+Cohesion: 0.67
+Nodes (3): lastPhaseLabel(), StepResume(), timeAgo()
+
+### Community 17 - "Community 17"
+Cohesion: 0.06
+Nodes (35): reasoning, value, data, rules, sendingSchedule, sequence, reasoning, value (+27 more)
+
+### Community 18 - "Community 18"
+Cohesion: 0.12
+Nodes (14): index.html (dev entry HTML), Build, code:bash (npm install), code:bash (npm run build), code:bash (npm run build:single), code:bash (npm run build:single && cp dist-single/index.html onboarding), code:tsx (import { useRouter } from "next/navigation";), Onboarding — standalone (+6 more)
+
+### Community 21 - "Community 21"
+Cohesion: 0.12
+Nodes (20): BASIC_FIELDS, CHIP_FIELDS, COMPANY_TEXT_FIELDS, CompanySection(), CompanySummary(), DEEP_DIVE_FIELDS, differentiationParagraph(), LogField (+12 more)
+
+### Community 23 - "Community 23"
+Cohesion: 0.14
+Nodes (14): 10. Messaging Guidance — **Not Shown**, 11. Extended Commercials — **Not Shown**, 12. Additional Proof — **Not Shown**, 13. Scoring Input — **Not Shown**, 1. Header, 2. Elevator Pitch, 3. What It Does & Solves, 4. Key Capabilities (+6 more)
+
+### Community 24 - "Community 24"
+Cohesion: 0.15
+Nodes (17): CopilotContext, CopilotContextValue, CopilotProvider(), useCopilot(), useRegisterCopilotAdapter(), CopilotWidget(), Message, classifyIntent() (+9 more)
+
+### Community 30 - "Community 30"
+Cohesion: 0.08
+Nodes (28): HEADER_CELL, KnowledgeDashboard(), NUM_CELL, Row(), Tier, TIER_META, TIER_ORDER, TIER_SHARE (+20 more)
+
+### Community 31 - "Community 31"
+Cohesion: 0.09
+Nodes (23): 10. Qualification Snapshot, 11. Deeper Pain & Risk Context — **Not Shown**, 12. Challenges — **Not Shown**, 13. Decision-Making Detail — **Not Shown**, 14. Current-Solution Detail — **Not Shown**, 15. Buying Signals Detail — **Not Shown**, 16. Buyer Psychology — **Not Shown**, 17. Extended Messaging Guidance — **Not Shown** (+15 more)
+
+### Community 32 - "Community 32"
+Cohesion: 0.15
+Nodes (13): ReferenceableField(), ReferenceableSection(), COMPANY_SIZE_BUCKETS, FUNDING_STAGE_BUCKETS, HistorySource, ProductField, LogField, LogField (+5 more)
+
+### Community 33 - "Community 33"
+Cohesion: 0.14
+Nodes (16): HistoryEntityType, HistoryEntry, ExplorerView, ICP_TEXT_FIELDS, VIEWS, displayValue(), ENTITY_LABEL, HistoryDrawer() (+8 more)
+
+### Community 34 - "Community 34"
+Cohesion: 0.17
+Nodes (12): 10. Targeting Filters — **Not Shown**, 11. Scoring Input — **Not Shown**, 1. Header, 2. Who This Is & Why They Fit, 3. Firmographic Snapshot, 4. Pains & Goals, 5. Buying Signals, 6. Real Companies Like This (+4 more)
+
+### Community 35 - "Community 35"
+Cohesion: 0.18
+Nodes (11): 10. Scoring Input — **Not Shown**, 1. Header Strip, 2. Who You Are & The Problem You Solve, 3. What Makes You Different, 4. What You Sell, 5. Proof & Credibility, 6. Market Context, 7. Deal Snapshot (+3 more)
+
+### Community 36 - "Community 36"
+Cohesion: 0.24
+Nodes (8): PersonaField, LogField, PersonaSummaryView(), PROSE, SECTION_ICON, sectionField(), sectionFieldList(), AccordionBlock()
+
+### Community 37 - "Community 37"
+Cohesion: 0.22
+Nodes (9): ConfidenceBadge(), FieldLabel(), FieldValue(), FILLED_ICONS, firstSentence(), ICON_PATHS, LowConfidenceMark(), reviseText() (+1 more)
+
+### Community 38 - "Community 38"
+Cohesion: 0.29
+Nodes (6): General implementation notes, Mechanisms, Onboarding Review Wizard — Summary View Specification, Open items to resolve before/during implementation, Priority tiers, Purpose
+
+## Ambiguous Edges - Review These
+- `CAMPAIGN_COMBOS` → `RoadmapPhase`  [AMBIGUOUS]
+  src/knowledge-center/data.ts · relation: references
+
+## Knowledge Gaps
+- **288 isolated node(s):** `name`, `private`, `version`, `type`, `dev` (+283 more)
+  These have ≤1 connection - possible missing edges or undocumented components.
+- **14 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+
+## Suggested Questions
+_Questions this graph is uniquely positioned to answer:_
+
+- **What is the exact relationship between `CAMPAIGN_COMBOS` and `RoadmapPhase`?**
+  _Edge tagged AMBIGUOUS (relation: references) - confidence is low._
+- **Why does `OnboardingShell()` connect `App Entry & Standalone Shim` to `Community 24`, `Community 1`, `Community 18`, `Onboarding Step Data & Editing`?**
+  _High betweenness centrality (0.112) - this node is a cross-community bridge._
+- **Why does `KnowledgeCenter()` connect `Community 1` to `Onboarding Step Data & Editing`, `App Entry & Standalone Shim`, `Community 21`?**
+  _High betweenness centrality (0.050) - this node is a cross-community bridge._
+- **What connects `name`, `private`, `version` to the rest of the system?**
+  _289 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Should `Onboarding Step Data & Editing` be split into smaller, more focused modules?**
+  _Cohesion score 0.014388489208633094 - nodes in this community are weakly interconnected._
+- **Should `Community 1` be split into smaller, more focused modules?**
+  _Cohesion score 0.07490079365079365 - nodes in this community are weakly interconnected._
+- **Should `Knowledge Center UI Components` be split into smaller, more focused modules?**
+  _Cohesion score 0.08571428571428572 - nodes in this community are weakly interconnected._

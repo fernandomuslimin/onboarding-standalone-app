@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { COMPANY_SIZE_BUCKETS, FUNDING_STAGE_BUCKETS, HistorySource, IcpDetail, PersonaDetail } from "./data";
 import { CardSection, CheckboxPills, ChipList, EditableField, FieldLabel, HistoryTextField, Icon, KC_DANGER_BTN, KC_PRIMARY_BTN } from "./ui";
+import { ReferenceableField, ReferenceableSection } from "../copilot/Referenceable";
 
 export function emptyIcp(id: string, productId: string): IcpDetail {
   return {
@@ -48,11 +49,14 @@ export function IcpDetailPane({ icp, personas, onPatch, onDelete, onSelectPerson
   }
 
   return (
+    <ReferenceableSection id={`icp:${icp.id}`} label={icp.name}>
     <div style={{ display: "flex", flexDirection: "column", gap: 20, maxWidth: 900 }}>
       <div style={{ background: "var(--color-page)", border: "1px solid var(--color-border)", borderRadius: 14, padding: "18px 22px", boxShadow: "var(--shadow-card)" }}>
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 14, marginBottom: 12 }}>
-          <EditableField value={icp.name} onChange={(v) => onPatch({ name: v })}
-            onCommit={(oldValue, newValue) => onLogField("Name", oldValue, newValue, "manual")} />
+          <ReferenceableField id={`icp:${icp.id}:field:name`} label="Name">
+            <EditableField value={icp.name} onChange={(v) => onPatch({ name: v })}
+              onCommit={(oldValue, newValue) => onLogField("Name", oldValue, newValue, "manual")} />
+          </ReferenceableField>
           <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
             <button type="button" className="kc-primary-btn" style={KC_PRIMARY_BTN} onClick={() => setSavedAt(new Date().toLocaleTimeString())}>
               <Icon name="check" size={14} />
@@ -65,10 +69,14 @@ export function IcpDetailPane({ icp, personas, onPatch, onDelete, onSelectPerson
 
       <CardSection icon="target" title="Identity & Fit">
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          <HistoryTextField label="Summary" value={icp.summary} onChange={(v) => onPatch({ summary: v })} multiline rows={2}
-            onLogChange={(c) => onLogField("Summary", c.oldValue, c.newValue, c.source, c.prompt)} />
-          <HistoryTextField label="Fit Reasoning" value={icp.fitReasoning} onChange={(v) => onPatch({ fitReasoning: v })} multiline rows={2}
-            onLogChange={(c) => onLogField("Fit Reasoning", c.oldValue, c.newValue, c.source, c.prompt)} />
+          <ReferenceableField id={`icp:${icp.id}:field:summary`} label="Summary">
+            <HistoryTextField label="Summary" value={icp.summary} onChange={(v) => onPatch({ summary: v })} multiline rows={2}
+              onLogChange={(c) => onLogField("Summary", c.oldValue, c.newValue, c.source, c.prompt)} />
+          </ReferenceableField>
+          <ReferenceableField id={`icp:${icp.id}:field:fitReasoning`} label="Fit Reasoning">
+            <HistoryTextField label="Fit Reasoning" value={icp.fitReasoning} onChange={(v) => onPatch({ fitReasoning: v })} multiline rows={2}
+              onLogChange={(c) => onLogField("Fit Reasoning", c.oldValue, c.newValue, c.source, c.prompt)} />
+          </ReferenceableField>
           <div>
             <FieldLabel>Buying Triggers</FieldLabel>
             <ChipList items={icp.buyingTriggers} onChange={logArray("Buying Triggers", icp.buyingTriggers, (v) => onPatch({ buyingTriggers: v }))} />
@@ -90,8 +98,10 @@ export function IcpDetailPane({ icp, personas, onPatch, onDelete, onSelectPerson
             <FieldLabel>Company Size</FieldLabel>
             <CheckboxPills options={COMPANY_SIZE_BUCKETS} selected={icp.companySizes} onChange={logArray("Company Size", icp.companySizes, (v) => onPatch({ companySizes: v }))} />
           </div>
-          <HistoryTextField label="Revenue Range" value={icp.revenueRange} onChange={(v) => onPatch({ revenueRange: v })}
-            onLogChange={(c) => onLogField("Revenue Range", c.oldValue, c.newValue, c.source, c.prompt)} />
+          <ReferenceableField id={`icp:${icp.id}:field:revenueRange`} label="Revenue Range">
+            <HistoryTextField label="Revenue Range" value={icp.revenueRange} onChange={(v) => onPatch({ revenueRange: v })}
+              onLogChange={(c) => onLogField("Revenue Range", c.oldValue, c.newValue, c.source, c.prompt)} />
+          </ReferenceableField>
           <div>
             <FieldLabel>Geographies</FieldLabel>
             <ChipList items={icp.geographies} onChange={logArray("Geographies", icp.geographies, (v) => onPatch({ geographies: v }))} />
@@ -101,17 +111,23 @@ export function IcpDetailPane({ icp, personas, onPatch, onDelete, onSelectPerson
             <CheckboxPills options={FUNDING_STAGE_BUCKETS} selected={icp.fundingStages} onChange={logArray("Funding Stage", icp.fundingStages, (v) => onPatch({ fundingStages: v }))} />
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
-            <HistoryTextField label="Growth Stage" value={icp.growthStage} onChange={(v) => onPatch({ growthStage: v })}
-              onLogChange={(c) => onLogField("Growth Stage", c.oldValue, c.newValue, c.source, c.prompt)} />
-            <HistoryTextField label="Business Model" value={icp.businessModel} onChange={(v) => onPatch({ businessModel: v })}
-              onLogChange={(c) => onLogField("Business Model", c.oldValue, c.newValue, c.source, c.prompt)} />
+            <ReferenceableField id={`icp:${icp.id}:field:growthStage`} label="Growth Stage">
+              <HistoryTextField label="Growth Stage" value={icp.growthStage} onChange={(v) => onPatch({ growthStage: v })}
+                onLogChange={(c) => onLogField("Growth Stage", c.oldValue, c.newValue, c.source, c.prompt)} />
+            </ReferenceableField>
+            <ReferenceableField id={`icp:${icp.id}:field:businessModel`} label="Business Model">
+              <HistoryTextField label="Business Model" value={icp.businessModel} onChange={(v) => onPatch({ businessModel: v })}
+                onLogChange={(c) => onLogField("Business Model", c.oldValue, c.newValue, c.source, c.prompt)} />
+            </ReferenceableField>
           </div>
           <div>
             <FieldLabel>Tech Stack Signals</FieldLabel>
             <ChipList items={icp.techStackSignals} onChange={logArray("Tech Stack Signals", icp.techStackSignals, (v) => onPatch({ techStackSignals: v }))} />
           </div>
-          <HistoryTextField label="Decision-Making Unit" value={icp.decisionMakingUnit} onChange={(v) => onPatch({ decisionMakingUnit: v })} multiline rows={2}
-            onLogChange={(c) => onLogField("Decision-Making Unit", c.oldValue, c.newValue, c.source, c.prompt)} />
+          <ReferenceableField id={`icp:${icp.id}:field:decisionMakingUnit`} label="Decision-Making Unit">
+            <HistoryTextField label="Decision-Making Unit" value={icp.decisionMakingUnit} onChange={(v) => onPatch({ decisionMakingUnit: v })} multiline rows={2}
+              onLogChange={(c) => onLogField("Decision-Making Unit", c.oldValue, c.newValue, c.source, c.prompt)} />
+          </ReferenceableField>
         </div>
       </CardSection>
 
@@ -156,10 +172,14 @@ export function IcpDetailPane({ icp, personas, onPatch, onDelete, onSelectPerson
             <ChipList items={icp.incumbentTools} onChange={logArray("Incumbent Tools", icp.incumbentTools, (v) => onPatch({ incumbentTools: v }))} />
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
-            <HistoryTextField label="Department Size" value={icp.departmentSize} onChange={(v) => onPatch({ departmentSize: v })}
-              onLogChange={(c) => onLogField("Department Size", c.oldValue, c.newValue, c.source, c.prompt)} />
-            <HistoryTextField label="Outreach Accessibility" value={icp.outreachAccessibility} onChange={(v) => onPatch({ outreachAccessibility: v })}
-              onLogChange={(c) => onLogField("Outreach Accessibility", c.oldValue, c.newValue, c.source, c.prompt)} />
+            <ReferenceableField id={`icp:${icp.id}:field:departmentSize`} label="Department Size">
+              <HistoryTextField label="Department Size" value={icp.departmentSize} onChange={(v) => onPatch({ departmentSize: v })}
+                onLogChange={(c) => onLogField("Department Size", c.oldValue, c.newValue, c.source, c.prompt)} />
+            </ReferenceableField>
+            <ReferenceableField id={`icp:${icp.id}:field:outreachAccessibility`} label="Outreach Accessibility">
+              <HistoryTextField label="Outreach Accessibility" value={icp.outreachAccessibility} onChange={(v) => onPatch({ outreachAccessibility: v })}
+                onLogChange={(c) => onLogField("Outreach Accessibility", c.oldValue, c.newValue, c.source, c.prompt)} />
+            </ReferenceableField>
           </div>
         </div>
       </CardSection>
@@ -191,5 +211,6 @@ export function IcpDetailPane({ icp, personas, onPatch, onDelete, onSelectPerson
         </button>
       </div>
     </div>
+    </ReferenceableSection>
   );
 }
