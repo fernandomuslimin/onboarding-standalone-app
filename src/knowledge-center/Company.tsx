@@ -103,6 +103,21 @@ const SYNTHESIZED_BLOCKS: { key: "whoYouAre" | "whatMakesYouDifferent"; label: s
   { key: "whatMakesYouDifferent", label: "Competitive Differentiation", build: differentiationParagraph, fields: ["unlike", "weUniquely", "differentiators"] },
 ];
 
+// Section-level pin targets for the remaining summary blocks (Company
+// Overview / Competitive Differentiation already pin as a whole via their
+// SYNTHESIZED_BLOCKS field id above). Ids are namespaced "company:block:
+// {key}" so hovering/pinning the whole card works the same as pinning a
+// single field inside it — mirrors the same pattern in onboarding-shell.tsx's
+// StepCompanyResearch.
+const COMPANY_BLOCKS: { key: string; label: string; fields: (keyof CompanyProfile)[] }[] = [
+  { key: "productsOfferings", label: "Products & Offerings", fields: ["productServiceSummary", "products"] },
+  { key: "proofCredibility", label: "Proof & Credibility", fields: ["keySellingPoints", "notableCustomers", "proof"] },
+  { key: "marketContext", label: "Market Context", fields: ["industries", "competitors"] },
+  { key: "dealSnapshot", label: "Deal Snapshot", fields: ["buyingMotion", "dealOverview", "salesCycle"] },
+  { key: "risksToAddress", label: "Risks to Address", fields: ["trustRisksObjections"] },
+];
+const companyBlockId = (key: string) => `company:block:${key}`;
+
 export function CompanySection({ profile, onChange, onLogField, reviewed, onToggleReviewed }: {
   profile: CompanyProfile; onChange: (key: keyof CompanyProfile, value: string | string[]) => void; onLogField: LogField;
   reviewed: boolean; onToggleReviewed: () => void;
@@ -117,8 +132,20 @@ export function CompanySection({ profile, onChange, onLogField, reviewed, onTogg
 
   useRegisterCopilotAdapter("company", {
     resolve(id): ResolvedReference | null {
-      const key = id.split(":")[1];
+      const parts = id.split(":");
+      const key = parts[1];
       if (!key) return { id, label: profile.companyName, value: COMPANY_TEXT_FIELDS.map((f) => ({ label: f.label, value: profile[f.key] as string })) };
+      if (key === "block") {
+        const block = COMPANY_BLOCKS.find((b) => b.key === parts[2]);
+        if (!block) return null;
+        return {
+          id, label: block.label,
+          value: block.fields.map((f) => {
+            const spec = [...COMPANY_TEXT_FIELDS, ...CHIP_FIELDS].find((s) => s.key === f);
+            return { label: spec ? spec.label : f, value: profile[f] };
+          }),
+        };
+      }
       const synth = SYNTHESIZED_BLOCKS.find((b) => b.key === key);
       if (synth) return { id, label: synth.label, value: synth.build(profile) };
       if (!(key in profile)) return null;
@@ -126,9 +153,29 @@ export function CompanySection({ profile, onChange, onLogField, reviewed, onTogg
       return { id, label: spec ? spec.label : key, value: profile[key as keyof CompanyProfile] };
     },
     applyEdit(id, instruction) {
-      const key = id.split(":")[1] as keyof CompanyProfile | "whoYouAre" | "whatMakesYouDifferent" | undefined;
+      const parts = id.split(":");
+      const key = parts[1];
       return new Promise((resolve) => {
         setTimeout(() => {
+          if (key === "block") {
+            const block = COMPANY_BLOCKS.find((b) => b.key === parts[2]);
+            if (!block) return resolve({ changedSummary: "couldn't find that section." });
+            let changed = 0;
+            let hasListFields = false;
+            block.fields.forEach((f) => {
+              const textSpec = COMPANY_TEXT_FIELDS.find((t) => t.key === f);
+              if (!textSpec) { hasListFields = true; return; }
+              const oldValue = profile[f] as string;
+              const revised = reviseText(oldValue, instruction);
+              if (revised !== oldValue) {
+                onChange(f, revised);
+                onLogField(textSpec.label, oldValue, revised, "ai", instruction);
+                changed++;
+              }
+            });
+            if (changed > 0) return resolve({ changedSummary: `updated ${changed} field(s) in "${block.label}".` });
+            return resolve({ changedSummary: hasListFields ? `no text changes — list fields in "${block.label}" aren't editable via the copilot yet.` : "no visible change." });
+          }
           if (key) {
             const synth = SYNTHESIZED_BLOCKS.find((b) => b.key === key);
             if (synth) {
@@ -282,8 +329,8 @@ function CompanySummary({ profile, onViewDetails }: {
   onViewDetails: () => void;
 }) {
   return (
-    <ReferenceableSection id="company" label={profile.companyName}>
-    <div style={{ width: "100%", maxWidth: 1320, display: "flex", flexDirection: "column", gap: 14 }}>
+    <ReferenceableSection id="company" label={profile.companyName} style={{ width: "100%" }}>
+    <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 14 }}>
       {/* Block 1 — Header Strip (Primary, Field-Join) */}
       <div style={{ background: "var(--color-page)", border: "1px solid var(--color-border)", borderRadius: 14, padding: "16px 26px", boxShadow: "var(--shadow-card)" }}>
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 20, flexWrap: "wrap" }}>
@@ -340,7 +387,7 @@ function CompanySummary({ profile, onViewDetails }: {
           </ReferenceableField>
 
           {/* Block 4 — What You Sell (Primary, Field-Join) */}
-          <CardSection icon="grid" title="Products & Offerings">
+          <CardSection icon="grid" title="Products & Offerings" sectionId={companyBlockId("productsOfferings")}>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               <ReferenceableField id="company:productServiceSummary" label="Product / Service Summary">
                 <p style={PROSE}>{profile.productServiceSummary}</p>
@@ -352,7 +399,7 @@ function CompanySummary({ profile, onViewDetails }: {
           </CardSection>
 
           {/* Block 5 — Proof & Credibility (Primary, Field-Join) */}
-          <CardSection icon="handshake" title="Proof & Credibility">
+          <CardSection icon="handshake" title="Proof & Credibility" sectionId={companyBlockId("proofCredibility")}>
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
                 <ReferenceableField id="company:keySellingPoints" label="Key Selling Points">
@@ -376,7 +423,7 @@ function CompanySummary({ profile, onViewDetails }: {
 
         <div style={{ display: "flex", flexDirection: "column", gap: 14, minWidth: 0 }}>
           {/* Blocks 6–8 — Secondary (expandable) */}
-          <AccordionBlock icon="globe" title="Market Context">
+          <AccordionBlock icon="globe" title="Market Context" sectionId={companyBlockId("marketContext")}>
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
               <ReferenceableField id="company:industries" label="Industries">
                 <FieldLabel>Industries</FieldLabel>
@@ -389,7 +436,7 @@ function CompanySummary({ profile, onViewDetails }: {
             </div>
           </AccordionBlock>
 
-          <AccordionBlock icon="dollar" title="Deal Snapshot">
+          <AccordionBlock icon="dollar" title="Deal Snapshot" sectionId={companyBlockId("dealSnapshot")}>
             <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
               <ReferenceableField id="company:buyingMotion" label="Buying Motion">
                 <FieldLabel>Buying Motion</FieldLabel>
@@ -406,7 +453,7 @@ function CompanySummary({ profile, onViewDetails }: {
             </div>
           </AccordionBlock>
 
-          <AccordionBlock icon="shield" title="Risks to Address">
+          <AccordionBlock icon="shield" title="Risks to Address" sectionId={companyBlockId("risksToAddress")}>
             <ReferenceableField id="company:trustRisksObjections" label="Trust Risks / Objections">
               <ul style={{ margin: 0, padding: "0 0 0 16px", display: "flex", flexDirection: "column", gap: 5 }}>
                 {profile.trustRisksObjections.map((risk, i) => (

@@ -17,7 +17,7 @@ const PIN_ICON = (
   </svg>
 );
 
-function ReferenceableBase({ id, label, radius, children }: { id: string; label: string; radius: number; children: React.ReactNode }) {
+function ReferenceableBase({ id, label, radius, style, children }: { id: string; label: string; radius: number; style?: React.CSSProperties; children: React.ReactNode }) {
   const { hoveredId, setHoveredId, pinned, pin, unpin, open } = useCopilot();
   const isPinned = pinned.some((r) => r.id === id);
   const isHovered = hoveredId === id;
@@ -33,9 +33,10 @@ function ReferenceableBase({ id, label, radius, children }: { id: string; label:
     <div
       className="copilot-ref"
       data-copilot-active={active}
+      data-copilot-hovered={isHovered}
       onMouseOver={(e) => { e.stopPropagation(); setHoveredId(id); }}
       onMouseLeave={() => setHoveredId((current) => (current === id ? null : current))}
-      style={{ position: "relative", borderRadius: radius }}
+      style={{ position: "relative", borderRadius: radius, ...style }}
     >
       {children}
       {isHovered && (
@@ -57,19 +58,23 @@ function ReferenceableBase({ id, label, radius, children }: { id: string; label:
   );
 }
 
-export function ReferenceableSection({ id, label, children }: { id: string; label: string; children: React.ReactNode }) {
-  return <ReferenceableBase id={id} label={label} radius={16}>{children}</ReferenceableBase>;
+export function ReferenceableSection({ id, label, style, children }: { id: string; label: string; style?: React.CSSProperties; children: React.ReactNode }) {
+  return <ReferenceableBase id={id} label={label} radius={16} style={style}>{children}</ReferenceableBase>;
 }
 
-export function ReferenceableField({ id, label, children }: { id: string; label: string; children: React.ReactNode }) {
-  return <ReferenceableBase id={id} label={label} radius={12}>{children}</ReferenceableBase>;
+export function ReferenceableField({ id, label, style, children }: { id: string; label: string; style?: React.CSSProperties; children: React.ReactNode }) {
+  return <ReferenceableBase id={id} label={label} radius={12} style={style}>{children}</ReferenceableBase>;
 }
 
-/* Mounted once by CopilotWidget. Gates the hover ring with
-   data-copilot-active so a pinned reference keeps a persistent border
-   even after the mouse leaves — same pattern as Diagram.tsx's
+/* Mounted once by CopilotWidget. Gates the ring with the JS-tracked
+   hoveredId (data-copilot-hovered) rather than raw CSS :hover — a plain
+   :hover selector matches every ancestor .copilot-ref at once (hovering
+   a nested field also sits inside its enclosing section), which rings
+   the whole outer card instead of just the deepest wrapper under the
+   pointer. data-copilot-active keeps a persistent border for a pinned
+   reference even after the mouse leaves — same pattern as Diagram.tsx's
    .kc-chart-box hover-ring precedent. */
 export const COPILOT_REF_STYLES = `
-.copilot-ref:not([data-copilot-active="true"]):hover { box-shadow: 0 0 0 2px var(--color-brand-tint) !important; }
+.copilot-ref[data-copilot-hovered="true"]:not([data-copilot-active="true"]) { box-shadow: 0 0 0 2px var(--color-brand-tint) !important; }
 .copilot-ref[data-copilot-active="true"] { box-shadow: 0 0 0 2px var(--color-brand) !important; }
 `;

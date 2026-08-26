@@ -46,16 +46,31 @@ const STYLES = `
 .ob-back-btn:hover { background: var(--color-surface); color: var(--color-heading); }
 .ob-link-btn:hover { color: var(--color-brand-hover); }
 .ob-hero-title { font-size: clamp(32px, 5vw, 56px); }
+.ob-hero-gradient-text {
+  background: linear-gradient(100deg, var(--color-brand) 15%, #0fb5c9 85%);
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;
+}
+
+@keyframes ob-hero-drift { 0%, 100% { transform: translate3d(0,0,0); } 50% { transform: translate3d(0,-14px,0); } }
+@keyframes ob-hero-drift-slow { 0%, 100% { transform: translate3d(0,0,0); } 50% { transform: translate3d(0,18px,0); } }
+@keyframes ob-hero-pulse-ring { 0% { box-shadow: 0 0 0 0 rgba(7,188,12,0.5); } 100% { box-shadow: 0 0 0 8px rgba(7,188,12,0); } }
+@keyframes ob-hero-ripple { from { transform: scale(0); opacity: 0.5; } to { transform: scale(1); opacity: 0; } }
+@keyframes ob-hero-dash { to { stroke-dashoffset: -24; } }
+.ob-hero-tile { transition: box-shadow 250ms var(--ease-apple), transform 250ms var(--ease-apple), border-color 250ms var(--ease-apple); }
+.ob-hero-tile:hover { box-shadow: 0 20px 40px -12px rgba(87,97,254,0.28); transform: translateY(-4px); border-color: rgba(87,97,254,0.35) !important; }
+.ob-hero-tile:hover .ob-hero-tile-icon { transform: scale(1.15) rotate(-6deg); }
+.ob-hero-tile-icon { transition: transform 300ms var(--ease-apple); }
+.ob-hero-skip { transition: opacity 200ms; }
+.ob-hero-skip:hover { opacity: 0.7; }
+.ob-primary-btn.ob-hero-cta { box-shadow: 0 12px 28px -8px rgba(87,97,254,0.55); }
+.ob-primary-btn.ob-hero-cta:hover:not(:disabled) { box-shadow: 0 16px 36px -8px rgba(87,97,254,0.65); }
+@media (max-width: 720px) {
+  .ob-hero-tiles { position: static !important; height: auto !important; display: flex !important; flex-direction: column !important; gap: 12px !important; }
+  .ob-hero-tile { position: static !important; width: 100% !important; }
+  .ob-hero-flow-line { display: none !important; }
+}
 
 .ob-field-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); align-items: start; gap: 12px; }
-
-.ob-review-card { max-width: 660px !important; }
-@media (min-width: 860px) {
-  .ob-review-card { max-width: 780px !important; }
-}
-@media (min-width: 1080px) {
-  .ob-review-card { max-width: 920px !important; }
-}
 
 @media (max-width: 1080px) {
   .ob-company-grid { grid-template-columns: 1fr !important; }
@@ -369,74 +384,136 @@ function PhaseStepper({ step }: { step: StepName }) {
 }
 
 /* ════════════════════════════════════════════════════════════════════
-   BRAND WELCOME — First screen shown. A single card previewing the
-   concrete outputs of onboarding, then straight into the flow.
+   BRAND WELCOME — First screen shown. A full-bleed animated hero
+   previewing the concrete outputs of onboarding, then straight into
+   the flow. `.ob-shell-content` already goes full-viewport and
+   centers both axes for this step (see the ternary in the main
+   render), so this component only needs to paint its own background
+   layer and content column on top of that.
 ══════════════════════════════════════════════════════════════════════ */
-const WELCOME_ITEMS: { title: string; desc: string; icon: React.ReactNode }[] = [
+const HERO_TILES: { title: string; desc: string; icon: React.ReactNode; style: React.CSSProperties }[] = [
   {
-    title: "A Knowledge Center",
-    desc: "Your company, products and market, researched and written up.",
+    title: "Knowledge center",
+    desc: "Your product, researched and written up.",
     icon: <><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></>,
+    style: { top: 0, left: "6%" },
   },
   {
     title: "ICPs & personas",
-    desc: "Who to go after, what they care about, and how to open.",
+    desc: "Who to go after and how to open.",
     icon: <><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></>,
-  },
-  {
-    title: "Sending infrastructure",
-    desc: "Domains and mailboxes provisioned, configured and warming.",
-    icon: <><rect x="3" y="4" width="18" height="6" rx="1.5" /><rect x="3" y="14" width="18" height="6" rx="1.5" /></>,
+    style: { top: 38, left: "38%", zIndex: 2 },
   },
   {
     title: "Live campaigns",
-    desc: "Email and LinkedIn sequences drafted from your own research.",
+    desc: "Sequences drafted from your research.",
     icon: <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />,
+    style: { top: 6, left: "70%" },
   },
 ];
 
+interface Ripple { id: number; x: number; y: number }
+
 function StepBrandWelcome({ onNext, onSkip }: { onNext: () => void; onSkip: () => void }) {
+  const [ripples, setRipples] = useState<Ripple[]>([]);
+  const glowRef = useRef<HTMLDivElement>(null);
+  const orb1Ref = useRef<HTMLDivElement>(null);
+  const orb2Ref = useRef<HTMLDivElement>(null);
+  const dotsRef = useRef<HTMLDivElement>(null);
+  const cursorGlowRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const target = { x: 0, y: 0 };
+    const current = { x: 0, y: 0 };
+    function onMouseMove(e: MouseEvent) {
+      target.x = (e.clientX / window.innerWidth) * 2 - 1;
+      target.y = (e.clientY / window.innerHeight) * 2 - 1;
+      if (cursorGlowRef.current) {
+        cursorGlowRef.current.style.left = `${e.clientX}px`;
+        cursorGlowRef.current.style.top = `${e.clientY}px`;
+        cursorGlowRef.current.style.opacity = "1";
+      }
+    }
+    window.addEventListener("mousemove", onMouseMove);
+    let raf = 0;
+    function loop() {
+      current.x += (target.x - current.x) * 0.06;
+      current.y += (target.y - current.y) * 0.06;
+      const mx = current.x, my = current.y;
+      if (glowRef.current) glowRef.current.style.background = `radial-gradient(900px circle at ${50 + mx * 22}% ${45 + my * 22}%, rgba(87,97,254,0.16), rgba(87,97,254,0.05) 40%, transparent 65%)`;
+      if (orb1Ref.current) orb1Ref.current.style.transform = `translate3d(${mx * 26}px, ${my * 26}px, 0)`;
+      if (orb2Ref.current) orb2Ref.current.style.transform = `translate3d(${mx * -34}px, ${my * -20}px, 0)`;
+      if (dotsRef.current) dotsRef.current.style.backgroundPosition = `${mx * 22}px ${my * 22}px`;
+      raf = requestAnimationFrame(loop);
+    }
+    raf = requestAnimationFrame(loop);
+    return () => {
+      window.removeEventListener("mousemove", onMouseMove);
+      cancelAnimationFrame(raf);
+    };
+  }, []);
+
+  function handleGetStarted(e: React.MouseEvent<HTMLButtonElement>) {
+    const r = e.currentTarget.getBoundingClientRect();
+    const id = Date.now();
+    setRipples((cur) => [...cur, { id, x: e.clientX - r.left, y: e.clientY - r.top }]);
+    setTimeout(() => setRipples((cur) => cur.filter((rp) => rp.id !== id)), 650);
+    onNext();
+  }
+
   return (
-    <div className="ob-card" style={{ ...CARD, maxWidth: 520, textAlign: "center" as const }}>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={`${import.meta.env.BASE_URL}b2brocket-logo.png`} alt="B2B Rocket" style={{ height: 44, marginBottom: 28, display: "block", marginLeft: "auto", marginRight: "auto" }} />
-
-      <h1 style={{ fontSize: 28, fontWeight: 800, letterSpacing: "-0.02em", lineHeight: 1.2, margin: "0 0 12px", color: "var(--color-heading)" }}>
-        Welcome to B2B Rocket
-      </h1>
-
-      <p style={{ fontSize: 15, color: "var(--color-body)", lineHeight: 1.6, margin: "0 auto 28px", maxWidth: 420 }}>
-        Answer a few quick questions and your AI agents get to work — prospecting, personalizing, and booking meetings for you.
-      </p>
-
-      <div style={{ border: "1px solid var(--color-border)", borderRadius: 12, overflow: "hidden", marginBottom: 28, textAlign: "left" as const }}>
-        <div style={{ padding: "10px 20px", background: "var(--color-surface)", borderBottom: "1px solid var(--color-border)" }}>
-          <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.05em", textTransform: "uppercase" as const, color: "var(--color-muted)" }}>
-            Here&apos;s what you&apos;ll have
-          </span>
-        </div>
-        {WELCOME_ITEMS.map((item, i) => (
-          <div key={item.title} style={{ display: "flex", alignItems: "flex-start", gap: 14, padding: "16px 20px", borderBottom: i < WELCOME_ITEMS.length - 1 ? "1px solid var(--color-border)" : "none" }}>
-            <div style={{ width: 36, height: 36, borderRadius: 9, background: "var(--color-brand-tint)", color: "var(--color-brand)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">{item.icon}</svg>
-            </div>
-            <div>
-              <div style={{ fontSize: 14.5, fontWeight: 700, color: "var(--color-heading)", marginBottom: 2 }}>{item.title}</div>
-              <div style={{ fontSize: 13, color: "var(--color-body)", lineHeight: 1.5 }}>{item.desc}</div>
-            </div>
-          </div>
-        ))}
+    <div style={{ position: "relative", width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
+      {/* Full-viewport ambient background — fixed so it paints behind the
+          whole page regardless of where this step sits in the shell. */}
+      <div style={{ position: "fixed", inset: 0, zIndex: 0, overflow: "hidden", pointerEvents: "none", background: "#fff" }}>
+        <div ref={glowRef} style={{ position: "absolute", inset: 0 }} />
+        <div ref={dotsRef} style={{ position: "absolute", inset: -40, opacity: 0.5, backgroundImage: "radial-gradient(rgba(5,12,70,0.10) 1px, transparent 1.5px)", backgroundSize: "28px 28px" }} />
+        <div ref={orb1Ref} style={{ position: "absolute", top: -200, left: -160, width: 600, height: 600, borderRadius: "50%", background: "radial-gradient(circle at 35% 30%, rgba(87,97,254,0.24), rgba(87,97,254,0.04) 60%, transparent 70%)", filter: "blur(6px)", animation: "ob-hero-drift 9s ease-in-out infinite" }} />
+        <div ref={orb2Ref} style={{ position: "absolute", bottom: -240, right: -180, width: 660, height: 660, borderRadius: "50%", background: "radial-gradient(circle at 60% 40%, rgba(15,181,201,0.18), rgba(15,181,201,0.02) 60%, transparent 70%)", filter: "blur(6px)", animation: "ob-hero-drift-slow 11s ease-in-out infinite" }} />
+        <div style={{ position: "absolute", inset: 0, opacity: 0.035, mixBlendMode: "multiply", backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")" }} />
       </div>
+      <div ref={cursorGlowRef} style={{ position: "fixed", zIndex: 0, pointerEvents: "none", width: 260, height: 260, marginLeft: -130, marginTop: -130, borderRadius: "50%", background: "radial-gradient(circle, rgba(87,97,254,0.28), rgba(15,181,201,0.1) 45%, transparent 70%)", filter: "blur(2px)", opacity: 0, transition: "opacity 0.3s var(--ease-apple)" }} />
 
-      <button onClick={onNext} style={PRIMARY_BTN} className="ob-primary-btn">
-        Get started
-      </button>
-      <p style={{ fontSize: 12.5, color: "var(--color-muted)", margin: "14px 0 0" }}>
-        Takes about 10 minutes. Your progress saves as you go.
-      </p>
-      <button onClick={onSkip} style={{ ...GHOST_BTN, width: "auto", margin: "8px auto 0" }} className="ob-ghost-btn">
-        Skip to Knowledge Center (testing)
-      </button>
+      <div style={{ position: "relative", zIndex: 2, width: "100%", maxWidth: 920, display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" as const }}>
+        <h1 className="ob-hero-title" style={{ fontWeight: 800, letterSpacing: "-0.02em", lineHeight: 1.15, margin: "0 0 18px", maxWidth: 680, color: "var(--color-heading)", opacity: 0, animation: "ob-fadeInUp 0.6s var(--ease-apple) 0.05s forwards" }}>
+          Welcome to <span className="ob-hero-gradient-text">B2B Rocket</span>.
+        </h1>
+        <p style={{ fontSize: 16, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 40px", maxWidth: 480, opacity: 0, animation: "ob-fadeInUp 0.6s var(--ease-apple) 0.15s forwards" }}>
+          Let&apos;s set up your outbound engine. Answer a few questions and your agents start researching, building your ICP, and drafting campaigns.
+        </p>
+
+        <div className="ob-hero-tiles" style={{ position: "relative", width: "100%", height: 180, marginBottom: 36, opacity: 0, animation: "ob-fadeInUp 0.6s var(--ease-apple) 0.25s forwards" }}>
+          <svg className="ob-hero-flow-line" width="100%" height="100%" viewBox="0 0 760 180" preserveAspectRatio="none" style={{ position: "absolute", inset: 0, overflow: "visible" }}>
+            <path d="M100 34 C 200 90, 220 90, 316 92 S 480 44, 580 46" fill="none" stroke="var(--color-brand)" strokeOpacity="0.28" strokeWidth="2" strokeDasharray="1 9" strokeLinecap="round" style={{ animation: "ob-hero-dash 1.6s linear infinite" }} />
+          </svg>
+          {HERO_TILES.map((tile, i) => (
+            <div key={tile.title} className="ob-hero-tile" style={{ position: "absolute", width: 220, padding: "20px 20px 18px", borderRadius: 14, background: "rgba(255,255,255,0.72)", border: "1px solid var(--color-border)", backdropFilter: "blur(12px)", boxShadow: "0 10px 26px -14px rgba(5,12,70,0.18)", textAlign: "left" as const, ...tile.style }}>
+              <span style={{ position: "absolute", top: -10, left: -10, width: 22, height: 22, borderRadius: "50%", background: "linear-gradient(135deg, var(--color-brand), #0fb5c9)", color: "#fff", fontSize: 11, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 10px -2px rgba(87,97,254,0.5)" }}>
+                {i + 1}
+              </span>
+              <div className="ob-hero-tile-icon" style={{ width: 34, height: 34, borderRadius: 9, background: "linear-gradient(155deg, var(--color-brand-tint), #fff)", border: "1px solid rgba(87,97,254,0.15)", color: "var(--color-brand)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 14 }}>
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">{tile.icon}</svg>
+              </div>
+              <div style={{ fontSize: 14.5, fontWeight: 700, color: "var(--color-heading)", marginBottom: 4 }}>{tile.title}</div>
+              <div style={{ fontSize: 12.5, color: "var(--color-muted)", lineHeight: 1.5 }}>{tile.desc}</div>
+            </div>
+          ))}
+        </div>
+
+        <button onClick={handleGetStarted} className="ob-primary-btn ob-hero-cta" style={{ ...PRIMARY_BTN, position: "relative", overflow: "hidden", width: "auto", height: 56, padding: "0 40px", fontSize: 17, fontWeight: 600, marginTop: 16, marginBottom: 16, opacity: 0, animation: "ob-fadeInUp 0.6s var(--ease-apple) 0.35s forwards" }}>
+          Get started
+          {ripples.map((r) => (
+            <span key={r.id} style={{ position: "absolute", left: r.x, top: r.y, width: 16, height: 16, marginLeft: -8, marginTop: -8, borderRadius: "50%", background: "rgba(255,255,255,0.6)", animation: "ob-hero-ripple 0.6s ease-out forwards", pointerEvents: "none" }} />
+          ))}
+        </button>
+
+        <p style={{ fontSize: 12.5, color: "var(--color-muted)", margin: "0 0 14px", opacity: 0, animation: "ob-fadeInUp 0.6s var(--ease-apple) 0.45s forwards" }}>
+          Takes about 10 minutes. Your progress saves as you go.
+        </p>
+        <button onClick={onSkip} className="ob-hero-skip" style={{ background: "none", border: "none", padding: 0, fontFamily: "inherit", fontSize: 12.5, fontWeight: 600, color: "var(--color-muted)", cursor: "pointer", opacity: 0, animation: "ob-fadeInUp 0.6s var(--ease-apple) 0.5s forwards" }}>
+          Skip for now
+        </button>
+      </div>
     </div>
   );
 }
@@ -1789,8 +1866,8 @@ function StepResearch({ onFinish }: { onFinish: () => void }) {
    header, used to group each block of AI-drafted findings on the
    Company Research step so every section reads as one consistent
    card instead of ad-hoc boxes with mismatched borders. */
-function ResearchSectionCard({ icon, title, children }: { icon: React.ReactNode; title: string; children: React.ReactNode }) {
-  return (
+function ResearchSectionCard({ icon, title, sectionId, children }: { icon: React.ReactNode; title: string; sectionId?: string; children: React.ReactNode }) {
+  const card = (
     <div style={{ border: "1px solid var(--color-border)", borderRadius: 14, background: "var(--color-page)", overflow: "hidden" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 16px", borderBottom: "1px solid var(--color-border)", background: "var(--color-surface)" }}>
         <span style={{ width: 26, height: 26, borderRadius: 8, background: "var(--color-brand-tint)", color: "var(--color-brand)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
@@ -1801,6 +1878,8 @@ function ResearchSectionCard({ icon, title, children }: { icon: React.ReactNode;
       <div style={{ padding: "16px 18px" }}>{children}</div>
     </div>
   );
+  if (!sectionId) return card;
+  return <ReferenceableSection id={sectionId} label={title} style={{ borderRadius: 14 }}>{card}</ReferenceableSection>;
 }
 
 function BulletList({ items, tone = "body" }: { items: string[]; tone?: "body" | "brand" }) {
@@ -1814,35 +1893,6 @@ function BulletList({ items, tone = "body" }: { items: string[]; tone?: "body" |
           <span style={{ fontSize: 12.5, color: textColor, lineHeight: 1.5 }}>{item}</span>
         </div>
       ))}
-    </div>
-  );
-}
-
-/* ─── Secondary block accordion — the review wizard's "Secondary
-   (expandable)" tier from summary-view-spec.md: on the page, collapsed
-   by default, one click away. Shared by the Company Research step and
-   the Product/ICP/Personas review panels below so every "show more"
-   in the wizard looks and behaves the same. */
-function SecondaryAccordion({ icon, title, children, defaultOpen = false }: {
-  icon: React.ReactNode; title: string; children: React.ReactNode; defaultOpen?: boolean;
-}) {
-  const [open, setOpen] = useState(defaultOpen);
-  return (
-    <div style={{ border: "1px solid var(--color-border)", borderRadius: 14, background: "var(--color-page)", overflow: "hidden" }}>
-      <button type="button" onClick={() => setOpen((o) => !o)}
-        style={{ width: "100%", display: "flex", alignItems: "center", gap: 10, padding: "12px 16px", background: "var(--color-surface)", border: "none", cursor: "pointer", fontFamily: "inherit", textAlign: "left" as const }}>
-        <span style={{ width: 26, height: 26, borderRadius: 8, background: "var(--color-brand-tint)", color: "var(--color-brand)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-          {icon}
-        </span>
-        <span style={{ flex: 1, minWidth: 0, fontSize: 12.5, fontWeight: 700, color: "var(--color-heading)", letterSpacing: "0.01em" }}>{title}</span>
-        <span style={{ flexShrink: 0, fontSize: 11, fontWeight: 700, color: "var(--color-muted)", display: "flex", alignItems: "center", gap: 5 }}>
-          {open ? "Show less" : "Show more"}
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ transform: open ? "rotate(180deg)" : "none", transition: "transform 150ms" }}>
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
-        </span>
-      </button>
-      {open && <div style={{ padding: "16px 18px" }}>{children}</div>}
     </div>
   );
 }
@@ -2032,21 +2082,61 @@ function StepCompanyResearch({ products, onNext }: { products: Product[]; onNext
     { key: "products", label: "Products" }, { key: "keySellingPoints", label: "Key Selling Points" }, { key: "notableCustomers", label: "Notable Customers" },
     { key: "industries", label: "Industries" }, { key: "competitors", label: "Competitors" }, { key: "trustRisks", label: "Trust Risks" },
   ];
+  const ALL_FIELDS = [...TEXT_FIELDS, ...LIST_FIELDS];
+
+  /* Section-level pin targets — one per visible block (Company Overview,
+     Products & Offerings, etc.), so hovering/pinning the whole card works
+     the same way as pinning a single field inside it. Ids are namespaced
+     "obc:block:{key}" so they never collide with a plain field id. */
+  const BLOCKS: { key: string; label: string; fields: (typeof ALL_FIELDS)[number]["key"][] }[] = [
+    { key: "headerStrip", label: "Category, Size & Revenue", fields: ["category", "employeeCount", "revenue"] },
+    { key: "companyOverview", label: "Company Overview", fields: ["whoYouAre"] },
+    { key: "differentiation", label: "Competitive Differentiation", fields: ["whatMakesYouDifferent"] },
+    { key: "productsOfferings", label: "Products & Offerings", fields: ["productSummary", "products"] },
+    { key: "proofCredibility", label: "Proof & Credibility", fields: ["keySellingPoints", "notableCustomers", "proof"] },
+    { key: "marketContext", label: "Market Context", fields: ["industries", "competitors"] },
+    { key: "dealSnapshot", label: "Deal Snapshot", fields: ["buyingMotion", "dealOverview", "salesCycle"] },
+    { key: "risksToAddress", label: "Risks to Address", fields: ["trustRisks"] },
+  ];
+  const blockId = (key: string) => `obc:block:${key}`;
 
   useRegisterCopilotAdapter("obc", {
     resolve(id): ResolvedReference | null {
-      const key = id.split(":")[1];
+      const parts = id.split(":");
+      const key = parts[1];
       if (!key) {
-        return { id, label: "Company Research", value: [...TEXT_FIELDS, ...LIST_FIELDS].map((f) => ({ label: f.label, value: data[f.key] })) };
+        return { id, label: "Company Research", value: ALL_FIELDS.map((f) => ({ label: f.label, value: data[f.key] })) };
       }
-      const spec = [...TEXT_FIELDS, ...LIST_FIELDS].find((f) => f.key === key);
+      if (key === "block") {
+        const block = BLOCKS.find((b) => b.key === parts[2]);
+        if (!block) return null;
+        return { id, label: block.label, value: block.fields.map((f) => ({ label: ALL_FIELDS.find((s) => s.key === f)?.label ?? f, value: data[f] })) };
+      }
+      const spec = ALL_FIELDS.find((f) => f.key === key);
       if (!spec) return null;
       return { id, label: spec.label, value: data[spec.key] };
     },
     applyEdit(id, instruction) {
-      const key = id.split(":")[1] as keyof CompanyResearchData | undefined;
+      const parts = id.split(":");
+      const key = parts[1];
       return new Promise((resolve) => {
         setTimeout(() => {
+          if (key === "block") {
+            const block = BLOCKS.find((b) => b.key === parts[2]);
+            if (!block) return resolve({ changedSummary: "couldn't find that section." });
+            let changed = 0;
+            let hasListFields = false;
+            const textPatch: Partial<CompanyResearchData> = {};
+            block.fields.forEach((f) => {
+              const textSpec = TEXT_FIELDS.find((t) => t.key === f);
+              if (!textSpec) { hasListFields = true; return; }
+              const revised = reviseText(data[textSpec.key], instruction);
+              if (revised !== data[textSpec.key]) { (textPatch as Record<string, string>)[textSpec.key] = revised; changed++; }
+            });
+            if (changed > 0) patch(textPatch);
+            if (changed > 0) return resolve({ changedSummary: `updated ${changed} field(s) in "${block.label}".` });
+            return resolve({ changedSummary: hasListFields ? `no text changes — list fields in "${block.label}" aren't editable via the copilot yet.` : "no visible change." });
+          }
           if (key) {
             const textSpec = TEXT_FIELDS.find((f) => f.key === key);
             if (textSpec) {
@@ -2081,7 +2171,7 @@ function StepCompanyResearch({ products, onNext }: { products: Product[]; onNext
     // "100%"` wrapper is the real flex child instead, so the card's own
     // `maxWidth` + `margin: "0 auto"` below can do the rest.
     <div style={{ width: "100%" }}>
-    <ReferenceableSection id="obc" label="Company Research">
+    <ReferenceableSection id="obc" label="Company Research" style={{ maxWidth: 1280, margin: "0 auto" }}>
     <div className="ob-card" style={{ ...CARD, maxWidth: 1280, margin: "0 auto" }}>
       <span style={{ fontSize: 12, fontWeight: 700, color: "var(--color-brand)", letterSpacing: "0.05em", textTransform: "uppercase" as const }}>Company Research</span>
       <h1 style={{ fontSize: 24, margin: "8px 0 8px" }}>Here&apos;s what we found</h1>
@@ -2091,16 +2181,16 @@ function StepCompanyResearch({ products, onNext }: { products: Product[]; onNext
 
       <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 24 }}>
         {/* Block 1 — Header Strip */}
-        <div style={{ display: "flex", flexWrap: "wrap" as const, gap: 16, border: "1px solid var(--color-border)", borderRadius: 14, background: "var(--color-page)", padding: "14px 16px" }}>
-          {([["category", "Category", category], ["employeeCount", "Company Size", employeeCount], ["revenue", "Revenue", revenue]] as const).map(([key, label, value]) => (
-            <div key={key} style={{ flex: "1 1 150px", minWidth: 0 }}>
-              <ReferenceableField id={`obc:${key}`} label={label}>
+        <ReferenceableSection id={blockId("headerStrip")} label="Category, Size & Revenue" style={{ borderRadius: 14 }}>
+          <div style={{ display: "flex", flexWrap: "wrap" as const, gap: 16, border: "1px solid var(--color-border)", borderRadius: 14, background: "var(--color-page)", padding: "14px 16px" }}>
+            {([["category", "Category", category], ["employeeCount", "Company Size", employeeCount], ["revenue", "Revenue", revenue]] as const).map(([key, label, value]) => (
+              <div key={key} style={{ flex: "1 1 150px", minWidth: 0 }}>
                 <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 4 }}>{label}</div>
                 <div style={{ fontSize: 13, fontWeight: 600, color: "var(--color-heading)" }}>{value}</div>
-              </ReferenceableField>
-            </div>
-          ))}
-        </div>
+              </div>
+            ))}
+          </div>
+        </ReferenceableSection>
 
         {/* Primary blocks (left, wide) + Secondary blocks (right rail) —
             collapses to a single column below 1080px, see .ob-company-grid
@@ -2108,107 +2198,81 @@ function StepCompanyResearch({ products, onNext }: { products: Product[]; onNext
         <div className="ob-company-grid" style={{ display: "grid", gridTemplateColumns: "minmax(0, 1.6fr) minmax(300px, 1fr)", gap: 20, alignItems: "start" }}>
           <div style={{ display: "flex", flexDirection: "column", gap: 14, minWidth: 0 }}>
             {/* Block 2 — Who You Are & The Problem You Solve */}
-            <ResearchSectionCard title="Company Overview"
+            <ResearchSectionCard title="Company Overview" sectionId={blockId("companyOverview")}
               icon={<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H9l-5 4v-4H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z" /></svg>}>
-              <ReferenceableField id="obc:whoYouAre" label="Company Overview">
-                <p style={{ fontSize: 13, color: "var(--color-body)", lineHeight: 1.6, margin: 0 }}>{whoYouAre}</p>
-              </ReferenceableField>
+              <p style={{ fontSize: 13, color: "var(--color-body)", lineHeight: 1.6, margin: 0 }}>{whoYouAre}</p>
             </ResearchSectionCard>
 
             {/* Block 3 — What Makes You Different */}
-            <ResearchSectionCard title="Competitive Differentiation"
+            <ResearchSectionCard title="Competitive Differentiation" sectionId={blockId("differentiation")}
               icon={<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="7.5" /><circle cx="12" cy="12" r="2.5" /><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3" /></svg>}>
-              <ReferenceableField id="obc:whatMakesYouDifferent" label="Competitive Differentiation">
-                <p style={{ fontSize: 13, color: "var(--color-body)", lineHeight: 1.6, margin: 0 }}>{whatMakesYouDifferent}</p>
-              </ReferenceableField>
+              <p style={{ fontSize: 13, color: "var(--color-body)", lineHeight: 1.6, margin: 0 }}>{whatMakesYouDifferent}</p>
             </ResearchSectionCard>
 
             {/* Block 4 — What You Sell */}
-            <ResearchSectionCard title="Products & Offerings"
+            <ResearchSectionCard title="Products & Offerings" sectionId={blockId("productsOfferings")}
               icon={<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 8l2-5h14l2 5" /><rect x="3" y="8" width="18" height="12" rx="2" /><path d="M9 12.5h6" /></svg>}>
               <div style={{ marginBottom: 10 }}>
-                <ReferenceableField id="obc:productSummary" label="Product Summary">
-                  <p style={{ fontSize: 13, color: "var(--color-body)", lineHeight: 1.6, margin: 0 }}>{productSummary}</p>
-                </ReferenceableField>
+                <p style={{ fontSize: 13, color: "var(--color-body)", lineHeight: 1.6, margin: 0 }}>{productSummary}</p>
               </div>
-              <ReferenceableField id="obc:products" label="Products">
-                <BulletList items={productChips} tone="brand" />
-              </ReferenceableField>
+              <BulletList items={productChips} tone="brand" />
             </ResearchSectionCard>
 
             {/* Block 5 — Proof & Credibility */}
-            <ResearchSectionCard title="Proof & Credibility"
+            <ResearchSectionCard title="Proof & Credibility" sectionId={blockId("proofCredibility")}
               icon={<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12l4-3 3 2 3-2 4 3" /><path d="M6 9v6l3 2.5L12 15M18 9v6l-3 2.5" /></svg>}>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 16, marginBottom: 12 }}>
                 <div>
                   <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>Key Selling Points</div>
-                  <ReferenceableField id="obc:keySellingPoints" label="Key Selling Points">
-                    <BulletList items={keySellingPoints} tone="brand" />
-                  </ReferenceableField>
+                  <BulletList items={keySellingPoints} tone="brand" />
                 </div>
                 <div>
                   <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>Notable Customers</div>
-                  <ReferenceableField id="obc:notableCustomers" label="Notable Customers">
-                    <BulletList items={notableCustomers} />
-                  </ReferenceableField>
+                  <BulletList items={notableCustomers} />
                 </div>
               </div>
-              <ReferenceableField id="obc:proof" label="Proof">
-                <p style={{ fontSize: 12.5, color: "var(--color-muted)", fontStyle: "italic" as const, lineHeight: 1.6, margin: 0 }}>{proof}</p>
-              </ReferenceableField>
+              <p style={{ fontSize: 12.5, color: "var(--color-muted)", fontStyle: "italic" as const, lineHeight: 1.6, margin: 0 }}>{proof}</p>
             </ResearchSectionCard>
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: 14, minWidth: 0 }}>
-            {/* Blocks 6–8 — Secondary (expandable) */}
-            <SecondaryAccordion title="Market Context"
+            {/* Blocks 6–8 — always shown in full, no collapse/expand */}
+            <ResearchSectionCard title="Market Context" sectionId={blockId("marketContext")}
               icon={<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a14 14 0 0 1 0 18 14 14 0 0 1 0-18Z" /></svg>}>
               <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                 <div>
                   <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>Industries</div>
-                  <ReferenceableField id="obc:industries" label="Industries">
-                    <BulletList items={industries} />
-                  </ReferenceableField>
+                  <BulletList items={industries} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>Competitors</div>
-                  <ReferenceableField id="obc:competitors" label="Competitors">
-                    <BulletList items={competitors} />
-                  </ReferenceableField>
+                  <BulletList items={competitors} />
                 </div>
               </div>
-            </SecondaryAccordion>
+            </ResearchSectionCard>
 
-            <SecondaryAccordion title="Deal Snapshot"
+            <ResearchSectionCard title="Deal Snapshot" sectionId={blockId("dealSnapshot")}
               icon={<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 6.5v11M15 9.3c0-1.3-1.4-2.3-3-2.3s-3 1-3 2.3 1.2 2 3 2.3c1.8.3 3 1 3 2.4s-1.4 2.3-3 2.3-3-.9-3-2.2" /></svg>}>
               <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                 <div>
                   <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 4 }}>Buying Motion</div>
-                  <ReferenceableField id="obc:buyingMotion" label="Buying Motion">
-                    <p style={{ fontSize: 12.5, color: "var(--color-body)", lineHeight: 1.6, margin: 0 }}>{buyingMotion}</p>
-                  </ReferenceableField>
+                  <p style={{ fontSize: 12.5, color: "var(--color-body)", lineHeight: 1.6, margin: 0 }}>{buyingMotion}</p>
                 </div>
                 <div>
                   <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 4 }}>Deal Overview</div>
-                  <ReferenceableField id="obc:dealOverview" label="Deal Overview">
-                    <p style={{ fontSize: 12.5, color: "var(--color-body)", lineHeight: 1.6, margin: 0 }}>{dealOverview}</p>
-                  </ReferenceableField>
+                  <p style={{ fontSize: 12.5, color: "var(--color-body)", lineHeight: 1.6, margin: 0 }}>{dealOverview}</p>
                 </div>
                 <div>
                   <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 4 }}>Sales Cycle</div>
-                  <ReferenceableField id="obc:salesCycle" label="Sales Cycle">
-                    <p style={{ fontSize: 12.5, color: "var(--color-body)", lineHeight: 1.6, margin: 0 }}>{salesCycle}</p>
-                  </ReferenceableField>
+                  <p style={{ fontSize: 12.5, color: "var(--color-body)", lineHeight: 1.6, margin: 0 }}>{salesCycle}</p>
                 </div>
               </div>
-            </SecondaryAccordion>
+            </ResearchSectionCard>
 
-            <SecondaryAccordion title="Risks to Address"
+            <ResearchSectionCard title="Risks to Address" sectionId={blockId("risksToAddress")}
               icon={<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3l7 3v6c0 4.5-3 8-7 9-4-1-7-4.5-7-9V6l7-3Z" /></svg>}>
-              <ReferenceableField id="obc:trustRisks" label="Trust Risks">
-                <BulletList items={trustRisks} />
-              </ReferenceableField>
-            </SecondaryAccordion>
+              <BulletList items={trustRisks} />
+            </ResearchSectionCard>
           </div>
         </div>
       </div>
@@ -2972,9 +3036,7 @@ function ProductServicesPanel({ state, onChange, productIdx }: { state: PSProduc
         <span style={{ fontSize: 11.5, fontWeight: 600, color: "var(--color-brand)", background: "var(--color-brand-tint)", borderRadius: 999, padding: "3px 10px", flexShrink: 0 }}>
           {state.badge}
         </span>
-        <ReferenceableField id={`ob:product:${productIdx}:field:Time To Value`} label="Time To Value">
-          <span style={{ fontSize: 11.5, color: "var(--color-muted)", flexShrink: 0 }}>{state.timeToValue}</span>
-        </ReferenceableField>
+        <span style={{ fontSize: 11.5, color: "var(--color-muted)", flexShrink: 0 }}>{state.timeToValue}</span>
       </div>
 
       {/* Block 2 — Elevator Pitch (Primary, Verbatim Passthrough) */}
@@ -2982,46 +3044,46 @@ function ProductServicesPanel({ state, onChange, productIdx }: { state: PSProduc
         <p style={{ fontSize: 13.5, fontStyle: "italic" as const, color: "var(--color-heading)", margin: "0 0 14px" }}>&ldquo;{state.elevatorPitch}&rdquo;</p>
       </ReferenceableField>
 
-      {/* Blocks 3–6, 8 — Primary (Field-Join / AI-Synthesized) */}
-      <div className="ob-field-grid">
-        {state.sections.map((section) => (
-          <ReferenceableField key={section.label} id={`ob:product:${productIdx}:field:${section.label}`} label={section.label}>
-            <PSField section={section} />
-          </ReferenceableField>
-        ))}
-      </div>
-
-      {/* Blocks 7, 9 — Secondary (expandable) */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 12 }}>
-        {state.secondarySections.map((section) => (
-          <SecondaryAccordion key={section.label} title={section.label}
-            icon={<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9" /></svg>}>
-            <ReferenceableField id={`ob:product:${productIdx}:field:${section.label}`} label={section.label}>
+      {/* Primary fields (left, wide) + Secondary accordions (right rail) —
+          collapses to a single column below 1080px, see .ob-company-grid
+          in STYLES above. */}
+      <div className="ob-company-grid" style={{ display: "grid", gridTemplateColumns: "minmax(0, 1.6fr) minmax(300px, 1fr)", gap: 20, alignItems: "start" }}>
+        {/* Blocks 3–6, 8 — Primary (Field-Join / AI-Synthesized) */}
+        <div className="ob-field-grid">
+          {state.sections.map((section) => (
+            <ReferenceableField key={section.label} id={`ob:product:${productIdx}:field:${section.label}`} label={section.label}>
               <PSField section={section} />
             </ReferenceableField>
-          </SecondaryAccordion>
-        ))}
+          ))}
+        </div>
+
+        {/* Blocks 7, 9 — Secondary, always shown in full, no collapse/expand */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 10, minWidth: 0 }}>
+          {state.secondarySections.map((section) => (
+            <ReferenceableField key={section.label} id={`ob:product:${productIdx}:field:${section.label}`} label={section.label}>
+              <PSField section={section} />
+            </ReferenceableField>
+          ))}
+        </div>
       </div>
     </div>
     </ReferenceableSection>
   );
 }
 
-/* One ICP candidate card — collapsed shows just the header spec's
-   Block 1 (name/growthStage/recommendation); expanding it reveals
-   Blocks 2–6 (Primary) plus a Secondary accordion for Blocks 8–9
-   (Market Size, Deeper Firmographics). Block 7 "Candidate Personas"
-   isn't duplicated here — the Personas section right after this one
-   already covers it. */
+/* One ICP candidate card — always shows the full detail (Blocks 1–6
+   Primary, plus Blocks 8–9 in a static "Market Sizing" card), no
+   collapse/expand. Block 7 "Candidate Personas" isn't duplicated here
+   — the Personas section right after this one already covers it. The
+   whole card is one Copilot pin target — content inside is plain, not
+   individually pinnable. */
 function IcpCandidateCard({ icp, index, productIdx }: {
   icp: IcpCandidate; index: number; productIdx: number;
 }) {
-  const [expanded, setExpanded] = useState(index === 0);
   return (
     <ReferenceableField id={`ob:icp:${productIdx}:icp:${index}`} label={icp.name}>
       <div style={{ borderRadius: 12, border: "1px solid var(--color-border)", background: "var(--color-page)", overflow: "hidden" }}>
-        <button type="button" onClick={() => setExpanded((e) => !e)}
-          style={{ width: "100%", display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10, padding: "14px 16px", background: "transparent", border: "none", cursor: "pointer", fontFamily: "inherit", textAlign: "left" as const }}>
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10, padding: "14px 16px" }}>
           <div style={{ flex: 1, minWidth: 0 }}>
             <span style={{ display: "block", fontSize: 13.5, fontWeight: 700, color: "var(--color-heading)", lineHeight: 1.4 }}>{icp.name}</span>
             <span style={{ fontSize: 11, color: "var(--color-muted)" }}>{icp.growthStage}</span>
@@ -3029,64 +3091,63 @@ function IcpCandidateCard({ icp, index, productIdx }: {
           <span style={{ flexShrink: 0, fontFamily: MONO_FONT, fontSize: 10.5, fontWeight: 700, padding: "4px 10px", borderRadius: 999, whiteSpace: "nowrap" as const, ...RECOMMENDATION_BADGE[icp.recommendation] }}>
             {icp.recommendation}
           </span>
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--color-muted)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: 3, transform: expanded ? "rotate(180deg)" : "none", transition: "transform 150ms" }}>
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
-        </button>
-        {expanded && (
-          <div style={{ padding: "0 16px 16px", display: "flex", flexDirection: "column", gap: 12 }}>
-            {/* Block 2 — Who This Is & Why They Fit */}
-            <div>
-              <p style={{ fontSize: 12.5, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 6px" }}>{icp.summary}</p>
-              <p style={{ fontSize: 12.5, color: "var(--color-muted)", fontStyle: "italic" as const, lineHeight: 1.6, margin: 0 }}>{icp.fitReasoning}</p>
-            </div>
-            {/* Block 3 — Firmographic Snapshot */}
-            <div>
-              <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>Firmographic Snapshot</div>
-              <BulletList items={[...icp.targetIndustries, ...icp.companySize, icp.revenueRange, ...icp.geographies]} />
-            </div>
-            {/* Block 4 — Pains & Goals */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 16 }}>
+        </div>
+        <div className="ob-company-grid" style={{ padding: "0 16px 16px", display: "grid", gridTemplateColumns: "minmax(0, 1.6fr) minmax(280px, 1fr)", gap: 20, alignItems: "start" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12, minWidth: 0 }}>
+              {/* Block 2 — Who This Is & Why They Fit */}
               <div>
-                <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>Pain Points</div>
-                <BulletList items={icp.painPoints} />
+                <p style={{ fontSize: 12.5, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 6px" }}>{icp.summary}</p>
+                <p style={{ fontSize: 12.5, color: "var(--color-muted)", fontStyle: "italic" as const, lineHeight: 1.6, margin: 0 }}>{icp.fitReasoning}</p>
               </div>
+              {/* Block 3 — Firmographic Snapshot */}
               <div>
-                <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>Business Goals</div>
-                <BulletList items={icp.businessGoals} />
+                <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>Firmographic Snapshot</div>
+                <BulletList items={[...icp.targetIndustries, ...icp.companySize, icp.revenueRange, ...icp.geographies]} />
               </div>
-            </div>
-            {/* Block 5 — Buying Signals */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 16 }}>
-              <div>
-                <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>Buying Triggers</div>
-                <BulletList items={icp.buyingTriggers} />
-              </div>
-              <div>
-                <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>Intent Signals</div>
-                <BulletList items={icp.intentSignals} />
-              </div>
-            </div>
-            {/* Block 6 — Real Companies Like This */}
-            {icp.icpProof.length > 0 && (
-              <div>
-                <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>Real Companies Like This</div>
-                <BulletList items={icp.icpProof} tone="brand" />
-              </div>
-            )}
-            {/* Blocks 8–9 — Secondary (expandable) */}
-            <SecondaryAccordion title="Market Sizing & Additional Firmographics"
-              icon={<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 20V9M11 20V4M18 20v-7" /><path d="M2 20h20" /></svg>}>
-              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              {/* Block 4 — Pains & Goals */}
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 16 }}>
                 <div>
-                  <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 4 }}>Market Size</div>
-                  <p style={{ fontSize: 12.5, color: "var(--color-body)", lineHeight: 1.6, margin: 0 }}>{icp.marketSize}</p>
+                  <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>Pain Points</div>
+                  <BulletList items={icp.painPoints} />
                 </div>
                 <div>
-                  <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>Tech Stack Signals</div>
-                  <BulletList items={icp.techStack} />
+                  <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>Business Goals</div>
+                  <BulletList items={icp.businessGoals} />
                 </div>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 16 }}>
+              </div>
+              {/* Block 5 — Buying Signals */}
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 16 }}>
+                <div>
+                  <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>Buying Triggers</div>
+                  <BulletList items={icp.buyingTriggers} />
+                </div>
+                <div>
+                  <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>Intent Signals</div>
+                  <BulletList items={icp.intentSignals} />
+                </div>
+              </div>
+              {/* Block 6 — Real Companies Like This */}
+              {icp.icpProof.length > 0 && (
+                <div>
+                  <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>Real Companies Like This</div>
+                  <BulletList items={icp.icpProof} tone="brand" />
+                </div>
+              )}
+            </div>
+
+            {/* Blocks 8–9 — Secondary, always shown in full */}
+            <div style={{ minWidth: 0 }}>
+              <ResearchSectionCard title="Market Sizing & Additional Firmographics"
+                icon={<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 20V9M11 20V4M18 20v-7" /><path d="M2 20h20" /></svg>}>
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  <div>
+                    <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 4 }}>Market Size</div>
+                    <p style={{ fontSize: 12.5, color: "var(--color-body)", lineHeight: 1.6, margin: 0 }}>{icp.marketSize}</p>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>Tech Stack Signals</div>
+                    <BulletList items={icp.techStack} />
+                  </div>
                   <div>
                     <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 4 }}>Business Model</div>
                     <p style={{ fontSize: 12.5, color: "var(--color-body)", lineHeight: 1.6, margin: 0 }}>{icp.businessModel}</p>
@@ -3095,15 +3156,14 @@ function IcpCandidateCard({ icp, index, productIdx }: {
                     <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>Funding Stage</div>
                     <BulletList items={icp.fundingStage} />
                   </div>
+                  <div>
+                    <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 4 }}>Decision-Making Unit</div>
+                    <p style={{ fontSize: 12.5, color: "var(--color-body)", lineHeight: 1.6, margin: 0 }}>{icp.decisionMakingUnit}</p>
+                  </div>
                 </div>
-                <div>
-                  <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 4 }}>Decision-Making Unit</div>
-                  <p style={{ fontSize: 12.5, color: "var(--color-body)", lineHeight: 1.6, margin: 0 }}>{icp.decisionMakingUnit}</p>
-                </div>
-              </div>
-            </SecondaryAccordion>
+              </ResearchSectionCard>
+            </div>
           </div>
-        )}
       </div>
     </ReferenceableField>
   );
@@ -3200,26 +3260,25 @@ function PersonasPanel({ personas, onChange, approvedList, onApprovePersona, pro
         </div>
       </ReferenceableField>
 
-      <div className="ob-field-grid">
-        {persona.sections.map((section) => (
-          <ReferenceableField key={`${selectedIndex}-${section.label}`} id={`ob:personas:${productIdx}:persona:${selectedIndex}:field:${section.label}`} label={section.label}>
-            <PSField section={section} />
-          </ReferenceableField>
-        ))}
-      </div>
-
-      {persona.secondarySections.length > 0 && (
-        <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 12 }}>
-          {persona.secondarySections.map((section) => (
-            <SecondaryAccordion key={`${selectedIndex}-${section.label}`} title={section.label}
-              icon={<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5" /></svg>}>
-              <ReferenceableField id={`ob:personas:${productIdx}:persona:${selectedIndex}:field:${section.label}`} label={section.label}>
-                <PSField section={section} />
-              </ReferenceableField>
-            </SecondaryAccordion>
+      <div className="ob-company-grid" style={{ display: "grid", gridTemplateColumns: "minmax(0, 1.6fr) minmax(280px, 1fr)", gap: 20, alignItems: "start" }}>
+        <div className="ob-field-grid">
+          {persona.sections.map((section) => (
+            <ReferenceableField key={`${selectedIndex}-${section.label}`} id={`ob:personas:${productIdx}:persona:${selectedIndex}:field:${section.label}`} label={section.label}>
+              <PSField section={section} />
+            </ReferenceableField>
           ))}
         </div>
-      )}
+
+        {persona.secondarySections.length > 0 && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 10, minWidth: 0 }}>
+            {persona.secondarySections.map((section) => (
+              <ReferenceableField key={`${selectedIndex}-${section.label}`} id={`ob:personas:${productIdx}:persona:${selectedIndex}:field:${section.label}`} label={section.label}>
+                <PSField section={section} />
+              </ReferenceableField>
+            ))}
+          </div>
+        )}
+      </div>
 
       <button type="button" onClick={approveCurrent} className="ob-primary-btn" style={{ ...PRIMARY_BTN, width: "auto", padding: "10px 24px", fontSize: 13, marginTop: 14, borderRadius: 999, gap: 6 }}>
         {personaApproved ? "Save changes" : (
@@ -3475,7 +3534,12 @@ function StepProductReview({ products, onNext }: { products: Product[]; onNext: 
   });
 
   return (
-    <div className="ob-card ob-review-card" style={{ ...CARD, maxWidth: 660 }}>
+    // Same shrink-wrap fix as StepCompanyResearch — `.ob-shell-content`'s
+    // `align-items: center` collapses an unsized flex child to its
+    // content's natural width, so this `width: "100%"` wrapper (not the
+    // card itself) is the real flex child.
+    <div style={{ width: "100%" }}>
+    <div className="ob-card" style={{ ...CARD, maxWidth: 1280, margin: "0 auto" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, marginBottom: 8 }}>
         <span style={{ fontSize: 12, fontWeight: 700, color: "var(--color-brand)", letterSpacing: "0.05em", textTransform: "uppercase" as const }}>Product, ICP &amp; Personas</span>
         <span style={{ fontSize: 11.5, fontWeight: 700, color: "var(--color-muted)", background: "var(--color-surface)", borderRadius: 999, padding: "4px 10px", flexShrink: 0 }}>
@@ -3572,15 +3636,16 @@ function StepProductReview({ products, onNext }: { products: Product[]; onNext: 
         />
       </CollapsibleReviewSection>
 
-      <button onClick={handleContinue} disabled={!currentDone} className="ob-primary-btn" style={{ ...PRIMARY_BTN, marginTop: 12, opacity: currentDone ? 1 : 0.5, cursor: currentDone ? "pointer" : "not-allowed" }}>
+      <button onClick={handleContinue} disabled={!currentDone} className="ob-primary-btn" style={{ ...PRIMARY_BTN, width: "auto", padding: "14px 32px", marginTop: 12, opacity: currentDone ? 1 : 0.5, cursor: currentDone ? "pointer" : "not-allowed" }}>
         Approve &amp; Continue
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
       </button>
       {!currentDone && (
-        <p style={{ fontSize: 12, color: "var(--color-muted)", textAlign: "center" as const, margin: "10px 0 0" }}>
+        <p style={{ fontSize: 12, color: "var(--color-muted)", margin: "10px 0 0" }}>
           Approve all three sections above to continue.
         </p>
       )}
+    </div>
     </div>
   );
 }

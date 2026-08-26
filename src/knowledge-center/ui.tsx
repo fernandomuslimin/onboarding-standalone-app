@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import { HistorySource } from "./data";
+import { ReferenceableSection } from "../copilot/Referenceable";
 
 /* ════════════════════════════════════════════════════════════════════
    Knowledge Center — shared UI primitives
@@ -105,8 +106,8 @@ export function ProgressBar({ pct, height = 6 }: { pct: number; height?: number 
 }
 
 /* ─── Card section (icon + heading wrapper) ────────────────────── */
-export function CardSection({ icon, title, children, right }: { icon: IconName; title: string; children: React.ReactNode; right?: React.ReactNode }) {
-  return (
+export function CardSection({ icon, title, sectionId, children, right }: { icon: IconName; title: string; sectionId?: string; children: React.ReactNode; right?: React.ReactNode }) {
+  const card = (
     <div style={{ background: "var(--color-page)", border: "1px solid var(--color-border)", borderRadius: 14, padding: "20px 22px", boxShadow: "var(--shadow-card)" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16, gap: 12 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
@@ -120,6 +121,8 @@ export function CardSection({ icon, title, children, right }: { icon: IconName; 
       {children}
     </div>
   );
+  if (!sectionId) return card;
+  return <ReferenceableSection id={sectionId} label={title} style={{ borderRadius: 14 }}>{card}</ReferenceableSection>;
 }
 
 /* ─── Low-confidence indicator ───────────────────────────────────
@@ -139,14 +142,14 @@ export function LowConfidenceMark({ value, threshold = 70 }: { value?: number; t
    summary-view blocks the spec marks "Secondary (expandable)": on
    the page, but tucked behind a show-more so Primary blocks stay
    above the fold. */
-export function AccordionBlock({ icon, title, children, defaultOpen = false }: {
-  icon: IconName; title: string; children: React.ReactNode; defaultOpen?: boolean;
+export function AccordionBlock({ icon, title, sectionId, children, defaultOpen = false }: {
+  icon: IconName; title: string; sectionId?: string; children: React.ReactNode; defaultOpen?: boolean;
 }) {
   const [open, setOpen] = useState(defaultOpen);
-  return (
+  const card = (
     <div style={{ background: "var(--color-page)", border: "1px solid var(--color-border)", borderRadius: 14, boxShadow: "var(--shadow-card)", overflow: "hidden" }}>
       <button type="button" onClick={() => setOpen((o) => !o)} className="kc-list-row"
-        style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "14px 20px", background: "transparent", border: "none", cursor: "pointer", fontFamily: KC_FONT, textAlign: "left" }}>
+        style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: sectionId ? "14px 38px 14px 20px" : "14px 20px", background: "transparent", border: "none", cursor: "pointer", fontFamily: KC_FONT, textAlign: "left" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
           <div style={{ width: 26, height: 26, borderRadius: 8, background: "var(--color-brand-tint)", color: "var(--color-brand)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
             <Icon name={icon} size={14} />
@@ -163,6 +166,8 @@ export function AccordionBlock({ icon, title, children, defaultOpen = false }: {
       {open && <div style={{ padding: "0 22px 20px" }}>{children}</div>}
     </div>
   );
+  if (!sectionId) return card;
+  return <ReferenceableSection id={sectionId} label={title} style={{ borderRadius: 14 }}>{card}</ReferenceableSection>;
 }
 
 /* ─── Currency formatting ────────────────────────────────────────── */

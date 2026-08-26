@@ -30,8 +30,8 @@
     "semantic_hash": "02ad44ca7f3d56ee33d2045f8de87a58"
   },
   "/Users/fernandomuslimin/Projects/B2BROCKET.AI/Source Code/onboarding-standalone-app/src/onboarding-shell.tsx": {
-    "mtime": 1787667614.1581213,
-    "ast_hash": "29ab4b50c5d89c296302cbe66ec91fa5",
+    "mtime": 1787675528.1994665,
+    "ast_hash": "a52a8e57e614c2e3ca74a60434b26f6c",
     "semantic_hash": ""
   },
   "/Users/fernandomuslimin/Projects/B2BROCKET.AI/Source Code/onboarding-standalone-app/src/knowledge-center/data.ts": {
@@ -205,8 +205,8 @@
     "semantic_hash": ""
   },
   "/Users/fernandomuslimin/Projects/B2BROCKET.AI/Source Code/onboarding-standalone-app/src/copilot/Referenceable.tsx": {
-    "mtime": 1787234433.194907,
-    "ast_hash": "05ed94f9885d0a841f87b0487fd7d7c9",
+    "mtime": 1787675060.421491,
+    "ast_hash": "4c2ed2e2e78927a4ecde96f44fc5a4a7",
     "semantic_hash": ""
   },
   "/Users/fernandomuslimin/Projects/B2BROCKET.AI/Source Code/onboarding-standalone-app/src/copilot/CopilotWidget.tsx": {

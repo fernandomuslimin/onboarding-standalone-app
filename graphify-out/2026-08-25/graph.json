@@ -1302,7 +1302,7 @@
       "label": "PAGE_STYLE",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L86",
+      "source_location": "L83",
       "id": "src_onboarding_shell_page_style",
       "community": 0,
       "norm_label": "page_style"
@@ -1311,7 +1311,7 @@
       "label": "CARD",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L96",
+      "source_location": "L93",
       "id": "src_onboarding_shell_card",
       "community": 0,
       "norm_label": "card"
@@ -1320,7 +1320,7 @@
       "label": "INPUT",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L107",
+      "source_location": "L104",
       "id": "src_onboarding_shell_input",
       "community": 0,
       "norm_label": "input"
@@ -1329,7 +1329,7 @@
       "label": "LABEL",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L121",
+      "source_location": "L118",
       "id": "src_onboarding_shell_label",
       "community": 0,
       "norm_label": "label"
@@ -1338,7 +1338,7 @@
       "label": "PRIMARY_BTN",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L130",
+      "source_location": "L127",
       "id": "src_onboarding_shell_primary_btn",
       "community": 0,
       "norm_label": "primary_btn"
@@ -1347,7 +1347,7 @@
       "label": "GHOST_BTN",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L148",
+      "source_location": "L145",
       "id": "src_onboarding_shell_ghost_btn",
       "community": 0,
       "norm_label": "ghost_btn"
@@ -1356,7 +1356,7 @@
       "label": "BACK_BTN",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L166",
+      "source_location": "L163",
       "id": "src_onboarding_shell_back_btn",
       "community": 0,
       "norm_label": "back_btn"
@@ -1365,7 +1365,7 @@
       "label": "BackButton()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L183",
+      "source_location": "L180",
       "id": "src_onboarding_shell_backbutton",
       "community": 0,
       "norm_label": "backbutton()"
@@ -1374,7 +1374,7 @@
       "label": "NoGoingBackNotice()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L195",
+      "source_location": "L192",
       "id": "src_onboarding_shell_nogoingbacknotice",
       "community": 0,
       "norm_label": "nogoingbacknotice()"
@@ -1383,7 +1383,7 @@
       "label": "Product",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L208",
+      "source_location": "L205",
       "id": "src_onboarding_shell_product",
       "community": 0,
       "norm_label": "product"
@@ -1392,7 +1392,7 @@
       "label": "PackageKey",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L216",
+      "source_location": "L213",
       "id": "src_onboarding_shell_packagekey",
       "community": 0,
       "norm_label": "packagekey"
@@ -1401,7 +1401,7 @@
       "label": "PACKAGES",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L218",
+      "source_location": "L215",
       "id": "src_onboarding_shell_packages",
       "community": 0,
       "norm_label": "packages"
@@ -1410,7 +1410,7 @@
       "label": "Sender",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L224",
+      "source_location": "L221",
       "id": "src_onboarding_shell_sender",
       "community": 0,
       "norm_label": "sender"
@@ -1419,7 +1419,7 @@
       "label": "Invitee",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L230",
+      "source_location": "L227",
       "id": "src_onboarding_shell_invitee",
       "community": 0,
       "norm_label": "invitee"
@@ -1428,7 +1428,7 @@
       "label": "isValidUrl()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L236",
+      "source_location": "L233",
       "id": "src_onboarding_shell_isvalidurl",
       "community": 4,
       "norm_label": "isvalidurl()"
@@ -1437,7 +1437,7 @@
       "label": "isValidEmail()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L248",
+      "source_location": "L245",
       "id": "src_onboarding_shell_isvalidemail",
       "community": 11,
       "norm_label": "isvalidemail()"
@@ -1446,7 +1446,7 @@
       "label": "isValidDomain()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L252",
+      "source_location": "L249",
       "id": "src_onboarding_shell_isvaliddomain",
       "community": 8,
       "norm_label": "isvaliddomain()"
@@ -1455,7 +1455,7 @@
       "label": "redistributePct()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L257",
+      "source_location": "L254",
       "id": "src_onboarding_shell_redistributepct",
       "community": 0,
       "norm_label": "redistributepct()"
@@ -1464,7 +1464,7 @@
       "label": "focusStyle()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L264",
+      "source_location": "L261",
       "id": "src_onboarding_shell_focusstyle",
       "community": 4,
       "norm_label": "focusstyle()"
@@ -1473,7 +1473,7 @@
       "label": "DOMAIN_PREFIXES",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L269",
+      "source_location": "L266",
       "id": "src_onboarding_shell_domain_prefixes",
       "community": 0,
       "norm_label": "domain_prefixes"
@@ -1482,7 +1482,7 @@
       "label": "DOMAIN_SUFFIXES",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L270",
+      "source_location": "L267",
       "id": "src_onboarding_shell_domain_suffixes",
       "community": 0,
       "norm_label": "domain_suffixes"
@@ -1491,7 +1491,7 @@
       "label": "extractDomain()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L272",
+      "source_location": "L269",
       "id": "src_onboarding_shell_extractdomain",
       "community": 10,
       "norm_label": "extractdomain()"
@@ -1500,7 +1500,7 @@
       "label": "extractBase()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L278",
+      "source_location": "L275",
       "id": "src_onboarding_shell_extractbase",
       "community": 13,
       "norm_label": "extractbase()"
@@ -1509,7 +1509,7 @@
       "label": "generateDomainSuggestions()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L284",
+      "source_location": "L281",
       "id": "src_onboarding_shell_generatedomainsuggestions",
       "community": 0,
       "norm_label": "generatedomainsuggestions()"
@@ -1518,7 +1518,7 @@
       "label": "AvailStatus",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L298",
+      "source_location": "L295",
       "id": "src_onboarding_shell_availstatus",
       "community": 0,
       "norm_label": "availstatus"
@@ -1527,7 +1527,7 @@
       "label": "getMailboxesForDomain()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L300",
+      "source_location": "L297",
       "id": "src_onboarding_shell_getmailboxesfordomain",
       "community": 0,
       "norm_label": "getmailboxesfordomain()"
@@ -1536,7 +1536,7 @@
       "label": "Spinner()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L313",
+      "source_location": "L310",
       "id": "src_onboarding_shell_spinner",
       "community": 0,
       "norm_label": "spinner()"
@@ -1545,7 +1545,7 @@
       "label": "StepIcon()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L324",
+      "source_location": "L321",
       "id": "src_onboarding_shell_stepicon",
       "community": 0,
       "norm_label": "stepicon()"
@@ -1554,7 +1554,7 @@
       "label": "PageChrome()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L332",
+      "source_location": "L329",
       "id": "src_onboarding_shell_pagechrome",
       "community": 0,
       "norm_label": "pagechrome()"
@@ -1563,7 +1563,7 @@
       "label": "PHASES",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L347",
+      "source_location": "L344",
       "id": "src_onboarding_shell_phases",
       "community": 0,
       "norm_label": "phases"
@@ -1572,25 +1572,34 @@
       "label": "PhaseStepper()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L354",
+      "source_location": "L351",
       "id": "src_onboarding_shell_phasestepper",
       "community": 0,
       "norm_label": "phasestepper()"
     },
     {
-      "label": "WELCOME_ITEMS",
+      "label": "HERO_TILES",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L385",
-      "id": "src_onboarding_shell_welcome_items",
+      "source_location": "L386",
+      "id": "src_onboarding_shell_hero_tiles",
       "community": 0,
-      "norm_label": "welcome_items"
+      "norm_label": "hero_tiles"
+    },
+    {
+      "label": "Ripple",
+      "file_type": "code",
+      "source_file": "src/onboarding-shell.tsx",
+      "source_location": "L407",
+      "id": "src_onboarding_shell_ripple",
+      "community": 0,
+      "norm_label": "ripple"
     },
     {
       "label": "StepBrandWelcome()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L408",
+      "source_location": "L409",
       "id": "src_onboarding_shell_stepbrandwelcome",
       "community": 0,
       "norm_label": "stepbrandwelcome()"
@@ -1599,7 +1608,7 @@
       "label": "INFRA_INTRO_BULLETS",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L457",
+      "source_location": "L514",
       "id": "src_onboarding_shell_infra_intro_bullets",
       "community": 0,
       "norm_label": "infra_intro_bullets"
@@ -1608,7 +1617,7 @@
       "label": "StepInfraIntro()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L463",
+      "source_location": "L520",
       "id": "src_onboarding_shell_stepinfraintro",
       "community": 0,
       "norm_label": "stepinfraintro()"
@@ -1617,7 +1626,7 @@
       "label": "StepWebsite()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L491",
+      "source_location": "L548",
       "id": "src_onboarding_shell_stepwebsite",
       "community": 4,
       "norm_label": "stepwebsite()"
@@ -1626,7 +1635,7 @@
       "label": "PRODUCTS_MODE_OPTIONS",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L579",
+      "source_location": "L636",
       "id": "src_onboarding_shell_products_mode_options",
       "community": 0,
       "norm_label": "products_mode_options"
@@ -1635,7 +1644,7 @@
       "label": "StepProducts()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L584",
+      "source_location": "L641",
       "id": "src_onboarding_shell_stepproducts",
       "community": 4,
       "norm_label": "stepproducts()"
@@ -1644,7 +1653,7 @@
       "label": "StepResearchSummary()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L817",
+      "source_location": "L874",
       "id": "src_onboarding_shell_stepresearchsummary",
       "community": 10,
       "norm_label": "stepresearchsummary()"
@@ -1653,7 +1662,7 @@
       "label": "StepStartingResearch()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L887",
+      "source_location": "L944",
       "id": "src_onboarding_shell_stepstartingresearch",
       "community": 0,
       "norm_label": "stepstartingresearch()"
@@ -1662,7 +1671,7 @@
       "label": "StepPrimaryDomain()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L926",
+      "source_location": "L983",
       "id": "src_onboarding_shell_stepprimarydomain",
       "community": 8,
       "norm_label": "stepprimarydomain()"
@@ -1671,7 +1680,7 @@
       "label": "StepVolume()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1017",
+      "source_location": "L1074",
       "id": "src_onboarding_shell_stepvolume",
       "community": 0,
       "norm_label": "stepvolume()"
@@ -1680,7 +1689,7 @@
       "label": "StepSenders()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1051",
+      "source_location": "L1108",
       "id": "src_onboarding_shell_stepsenders",
       "community": 0,
       "norm_label": "stepsenders()"
@@ -1689,7 +1698,7 @@
       "label": "StepInfraSummary()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1193",
+      "source_location": "L1250",
       "id": "src_onboarding_shell_stepinfrasummary",
       "community": 0,
       "norm_label": "stepinfrasummary()"
@@ -1698,7 +1707,7 @@
       "label": "CONNECTIONS_INTRO_BULLETS",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1239",
+      "source_location": "L1296",
       "id": "src_onboarding_shell_connections_intro_bullets",
       "community": 0,
       "norm_label": "connections_intro_bullets"
@@ -1707,7 +1716,7 @@
       "label": "StepConnectionsIntro()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1246",
+      "source_location": "L1303",
       "id": "src_onboarding_shell_stepconnectionsintro",
       "community": 0,
       "norm_label": "stepconnectionsintro()"
@@ -1716,7 +1725,7 @@
       "label": "StepConnect()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1274",
+      "source_location": "L1331",
       "id": "src_onboarding_shell_stepconnect",
       "community": 4,
       "norm_label": "stepconnect()"
@@ -1725,7 +1734,7 @@
       "label": "StepConnectLinkedIn()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1337",
+      "source_location": "L1394",
       "id": "src_onboarding_shell_stepconnectlinkedin",
       "community": 0,
       "norm_label": "stepconnectlinkedin()"
@@ -1734,7 +1743,7 @@
       "label": "StepConnectCalendar()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1388",
+      "source_location": "L1445",
       "id": "src_onboarding_shell_stepconnectcalendar",
       "community": 0,
       "norm_label": "stepconnectcalendar()"
@@ -1743,7 +1752,7 @@
       "label": "INVITE_ROLES",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1457",
+      "source_location": "L1514",
       "id": "src_onboarding_shell_invite_roles",
       "community": 0,
       "norm_label": "invite_roles"
@@ -1752,7 +1761,7 @@
       "label": "StepInvite()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1463",
+      "source_location": "L1520",
       "id": "src_onboarding_shell_stepinvite",
       "community": 11,
       "norm_label": "stepinvite()"
@@ -1761,7 +1770,7 @@
       "label": "StepConnectionsSummary()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1566",
+      "source_location": "L1623",
       "id": "src_onboarding_shell_stepconnectionssummary",
       "community": 0,
       "norm_label": "stepconnectionssummary()"
@@ -1770,7 +1779,7 @@
       "label": "REVIEW_INTRO_BULLETS",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1610",
+      "source_location": "L1667",
       "id": "src_onboarding_shell_review_intro_bullets",
       "community": 0,
       "norm_label": "review_intro_bullets"
@@ -1779,7 +1788,7 @@
       "label": "StepReviewIntro()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1616",
+      "source_location": "L1673",
       "id": "src_onboarding_shell_stepreviewintro",
       "community": 0,
       "norm_label": "stepreviewintro()"
@@ -1788,7 +1797,7 @@
       "label": "StepReviewOrder()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1646",
+      "source_location": "L1703",
       "id": "src_onboarding_shell_steprevieworder",
       "community": 13,
       "norm_label": "steprevieworder()"
@@ -1797,7 +1806,7 @@
       "label": "RESEARCH_ITEMS",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1741",
+      "source_location": "L1798",
       "id": "src_onboarding_shell_research_items",
       "community": 0,
       "norm_label": "research_items"
@@ -1806,7 +1815,7 @@
       "label": "StepResearch()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1749",
+      "source_location": "L1806",
       "id": "src_onboarding_shell_stepresearch",
       "community": 4,
       "norm_label": "stepresearch()"
@@ -1815,7 +1824,7 @@
       "label": "ResearchSectionCard()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1802",
+      "source_location": "L1859",
       "id": "src_onboarding_shell_researchsectioncard",
       "community": 0,
       "norm_label": "researchsectioncard()"
@@ -1824,7 +1833,7 @@
       "label": "BulletList()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1817",
+      "source_location": "L1875",
       "id": "src_onboarding_shell_bulletlist",
       "community": 0,
       "norm_label": "bulletlist()"
@@ -1833,43 +1842,16 @@
       "label": "SecondaryAccordion()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1837",
+      "source_location": "L1895",
       "id": "src_onboarding_shell_secondaryaccordion",
       "community": 0,
       "norm_label": "secondaryaccordion()"
     },
     {
-      "label": "EditableText()",
-      "file_type": "code",
-      "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1865",
-      "id": "src_onboarding_shell_editabletext",
-      "community": 0,
-      "norm_label": "editabletext()"
-    },
-    {
-      "label": "EditableBulletList()",
-      "file_type": "code",
-      "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1964",
-      "id": "src_onboarding_shell_editablebulletlist",
-      "community": 0,
-      "norm_label": "editablebulletlist()"
-    },
-    {
-      "label": "AIRevise()",
-      "file_type": "code",
-      "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L1997",
-      "id": "src_onboarding_shell_airevise",
-      "community": 0,
-      "norm_label": "airevise()"
-    },
-    {
       "label": "firstSentence()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2053",
+      "source_location": "L1921",
       "id": "src_onboarding_shell_firstsentence",
       "community": 5,
       "norm_label": "firstsentence()"
@@ -1878,7 +1860,7 @@
       "label": "reviseText()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2060",
+      "source_location": "L1928",
       "id": "src_onboarding_shell_revisetext",
       "community": 5,
       "norm_label": "revisetext()"
@@ -1887,52 +1869,16 @@
       "label": "titleCase()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2070",
+      "source_location": "L1938",
       "id": "src_onboarding_shell_titlecase",
       "community": 5,
       "norm_label": "titlecase()"
     },
     {
-      "label": "WhatYouSellBundle",
-      "file_type": "code",
-      "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2076",
-      "id": "src_onboarding_shell_whatyousellbundle",
-      "community": 0,
-      "norm_label": "whatyousellbundle"
-    },
-    {
-      "label": "reviseWhatYouSellBundle()",
-      "file_type": "code",
-      "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2077",
-      "id": "src_onboarding_shell_revisewhatyousellbundle",
-      "community": 5,
-      "norm_label": "revisewhatyousellbundle()"
-    },
-    {
-      "label": "ProofBundle",
-      "file_type": "code",
-      "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2085",
-      "id": "src_onboarding_shell_proofbundle",
-      "community": 0,
-      "norm_label": "proofbundle"
-    },
-    {
-      "label": "reviseProofBundle()",
-      "file_type": "code",
-      "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2086",
-      "id": "src_onboarding_shell_reviseproofbundle",
-      "community": 5,
-      "norm_label": "reviseproofbundle()"
-    },
-    {
       "label": "reviseSectionContent()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2099",
+      "source_location": "L1945",
       "id": "src_onboarding_shell_revisesectioncontent",
       "community": 5,
       "norm_label": "revisesectioncontent()"
@@ -1941,7 +1887,7 @@
       "label": "reviseProductServicesBundle()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2115",
+      "source_location": "L1961",
       "id": "src_onboarding_shell_reviseproductservicesbundle",
       "community": 0,
       "norm_label": "reviseproductservicesbundle()"
@@ -1950,7 +1896,7 @@
       "label": "IcpBundle",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2132",
+      "source_location": "L1978",
       "id": "src_onboarding_shell_icpbundle",
       "community": 0,
       "norm_label": "icpbundle"
@@ -1959,7 +1905,7 @@
       "label": "reviseIcpBundle()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2133",
+      "source_location": "L1979",
       "id": "src_onboarding_shell_reviseicpbundle",
       "community": 5,
       "norm_label": "reviseicpbundle()"
@@ -1968,7 +1914,7 @@
       "label": "revisePersonasBundle()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2160",
+      "source_location": "L2006",
       "id": "src_onboarding_shell_revisepersonasbundle",
       "community": 0,
       "norm_label": "revisepersonasbundle()"
@@ -1977,7 +1923,7 @@
       "label": "CompanyResearchData",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2175",
+      "source_location": "L2021",
       "id": "src_onboarding_shell_companyresearchdata",
       "community": 0,
       "norm_label": "companyresearchdata"
@@ -1986,7 +1932,7 @@
       "label": "buildInitialCompanyResearch()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2202",
+      "source_location": "L2048",
       "id": "src_onboarding_shell_buildinitialcompanyresearch",
       "community": 0,
       "norm_label": "buildinitialcompanyresearch()"
@@ -1995,16 +1941,16 @@
       "label": "StepCompanyResearch()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2232",
+      "source_location": "L2078",
       "id": "src_onboarding_shell_stepcompanyresearch",
-      "community": 4,
+      "community": 24,
       "norm_label": "stepcompanyresearch()"
     },
     {
       "label": "PSContent",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2457",
+      "source_location": "L2340",
       "id": "src_onboarding_shell_pscontent",
       "community": 0,
       "norm_label": "pscontent"
@@ -2013,7 +1959,7 @@
       "label": "PSSection",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2458",
+      "source_location": "L2341",
       "id": "src_onboarding_shell_pssection",
       "community": 0,
       "norm_label": "pssection"
@@ -2022,7 +1968,7 @@
       "label": "PSField()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2460",
+      "source_location": "L2343",
       "id": "src_onboarding_shell_psfield",
       "community": 0,
       "norm_label": "psfield()"
@@ -2031,7 +1977,7 @@
       "label": "PSProductState",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2482",
+      "source_location": "L2365",
       "id": "src_onboarding_shell_psproductstate",
       "community": 0,
       "norm_label": "psproductstate"
@@ -2040,7 +1986,7 @@
       "label": "buildInitialPSProduct()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2484",
+      "source_location": "L2367",
       "id": "src_onboarding_shell_buildinitialpsproduct",
       "community": 28,
       "norm_label": "buildinitialpsproduct()"
@@ -2049,7 +1995,7 @@
       "label": "PersonaData",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2523",
+      "source_location": "L2406",
       "id": "src_onboarding_shell_personadata",
       "community": 0,
       "norm_label": "personadata"
@@ -2058,7 +2004,7 @@
       "label": "PERSONAS_DEFAULT",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2532",
+      "source_location": "L2415",
       "id": "src_onboarding_shell_personas_default",
       "community": 0,
       "norm_label": "personas_default"
@@ -2067,7 +2013,7 @@
       "label": "CampaignStep",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2601",
+      "source_location": "L2484",
       "id": "src_onboarding_shell_campaignstep",
       "community": 0,
       "norm_label": "campaignstep"
@@ -2076,7 +2022,7 @@
       "label": "Campaign",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2602",
+      "source_location": "L2485",
       "id": "src_onboarding_shell_campaign",
       "community": 0,
       "norm_label": "campaign"
@@ -2085,7 +2031,7 @@
       "label": "CAMPAIGNS",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2604",
+      "source_location": "L2487",
       "id": "src_onboarding_shell_campaigns",
       "community": 0,
       "norm_label": "campaigns"
@@ -2094,7 +2040,7 @@
       "label": "ChannelIcon()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2649",
+      "source_location": "L2532",
       "id": "src_onboarding_shell_channelicon",
       "community": 0,
       "norm_label": "channelicon()"
@@ -2103,7 +2049,7 @@
       "label": "StepCardContent()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2664",
+      "source_location": "L2547",
       "id": "src_onboarding_shell_stepcardcontent",
       "community": 0,
       "norm_label": "stepcardcontent()"
@@ -2112,7 +2058,7 @@
       "label": "StepOutreachCampaign()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2678",
+      "source_location": "L2561",
       "id": "src_onboarding_shell_stepoutreachcampaign",
       "community": 4,
       "norm_label": "stepoutreachcampaign()"
@@ -2121,7 +2067,7 @@
       "label": "StepAllSet()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2905",
+      "source_location": "L2788",
       "id": "src_onboarding_shell_stepallset",
       "community": 0,
       "norm_label": "stepallset()"
@@ -2130,7 +2076,7 @@
       "label": "LaunchTimelineItem",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2926",
+      "source_location": "L2809",
       "id": "src_onboarding_shell_launchtimelineitem",
       "community": 0,
       "norm_label": "launchtimelineitem"
@@ -2139,7 +2085,7 @@
       "label": "LAUNCH_TIMELINE",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2928",
+      "source_location": "L2811",
       "id": "src_onboarding_shell_launch_timeline",
       "community": 0,
       "norm_label": "launch_timeline"
@@ -2148,7 +2094,7 @@
       "label": "StepClearedForLaunch()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2937",
+      "source_location": "L2820",
       "id": "src_onboarding_shell_stepclearedforlaunch",
       "community": 4,
       "norm_label": "stepclearedforlaunch()"
@@ -2157,7 +2103,7 @@
       "label": "Recommendation",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2978",
+      "source_location": "L2861",
       "id": "src_onboarding_shell_recommendation",
       "community": 0,
       "norm_label": "recommendation"
@@ -2166,34 +2112,16 @@
       "label": "RECOMMENDATION_BADGE",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2979",
+      "source_location": "L2862",
       "id": "src_onboarding_shell_recommendation_badge",
       "community": 0,
       "norm_label": "recommendation_badge"
     },
     {
-      "label": "RECOMMENDATION_ORDER",
-      "file_type": "code",
-      "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2984",
-      "id": "src_onboarding_shell_recommendation_order",
-      "community": 0,
-      "norm_label": "recommendation_order"
-    },
-    {
-      "label": "nextRecommendation()",
-      "file_type": "code",
-      "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2985",
-      "id": "src_onboarding_shell_nextrecommendation",
-      "community": 0,
-      "norm_label": "nextrecommendation()"
-    },
-    {
       "label": "IcpCandidate",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L2998",
+      "source_location": "L2879",
       "id": "src_onboarding_shell_icpcandidate",
       "community": 0,
       "norm_label": "icpcandidate"
@@ -2202,7 +2130,7 @@
       "label": "ICP_CANDIDATES_DEFAULT",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3023",
+      "source_location": "L2904",
       "id": "src_onboarding_shell_icp_candidates_default",
       "community": 0,
       "norm_label": "icp_candidates_default"
@@ -2211,7 +2139,7 @@
       "label": "SECTION_ICON_PATH",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3093",
+      "source_location": "L2974",
       "id": "src_onboarding_shell_section_icon_path",
       "community": 0,
       "norm_label": "section_icon_path"
@@ -2220,7 +2148,7 @@
       "label": "SectionIcon()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3116",
+      "source_location": "L2997",
       "id": "src_onboarding_shell_sectionicon",
       "community": 0,
       "norm_label": "sectionicon()"
@@ -2229,7 +2157,7 @@
       "label": "CollapsibleReviewSection()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3124",
+      "source_location": "L3005",
       "id": "src_onboarding_shell_collapsiblereviewsection",
       "community": 0,
       "norm_label": "collapsiblereviewsection()"
@@ -2238,7 +2166,7 @@
       "label": "ProductServicesPanel()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3194",
+      "source_location": "L3075",
       "id": "src_onboarding_shell_productservicespanel",
       "community": 0,
       "norm_label": "productservicespanel()"
@@ -2247,7 +2175,7 @@
       "label": "IcpCandidateCard()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3245",
+      "source_location": "L3131",
       "id": "src_onboarding_shell_icpcandidatecard",
       "community": 0,
       "norm_label": "icpcandidatecard()"
@@ -2256,7 +2184,7 @@
       "label": "IcpPanel()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3342",
+      "source_location": "L3230",
       "id": "src_onboarding_shell_icppanel",
       "community": 0,
       "norm_label": "icppanel()"
@@ -2265,7 +2193,7 @@
       "label": "PersonasPanel()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3371",
+      "source_location": "L3255",
       "id": "src_onboarding_shell_personaspanel",
       "community": 0,
       "norm_label": "personaspanel()"
@@ -2274,7 +2202,7 @@
       "label": "ReviewSectionKey",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3471",
+      "source_location": "L3357",
       "id": "src_onboarding_shell_reviewsectionkey",
       "community": 0,
       "norm_label": "reviewsectionkey"
@@ -2283,7 +2211,7 @@
       "label": "REVIEW_SECTION_ORDER",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3472",
+      "source_location": "L3358",
       "id": "src_onboarding_shell_review_section_order",
       "community": 0,
       "norm_label": "review_section_order"
@@ -2292,7 +2220,7 @@
       "label": "nextReviewSection()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3473",
+      "source_location": "L3359",
       "id": "src_onboarding_shell_nextreviewsection",
       "community": 0,
       "norm_label": "nextreviewsection()"
@@ -2301,7 +2229,7 @@
       "label": "ProductReviewState",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3478",
+      "source_location": "L3364",
       "id": "src_onboarding_shell_productreviewstate",
       "community": 0,
       "norm_label": "productreviewstate"
@@ -2310,7 +2238,7 @@
       "label": "buildInitialProductReview()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3488",
+      "source_location": "L3374",
       "id": "src_onboarding_shell_buildinitialproductreview",
       "community": 28,
       "norm_label": "buildinitialproductreview()"
@@ -2319,7 +2247,7 @@
       "label": "REVIEW_SECTION_LABEL",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3500",
+      "source_location": "L3386",
       "id": "src_onboarding_shell_review_section_label",
       "community": 0,
       "norm_label": "review_section_label"
@@ -2328,7 +2256,7 @@
       "label": "SectionProgressBar()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3502",
+      "source_location": "L3388",
       "id": "src_onboarding_shell_sectionprogressbar",
       "community": 0,
       "norm_label": "sectionprogressbar()"
@@ -2337,16 +2265,16 @@
       "label": "StepProductReview()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3522",
+      "source_location": "L3408",
       "id": "src_onboarding_shell_stepproductreview",
-      "community": 4,
+      "community": 24,
       "norm_label": "stepproductreview()"
     },
     {
       "label": "StepName",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3825",
+      "source_location": "L3717",
       "id": "src_onboarding_shell_stepname",
       "community": 0,
       "norm_label": "stepname"
@@ -2355,7 +2283,7 @@
       "label": "STEP_ORDER",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3832",
+      "source_location": "L3724",
       "id": "src_onboarding_shell_step_order",
       "community": 0,
       "norm_label": "step_order"
@@ -2364,7 +2292,7 @@
       "label": "ALL_STEPS",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3839",
+      "source_location": "L3731",
       "id": "src_onboarding_shell_all_steps",
       "community": 0,
       "norm_label": "all_steps"
@@ -2373,7 +2301,7 @@
       "label": "RESUME_THRESHOLD",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3851",
+      "source_location": "L3743",
       "id": "src_onboarding_shell_resume_threshold",
       "community": 0,
       "norm_label": "resume_threshold"
@@ -2382,7 +2310,7 @@
       "label": "OnboardingDraft",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3853",
+      "source_location": "L3745",
       "id": "src_onboarding_shell_onboardingdraft",
       "community": 0,
       "norm_label": "onboardingdraft"
@@ -2391,7 +2319,7 @@
       "label": "loadDraft()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3871",
+      "source_location": "L3763",
       "id": "src_onboarding_shell_loaddraft",
       "community": 0,
       "norm_label": "loaddraft()"
@@ -2400,7 +2328,7 @@
       "label": "saveDraft()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3880",
+      "source_location": "L3772",
       "id": "src_onboarding_shell_savedraft",
       "community": 0,
       "norm_label": "savedraft()"
@@ -2409,7 +2337,7 @@
       "label": "clearDraft()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3883",
+      "source_location": "L3775",
       "id": "src_onboarding_shell_cleardraft",
       "community": 0,
       "norm_label": "cleardraft()"
@@ -2418,7 +2346,7 @@
       "label": "lastPhaseLabel()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3888",
+      "source_location": "L3780",
       "id": "src_onboarding_shell_lastphaselabel",
       "community": 9,
       "norm_label": "lastphaselabel()"
@@ -2427,7 +2355,7 @@
       "label": "timeAgo()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3898",
+      "source_location": "L3790",
       "id": "src_onboarding_shell_timeago",
       "community": 9,
       "norm_label": "timeago()"
@@ -2436,7 +2364,7 @@
       "label": "StepResume()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3907",
+      "source_location": "L3799",
       "id": "src_onboarding_shell_stepresume",
       "community": 9,
       "norm_label": "stepresume()"
@@ -2445,7 +2373,7 @@
       "label": "OnboardingShell()",
       "file_type": "code",
       "source_file": "src/onboarding-shell.tsx",
-      "source_location": "L3926",
+      "source_location": "L3818",
       "id": "src_onboarding_shell_onboardingshell",
       "community": 4,
       "norm_label": "onboardingshell()"
@@ -2519,7 +2447,7 @@
       "source_file": "src/copilot/CopilotContext.tsx",
       "source_location": "L82",
       "id": "copilot_copilotcontext_useregistercopilotadapter",
-      "community": 4,
+      "community": 24,
       "norm_label": "useregistercopilotadapter()"
     },
     {
@@ -2573,7 +2501,7 @@
       "source_file": "src/copilot/Referenceable.tsx",
       "source_location": "L1",
       "id": "src_copilot_referenceable_tsx",
-      "community": 24,
+      "community": 32,
       "norm_label": "referenceable.tsx"
     },
     {
@@ -2582,25 +2510,25 @@
       "source_file": "src/copilot/Referenceable.tsx",
       "source_location": "L20",
       "id": "copilot_referenceable_referenceablebase",
-      "community": 24,
+      "community": 32,
       "norm_label": "referenceablebase()"
     },
     {
       "label": "ReferenceableSection()",
       "file_type": "code",
       "source_file": "src/copilot/Referenceable.tsx",
-      "source_location": "L60",
+      "source_location": "L61",
       "id": "copilot_referenceable_referenceablesection",
-      "community": 24,
+      "community": 32,
       "norm_label": "referenceablesection()"
     },
     {
       "label": "ReferenceableField()",
       "file_type": "code",
       "source_file": "src/copilot/Referenceable.tsx",
-      "source_location": "L64",
+      "source_location": "L65",
       "id": "copilot_referenceable_referenceablefield",
-      "community": 24,
+      "community": 32,
       "norm_label": "referenceablefield()"
     },
     {
@@ -2762,7 +2690,7 @@
       "source_file": "src/knowledge-center/data.ts",
       "source_location": "L102",
       "id": "knowledge_center_data_productfield",
-      "community": 21,
+      "community": 32,
       "norm_label": "productfield"
     },
     {
@@ -2789,7 +2717,7 @@
       "source_file": "src/knowledge-center/data.ts",
       "source_location": "L230",
       "id": "knowledge_center_data_company_size_buckets",
-      "community": 21,
+      "community": 32,
       "norm_label": "company_size_buckets"
     },
     {
@@ -2798,7 +2726,7 @@
       "source_file": "src/knowledge-center/data.ts",
       "source_location": "L231",
       "id": "knowledge_center_data_funding_stage_buckets",
-      "community": 21,
+      "community": 32,
       "norm_label": "funding_stage_buckets"
     },
     {
@@ -2834,7 +2762,7 @@
       "source_file": "src/knowledge-center/data.ts",
       "source_location": "L370",
       "id": "knowledge_center_data_treekey",
-      "community": 2,
+      "community": 30,
       "norm_label": "treekey()"
     },
     {
@@ -2843,7 +2771,7 @@
       "source_file": "src/knowledge-center/data.ts",
       "source_location": "L375",
       "id": "knowledge_center_data_historysource",
-      "community": 21,
+      "community": 32,
       "norm_label": "historysource"
     },
     {
@@ -2852,7 +2780,7 @@
       "source_file": "src/knowledge-center/data.ts",
       "source_location": "L380",
       "id": "knowledge_center_data_historyentitytype",
-      "community": 1,
+      "community": 30,
       "norm_label": "historyentitytype"
     },
     {
@@ -2861,7 +2789,7 @@
       "source_file": "src/knowledge-center/data.ts",
       "source_location": "L382",
       "id": "knowledge_center_data_historyentry",
-      "community": 1,
+      "community": 30,
       "norm_label": "historyentry"
     },
     {
@@ -2870,7 +2798,7 @@
       "source_file": "src/knowledge-center/data.ts",
       "source_location": "L395",
       "id": "knowledge_center_data_icpsforproduct",
-      "community": 2,
+      "community": 30,
       "norm_label": "icpsforproduct()"
     },
     {
@@ -2879,7 +2807,7 @@
       "source_file": "src/knowledge-center/data.ts",
       "source_location": "L399",
       "id": "knowledge_center_data_personasforicp",
-      "community": 2,
+      "community": 30,
       "norm_label": "personasforicp()"
     },
     {
@@ -2888,7 +2816,7 @@
       "source_file": "src/knowledge-center/data.ts",
       "source_location": "L404",
       "id": "knowledge_center_data_personafield",
-      "community": 21,
+      "community": 33,
       "norm_label": "personafield"
     },
     {
@@ -3122,7 +3050,7 @@
       "source_file": "src/knowledge-center/Explorer.tsx",
       "source_location": "L1",
       "id": "src_knowledge_center_explorer_tsx",
-      "community": 21,
+      "community": 30,
       "norm_label": "explorer.tsx"
     },
     {
@@ -3131,7 +3059,7 @@
       "source_file": "src/knowledge-center/Explorer.tsx",
       "source_location": "L18",
       "id": "knowledge_center_explorer_icp_text_fields",
-      "community": 21,
+      "community": 30,
       "norm_label": "icp_text_fields"
     },
     {
@@ -3140,7 +3068,7 @@
       "source_file": "src/knowledge-center/Explorer.tsx",
       "source_location": "L34",
       "id": "knowledge_center_explorer_icp_list_fields",
-      "community": 21,
+      "community": 30,
       "norm_label": "icp_list_fields"
     },
     {
@@ -3149,7 +3077,7 @@
       "source_file": "src/knowledge-center/Explorer.tsx",
       "source_location": "L47",
       "id": "knowledge_center_explorer_explorerview",
-      "community": 21,
+      "community": 30,
       "norm_label": "explorerview"
     },
     {
@@ -3158,7 +3086,7 @@
       "source_file": "src/knowledge-center/Explorer.tsx",
       "source_location": "L49",
       "id": "knowledge_center_explorer_views",
-      "community": 21,
+      "community": 30,
       "norm_label": "views"
     },
     {
@@ -3167,7 +3095,7 @@
       "source_file": "src/knowledge-center/Explorer.tsx",
       "source_location": "L55",
       "id": "knowledge_center_explorer_explorer",
-      "community": 2,
+      "community": 30,
       "norm_label": "explorer()"
     },
     {
@@ -3266,7 +3194,7 @@
       "source_file": "src/knowledge-center/ProductDetailPane.tsx",
       "source_location": "L1",
       "id": "src_knowledge_center_productdetailpane_tsx",
-      "community": 21,
+      "community": 32,
       "norm_label": "productdetailpane.tsx"
     },
     {
@@ -3275,7 +3203,7 @@
       "source_file": "src/knowledge-center/ProductDetailPane.tsx",
       "source_location": "L6",
       "id": "knowledge_center_productdetailpane_emptyproduct",
-      "community": 21,
+      "community": 32,
       "norm_label": "emptyproduct()"
     },
     {
@@ -3284,7 +3212,7 @@
       "source_file": "src/knowledge-center/ProductDetailPane.tsx",
       "source_location": "L10",
       "id": "knowledge_center_productdetailpane_logfield",
-      "community": 21,
+      "community": 32,
       "norm_label": "logfield"
     },
     {
@@ -3293,7 +3221,7 @@
       "source_file": "src/knowledge-center/ProductDetailPane.tsx",
       "source_location": "L12",
       "id": "knowledge_center_productdetailpane_productcard",
-      "community": 21,
+      "community": 32,
       "norm_label": "productcard()"
     },
     {
@@ -3302,7 +3230,7 @@
       "source_file": "src/knowledge-center/ProductDetailPane.tsx",
       "source_location": "L43",
       "id": "knowledge_center_productdetailpane_productdetailpane",
-      "community": 21,
+      "community": 32,
       "norm_label": "productdetailpane()"
     },
     {
@@ -3455,7 +3383,7 @@
       "source_file": "src/knowledge-center/Overview.tsx",
       "source_location": "L226",
       "id": "knowledge_center_overview_personagroup",
-      "community": 2,
+      "community": 30,
       "norm_label": "personagroup()"
     },
     {
@@ -3473,7 +3401,7 @@
       "source_file": "src/knowledge-center/Overview.tsx",
       "source_location": "L401",
       "id": "knowledge_center_overview_knowledgeoverview",
-      "community": 2,
+      "community": 30,
       "norm_label": "knowledgeoverview()"
     },
     {
@@ -3482,7 +3410,7 @@
       "source_file": "src/knowledge-center/IcpDetailPane.tsx",
       "source_location": "L1",
       "id": "src_knowledge_center_icpdetailpane_tsx",
-      "community": 21,
+      "community": 32,
       "norm_label": "icpdetailpane.tsx"
     },
     {
@@ -3491,7 +3419,7 @@
       "source_file": "src/knowledge-center/IcpDetailPane.tsx",
       "source_location": "L6",
       "id": "knowledge_center_icpdetailpane_emptyicp",
-      "community": 21,
+      "community": 32,
       "norm_label": "emptyicp()"
     },
     {
@@ -3500,7 +3428,7 @@
       "source_file": "src/knowledge-center/IcpDetailPane.tsx",
       "source_location": "L18",
       "id": "knowledge_center_icpdetailpane_logfield",
-      "community": 21,
+      "community": 32,
       "norm_label": "logfield"
     },
     {
@@ -3509,7 +3437,7 @@
       "source_file": "src/knowledge-center/IcpDetailPane.tsx",
       "source_location": "L20",
       "id": "knowledge_center_icpdetailpane_percentstat",
-      "community": 21,
+      "community": 32,
       "norm_label": "percentstat()"
     },
     {
@@ -3518,7 +3446,7 @@
       "source_file": "src/knowledge-center/IcpDetailPane.tsx",
       "source_location": "L35",
       "id": "knowledge_center_icpdetailpane_icpdetailpane",
-      "community": 21,
+      "community": 30,
       "norm_label": "icpdetailpane()"
     },
     {
@@ -3527,7 +3455,7 @@
       "source_file": "src/knowledge-center/Tree.tsx",
       "source_location": "L1",
       "id": "src_knowledge_center_tree_tsx",
-      "community": 2,
+      "community": 30,
       "norm_label": "tree.tsx"
     },
     {
@@ -3563,7 +3491,7 @@
       "source_file": "src/knowledge-center/HistoryDrawer.tsx",
       "source_location": "L1",
       "id": "src_knowledge_center_historydrawer_tsx",
-      "community": 1,
+      "community": 30,
       "norm_label": "historydrawer.tsx"
     },
     {
@@ -3572,7 +3500,7 @@
       "source_file": "src/knowledge-center/HistoryDrawer.tsx",
       "source_location": "L4",
       "id": "knowledge_center_historydrawer_entity_label",
-      "community": 1,
+      "community": 30,
       "norm_label": "entity_label"
     },
     {
@@ -3581,7 +3509,7 @@
       "source_file": "src/knowledge-center/HistoryDrawer.tsx",
       "source_location": "L6",
       "id": "knowledge_center_historydrawer_displayvalue",
-      "community": 1,
+      "community": 30,
       "norm_label": "displayvalue()"
     },
     {
@@ -3590,7 +3518,7 @@
       "source_file": "src/knowledge-center/HistoryDrawer.tsx",
       "source_location": "L10",
       "id": "knowledge_center_historydrawer_historyrow",
-      "community": 1,
+      "community": 30,
       "norm_label": "historyrow()"
     },
     {
@@ -3599,7 +3527,7 @@
       "source_file": "src/knowledge-center/HistoryDrawer.tsx",
       "source_location": "L46",
       "id": "knowledge_center_historydrawer_historydrawer",
-      "community": 1,
+      "community": 30,
       "norm_label": "historydrawer()"
     },
     {
@@ -3608,7 +3536,7 @@
       "source_file": "src/knowledge-center/PersonaDetailPane.tsx",
       "source_location": "L1",
       "id": "src_knowledge_center_personadetailpane_tsx",
-      "community": 21,
+      "community": 33,
       "norm_label": "personadetailpane.tsx"
     },
     {
@@ -3617,7 +3545,7 @@
       "source_file": "src/knowledge-center/PersonaDetailPane.tsx",
       "source_location": "L8",
       "id": "knowledge_center_personadetailpane_prose",
-      "community": 21,
+      "community": 33,
       "norm_label": "prose"
     },
     {
@@ -3626,7 +3554,7 @@
       "source_file": "src/knowledge-center/PersonaDetailPane.tsx",
       "source_location": "L10",
       "id": "knowledge_center_personadetailpane_sectionfield",
-      "community": 21,
+      "community": 33,
       "norm_label": "sectionfield()"
     },
     {
@@ -3635,7 +3563,7 @@
       "source_file": "src/knowledge-center/PersonaDetailPane.tsx",
       "source_location": "L13",
       "id": "knowledge_center_personadetailpane_sectionfieldlist",
-      "community": 21,
+      "community": 33,
       "norm_label": "sectionfieldlist()"
     },
     {
@@ -3644,7 +3572,7 @@
       "source_file": "src/knowledge-center/PersonaDetailPane.tsx",
       "source_location": "L18",
       "id": "knowledge_center_personadetailpane_section_icon",
-      "community": 21,
+      "community": 33,
       "norm_label": "section_icon"
     },
     {
@@ -3653,7 +3581,7 @@
       "source_file": "src/knowledge-center/PersonaDetailPane.tsx",
       "source_location": "L36",
       "id": "knowledge_center_personadetailpane_emptypersona",
-      "community": 21,
+      "community": 30,
       "norm_label": "emptypersona()"
     },
     {
@@ -3662,7 +3590,7 @@
       "source_file": "src/knowledge-center/PersonaDetailPane.tsx",
       "source_location": "L40",
       "id": "knowledge_center_personadetailpane_logfield",
-      "community": 21,
+      "community": 33,
       "norm_label": "logfield"
     },
     {
@@ -3671,7 +3599,7 @@
       "source_file": "src/knowledge-center/PersonaDetailPane.tsx",
       "source_location": "L42",
       "id": "knowledge_center_personadetailpane_personafieldrow",
-      "community": 21,
+      "community": 33,
       "norm_label": "personafieldrow()"
     },
     {
@@ -3689,7 +3617,7 @@
       "source_file": "src/knowledge-center/PersonaDetailPane.tsx",
       "source_location": "L101",
       "id": "knowledge_center_personadetailpane_personasummaryview",
-      "community": 21,
+      "community": 33,
       "norm_label": "personasummaryview()"
     },
     {
@@ -3698,7 +3626,7 @@
       "source_file": "src/knowledge-center/PersonaDetailPane.tsx",
       "source_location": "L224",
       "id": "knowledge_center_personadetailpane_personadetailpane",
-      "community": 21,
+      "community": 30,
       "norm_label": "personadetailpane()"
     },
     {
@@ -4004,7 +3932,7 @@
       "source_file": "src/knowledge-center/ui.tsx",
       "source_location": "L1",
       "id": "src_knowledge_center_ui_tsx",
-      "community": 21,
+      "community": 34,
       "norm_label": "ui.tsx"
     },
     {
@@ -4022,7 +3950,7 @@
       "source_file": "src/knowledge-center/ui.tsx",
       "source_location": "L20",
       "id": "knowledge_center_ui_icon_paths",
-      "community": 21,
+      "community": 34,
       "norm_label": "icon_paths"
     },
     {
@@ -4031,7 +3959,7 @@
       "source_file": "src/knowledge-center/ui.tsx",
       "source_location": "L60",
       "id": "knowledge_center_ui_filled_icons",
-      "community": 21,
+      "community": 34,
       "norm_label": "filled_icons"
     },
     {
@@ -4049,7 +3977,7 @@
       "source_file": "src/knowledge-center/ui.tsx",
       "source_location": "L78",
       "id": "knowledge_center_ui_confidencebadge",
-      "community": 21,
+      "community": 34,
       "norm_label": "confidencebadge()"
     },
     {
@@ -4058,7 +3986,7 @@
       "source_file": "src/knowledge-center/ui.tsx",
       "source_location": "L90",
       "id": "knowledge_center_ui_matchbadge",
-      "community": 2,
+      "community": 32,
       "norm_label": "matchbadge()"
     },
     {
@@ -4067,7 +3995,7 @@
       "source_file": "src/knowledge-center/ui.tsx",
       "source_location": "L98",
       "id": "knowledge_center_ui_progressbar",
-      "community": 21,
+      "community": 32,
       "norm_label": "progressbar()"
     },
     {
@@ -4076,7 +4004,7 @@
       "source_file": "src/knowledge-center/ui.tsx",
       "source_location": "L108",
       "id": "knowledge_center_ui_cardsection",
-      "community": 1,
+      "community": 21,
       "norm_label": "cardsection()"
     },
     {
@@ -4085,7 +4013,7 @@
       "source_file": "src/knowledge-center/ui.tsx",
       "source_location": "L129",
       "id": "knowledge_center_ui_lowconfidencemark",
-      "community": 21,
+      "community": 34,
       "norm_label": "lowconfidencemark()"
     },
     {
@@ -4094,7 +4022,7 @@
       "source_file": "src/knowledge-center/ui.tsx",
       "source_location": "L142",
       "id": "knowledge_center_ui_accordionblock",
-      "community": 21,
+      "community": 34,
       "norm_label": "accordionblock()"
     },
     {
@@ -4112,7 +4040,7 @@
       "source_file": "src/knowledge-center/ui.tsx",
       "source_location": "L176",
       "id": "knowledge_center_ui_stattile",
-      "community": 30,
+      "community": 1,
       "norm_label": "stattile()"
     },
     {
@@ -4121,7 +4049,7 @@
       "source_file": "src/knowledge-center/ui.tsx",
       "source_location": "L191",
       "id": "knowledge_center_ui_fieldlabel",
-      "community": 21,
+      "community": 34,
       "norm_label": "fieldlabel()"
     },
     {
@@ -4130,7 +4058,7 @@
       "source_file": "src/knowledge-center/ui.tsx",
       "source_location": "L201",
       "id": "knowledge_center_ui_fieldvalue",
-      "community": 21,
+      "community": 33,
       "norm_label": "fieldvalue()"
     },
     {
@@ -4148,7 +4076,7 @@
       "source_file": "src/knowledge-center/ui.tsx",
       "source_location": "L248",
       "id": "knowledge_center_ui_firstsentence",
-      "community": 21,
+      "community": 34,
       "norm_label": "firstsentence()"
     },
     {
@@ -4157,7 +4085,7 @@
       "source_file": "src/knowledge-center/ui.tsx",
       "source_location": "L252",
       "id": "knowledge_center_ui_revisetext",
-      "community": 21,
+      "community": 34,
       "norm_label": "revisetext()"
     },
     {
@@ -4166,7 +4094,7 @@
       "source_file": "src/knowledge-center/ui.tsx",
       "source_location": "L268",
       "id": "knowledge_center_ui_historytextfield",
-      "community": 21,
+      "community": 33,
       "norm_label": "historytextfield()"
     },
     {
@@ -4184,7 +4112,7 @@
       "source_file": "src/knowledge-center/ui.tsx",
       "source_location": "L317",
       "id": "knowledge_center_ui_tagrow",
-      "community": 21,
+      "community": 34,
       "norm_label": "tagrow()"
     },
     {
@@ -4193,7 +4121,7 @@
       "source_file": "src/knowledge-center/ui.tsx",
       "source_location": "L328",
       "id": "knowledge_center_ui_checkboxpills",
-      "community": 21,
+      "community": 32,
       "norm_label": "checkboxpills()"
     },
     {
@@ -4202,7 +4130,7 @@
       "source_file": "src/knowledge-center/ui.tsx",
       "source_location": "L351",
       "id": "knowledge_center_ui_kc_primary_btn",
-      "community": 2,
+      "community": 32,
       "norm_label": "kc_primary_btn"
     },
     {
@@ -4220,7 +4148,7 @@
       "source_file": "src/knowledge-center/ui.tsx",
       "source_location": "L363",
       "id": "knowledge_center_ui_kc_danger_btn",
-      "community": 21,
+      "community": 32,
       "norm_label": "kc_danger_btn"
     },
     {
@@ -4229,7 +4157,7 @@
       "source_file": "src/knowledge-center/ui.tsx",
       "source_location": "L369",
       "id": "knowledge_center_ui_iconbutton",
-      "community": 2,
+      "community": 32,
       "norm_label": "iconbutton()"
     },
     {
@@ -4238,7 +4166,7 @@
       "source_file": "src/knowledge-center/ui.tsx",
       "source_location": "L379",
       "id": "knowledge_center_ui_emptystate",
-      "community": 1,
+      "community": 30,
       "norm_label": "emptystate()"
     },
     {
@@ -4256,7 +4184,7 @@
       "source_file": "src/knowledge-center/ui.tsx",
       "source_location": "L421",
       "id": "knowledge_center_ui_drawer",
-      "community": 1,
+      "community": 30,
       "norm_label": "drawer()"
     },
     {
@@ -4989,6 +4917,96 @@
       "norm_label": "open items to resolve before/during implementation"
     },
     {
+      "label": "WELCOME_ITEMS",
+      "file_type": "code",
+      "source_file": "src/onboarding-shell.tsx",
+      "source_location": "L367",
+      "community": 0,
+      "norm_label": "welcome_items",
+      "id": "src_onboarding_shell_welcome_items"
+    },
+    {
+      "label": "EditableText()",
+      "file_type": "code",
+      "source_file": "src/onboarding-shell.tsx",
+      "source_location": "L1865",
+      "community": 0,
+      "norm_label": "editabletext()",
+      "id": "src_onboarding_shell_editabletext"
+    },
+    {
+      "label": "EditableBulletList()",
+      "file_type": "code",
+      "source_file": "src/onboarding-shell.tsx",
+      "source_location": "L1964",
+      "community": 0,
+      "norm_label": "editablebulletlist()",
+      "id": "src_onboarding_shell_editablebulletlist"
+    },
+    {
+      "label": "AIRevise()",
+      "file_type": "code",
+      "source_file": "src/onboarding-shell.tsx",
+      "source_location": "L1997",
+      "community": 0,
+      "norm_label": "airevise()",
+      "id": "src_onboarding_shell_airevise"
+    },
+    {
+      "label": "WhatYouSellBundle",
+      "file_type": "code",
+      "source_file": "src/onboarding-shell.tsx",
+      "source_location": "L2076",
+      "community": 0,
+      "norm_label": "whatyousellbundle",
+      "id": "src_onboarding_shell_whatyousellbundle"
+    },
+    {
+      "label": "reviseWhatYouSellBundle()",
+      "file_type": "code",
+      "source_file": "src/onboarding-shell.tsx",
+      "source_location": "L2077",
+      "community": 5,
+      "norm_label": "revisewhatyousellbundle()",
+      "id": "src_onboarding_shell_revisewhatyousellbundle"
+    },
+    {
+      "label": "ProofBundle",
+      "file_type": "code",
+      "source_file": "src/onboarding-shell.tsx",
+      "source_location": "L2085",
+      "community": 0,
+      "norm_label": "proofbundle",
+      "id": "src_onboarding_shell_proofbundle"
+    },
+    {
+      "label": "reviseProofBundle()",
+      "file_type": "code",
+      "source_file": "src/onboarding-shell.tsx",
+      "source_location": "L2086",
+      "community": 5,
+      "norm_label": "reviseproofbundle()",
+      "id": "src_onboarding_shell_reviseproofbundle"
+    },
+    {
+      "label": "RECOMMENDATION_ORDER",
+      "file_type": "code",
+      "source_file": "src/onboarding-shell.tsx",
+      "source_location": "L2984",
+      "community": 0,
+      "norm_label": "recommendation_order",
+      "id": "src_onboarding_shell_recommendation_order"
+    },
+    {
+      "label": "nextRecommendation()",
+      "file_type": "code",
+      "source_file": "src/onboarding-shell.tsx",
+      "source_location": "L2985",
+      "community": 0,
+      "norm_label": "nextrecommendation()",
+      "id": "src_onboarding_shell_nextrecommendation"
+    },
+    {
       "label": "OverviewTab",
       "file_type": "code",
       "source_file": "src/knowledge-center/Overview.tsx",
@@ -5164,7 +5182,7 @@
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
       "source_location": "L222",
-      "community": 21,
+      "community": 34,
       "norm_label": "askai()",
       "id": "knowledge_center_ui_askai"
     },
@@ -5452,7 +5470,7 @@
       "file_type": "code",
       "source_file": "src/knowledge-center/IcpDetailPane.tsx",
       "source_location": "L17",
-      "community": 21,
+      "community": 32,
       "norm_label": "icpcompletion()",
       "id": "knowledge_center_icpdetailpane_icpcompletion"
     },
@@ -5461,7 +5479,7 @@
       "file_type": "code",
       "source_file": "src/knowledge-center/PersonaDetailPane.tsx",
       "source_location": "L29",
-      "community": 21,
+      "community": 33,
       "norm_label": "personacompletion()",
       "id": "knowledge_center_personadetailpane_personacompletion"
     },
@@ -5470,7 +5488,7 @@
       "file_type": "code",
       "source_file": "src/knowledge-center/Tree.tsx",
       "source_location": "L6",
-      "community": 2,
+      "community": 30,
       "norm_label": "row_base",
       "id": "knowledge_center_tree_row_base"
     },
@@ -5479,7 +5497,7 @@
       "file_type": "code",
       "source_file": "src/knowledge-center/Tree.tsx",
       "source_location": "L12",
-      "community": 2,
+      "community": 30,
       "norm_label": "chevron()",
       "id": "knowledge_center_tree_chevron"
     },
@@ -5488,7 +5506,7 @@
       "file_type": "code",
       "source_file": "src/knowledge-center/Tree.tsx",
       "source_location": "L20",
-      "community": 2,
+      "community": 30,
       "norm_label": "emptybranch()",
       "id": "knowledge_center_tree_emptybranch"
     },
@@ -5497,7 +5515,7 @@
       "file_type": "code",
       "source_file": "src/knowledge-center/Tree.tsx",
       "source_location": "L26",
-      "community": 2,
+      "community": 30,
       "norm_label": "personarow()",
       "id": "knowledge_center_tree_personarow"
     },
@@ -5506,7 +5524,7 @@
       "file_type": "code",
       "source_file": "src/knowledge-center/Tree.tsx",
       "source_location": "L45",
-      "community": 2,
+      "community": 30,
       "norm_label": "icprow()",
       "id": "knowledge_center_tree_icprow"
     },
@@ -5515,7 +5533,7 @@
       "file_type": "code",
       "source_file": "src/knowledge-center/Tree.tsx",
       "source_location": "L83",
-      "community": 2,
+      "community": 30,
       "norm_label": "productrow()",
       "id": "knowledge_center_tree_productrow"
     },
@@ -5524,7 +5542,7 @@
       "file_type": "code",
       "source_file": "src/knowledge-center/Tree.tsx",
       "source_location": "L122",
-      "community": 2,
+      "community": 30,
       "norm_label": "knowledgetree()",
       "id": "knowledge_center_tree_knowledgetree"
     },
@@ -7685,6 +7703,16 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/onboarding-shell.tsx",
+      "source_location": "L386",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_onboarding_shell_tsx",
+      "target": "src_onboarding_shell_hero_tiles"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/onboarding-shell.tsx",
       "source_location": "L2989",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -8530,6 +8558,16 @@
       "confidence_score": 1.0,
       "source": "src_onboarding_shell_tsx",
       "target": "src_onboarding_shell_revisewhatyousellbundle"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/onboarding-shell.tsx",
+      "source_location": "L407",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_onboarding_shell_tsx",
+      "target": "src_onboarding_shell_ripple"
     },
     {
       "relation": "contains",
@@ -17293,5 +17331,5 @@
       "source_file": "src/knowledge-center/KnowledgeCenter.tsx"
     }
   ],
-  "built_at_commit": "fcffbc8a3daffa254f67bd243c24133ab78757cc"
+  "built_at_commit": "a5048fd77acb1f2427352aada251fc06cc7e5eae"
 }
