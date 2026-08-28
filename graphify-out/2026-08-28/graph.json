@@ -3351,10 +3351,19 @@
       "norm_label": "logfield"
     },
     {
-      "label": "ProductPillRow()",
+      "label": "PROSE",
       "file_type": "code",
       "source_file": "src/knowledge-center/Overview.tsx",
       "source_location": "L12",
+      "id": "knowledge_center_overview_prose",
+      "community": 30,
+      "norm_label": "prose"
+    },
+    {
+      "label": "ProductPillRow()",
+      "file_type": "code",
+      "source_file": "src/knowledge-center/Overview.tsx",
+      "source_location": "L14",
       "id": "knowledge_center_overview_productpillrow",
       "community": 30,
       "norm_label": "productpillrow()"
@@ -3363,16 +3372,25 @@
       "label": "SectionHeaderRow()",
       "file_type": "code",
       "source_file": "src/knowledge-center/Overview.tsx",
-      "source_location": "L47",
+      "source_location": "L49",
       "id": "knowledge_center_overview_sectionheaderrow",
       "community": 30,
       "norm_label": "sectionheaderrow()"
     },
     {
+      "label": "PersonaMiniSummary()",
+      "file_type": "code",
+      "source_file": "src/knowledge-center/Overview.tsx",
+      "source_location": "L65",
+      "id": "knowledge_center_overview_personaminisummary",
+      "community": 30,
+      "norm_label": "personaminisummary()"
+    },
+    {
       "label": "PersonaGroup()",
       "file_type": "code",
       "source_file": "src/knowledge-center/Overview.tsx",
-      "source_location": "L60",
+      "source_location": "L74",
       "id": "knowledge_center_overview_personagroup",
       "community": 33,
       "norm_label": "personagroup()"
@@ -3381,7 +3399,7 @@
       "label": "KnowledgeOverview()",
       "file_type": "code",
       "source_file": "src/knowledge-center/Overview.tsx",
-      "source_location": "L97",
+      "source_location": "L116",
       "id": "knowledge_center_overview_knowledgeoverview",
       "community": 33,
       "norm_label": "knowledgeoverview()"
@@ -4942,24 +4960,6 @@
       "id": "field_reference_summary_view_spec_open_items_to_resolve_before_during_implementation",
       "community": 23,
       "norm_label": "open items to resolve before/during implementation"
-    },
-    {
-      "label": "PROSE",
-      "file_type": "code",
-      "source_file": "src/knowledge-center/Overview.tsx",
-      "source_location": "L12",
-      "community": 30,
-      "norm_label": "prose",
-      "id": "knowledge_center_overview_prose"
-    },
-    {
-      "label": "PersonaMiniSummary()",
-      "file_type": "code",
-      "source_file": "src/knowledge-center/Overview.tsx",
-      "source_location": "L65",
-      "community": 30,
-      "norm_label": "personaminisummary()",
-      "id": "knowledge_center_overview_personaminisummary"
     },
     {
       "label": "Bullets()",

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { HistorySource, PRODUCTS, PersonaDetail, PersonaField, personaPerformance } from "./data";
-import { AccordionBlock, CardSection, ChipList, Drawer, EditableField, EmptyState, FieldLabel, FieldValue, HistoryTextField, Icon, IconName, KC_DANGER_BTN, KC_PRIMARY_BTN, MatchBadge, StatTile, TagRow, formatCurrencyShort } from "./ui";
+import { Bullets, CardSection, ChipList, Drawer, EditableField, EmptyState, FieldLabel, FieldValue, HistoryTextField, Icon, IconName, KC_DANGER_BTN, KC_PRIMARY_BTN, StatTile, formatCurrencyShort } from "./ui";
 import { ComboRow, ComboTableHeader, overallFit } from "./ComboRow";
 import { CampaignSequenceView } from "./CampaignSequenceView";
 import { ReferenceableField, ReferenceableSection } from "../copilot/Referenceable";
@@ -92,7 +92,7 @@ function PerformanceSection({ persona }: { persona: PersonaDetail }) {
 
 /* ─── Summary — matches summary-view-spec.md Step 4 (Persona). Primary
    blocks 1–9 sit above the fold; block 10 (Qualification Snapshot) is
-   Secondary, behind AccordionBlock. Blocks 11–21 (deeper pain/risk
+   Secondary, always expanded (no collapse/show-more). Blocks 11–21 (deeper pain/risk
    context, decision-making detail, buyer psychology, extended
    messaging/outreach, remaining qualification tiers, etc.) and block
    22 (scoring input) are Hidden — Copilot only / internal-only — and
@@ -113,10 +113,7 @@ function PersonaSummaryView({ persona, onViewDetails }: {
           <div style={{ minWidth: 0 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
               <h2 style={{ fontSize: 21, fontWeight: 800, margin: 0 }}>{persona.name}</h2>
-              <MatchBadge value={persona.matchPct} />
-            </div>
-            <div style={{ marginTop: 6 }}>
-              <TagRow items={[persona.department]} />
+              <span style={{ fontSize: 11, fontWeight: 600, color: "var(--color-brand)", border: "1px solid var(--color-border)", background: "var(--color-brand-tint)", borderRadius: 999, padding: "2px 10px" }}>{persona.department}</span>
             </div>
           </div>
           <button type="button" className="kc-primary-btn" title="View Details" style={{ ...KC_PRIMARY_BTN, padding: 0, width: 36, height: 36, justifyContent: "center", flexShrink: 0 }} onClick={onViewDetails}>
@@ -138,7 +135,7 @@ function PersonaSummaryView({ persona, onViewDetails }: {
       {/* Block 3 — What They're Responsible For (Primary, Field-Join) */}
       <CardSection icon="briefcase" title="Key Responsibilities">
         <ReferenceableField id={`persona:${persona.id}:section:Responsibilities:field:Core Responsibilities`} label="Core Responsibilities">
-          <FieldValue value={sectionFieldList(persona, "Responsibilities", "Core Responsibilities")} />
+          <Bullets items={sectionFieldList(persona, "Responsibilities", "Core Responsibilities")} />
         </ReferenceableField>
       </CardSection>
 
@@ -151,7 +148,7 @@ function PersonaSummaryView({ persona, onViewDetails }: {
           </ReferenceableField>
           <ReferenceableField id={`persona:${persona.id}:section:Goals:field:Secondary Goals`} label="Secondary Goals">
             <FieldLabel>Secondary Goals</FieldLabel>
-            <FieldValue value={sectionFieldList(persona, "Goals", "Secondary Goals")} />
+            <Bullets items={sectionFieldList(persona, "Goals", "Secondary Goals")} />
           </ReferenceableField>
         </div>
       </CardSection>
@@ -166,7 +163,7 @@ function PersonaSummaryView({ persona, onViewDetails }: {
       {/* Block 6 — Current Tools (Primary, Field-Join) */}
       <CardSection icon="layers" title="Current Tools">
         <ReferenceableField id={`persona:${persona.id}:section:Current Solutions:field:Tools In Use`} label="Tools In Use">
-          <TagRow items={sectionFieldList(persona, "Current Solutions", "Tools In Use")} />
+          <Bullets items={sectionFieldList(persona, "Current Solutions", "Tools In Use")} />
         </ReferenceableField>
       </CardSection>
 
@@ -188,11 +185,7 @@ function PersonaSummaryView({ persona, onViewDetails }: {
       {objections.length > 0 && (
         <CardSection icon="shield" title="Anticipated Objections">
           <ReferenceableField id={`persona:${persona.id}:section:Messaging Guidance:field:Objections They Raise`} label="Objections They Raise">
-            <ul style={{ margin: 0, padding: "0 0 0 16px", display: "flex", flexDirection: "column", gap: 5 }}>
-              {objections.map((o, i) => (
-                <li key={i} style={{ fontSize: 12.5, color: "var(--color-heading)", lineHeight: 1.5, fontStyle: "italic" }}>{o}</li>
-              ))}
-            </ul>
+            <Bullets items={objections} />
           </ReferenceableField>
         </CardSection>
       )}
@@ -204,8 +197,8 @@ function PersonaSummaryView({ persona, onViewDetails }: {
         </ReferenceableField>
       </CardSection>
 
-      {/* Block 10 — Qualification Snapshot (Secondary) */}
-      <AccordionBlock icon="check" title="Qualification Snapshot">
+      {/* Block 10 — Qualification Snapshot (Secondary, always expanded) */}
+      <CardSection icon="check" title="Qualification Snapshot">
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           <ReferenceableField id={`persona:${persona.id}:section:Qualification:field:Warm Lead`} label="Warm Lead">
             <FieldLabel>Warm Lead</FieldLabel>
@@ -216,7 +209,7 @@ function PersonaSummaryView({ persona, onViewDetails }: {
             <FieldValue value={sectionField(persona, "Qualification", "Meeting-Ready") ?? "—"} />
           </ReferenceableField>
         </div>
-      </AccordionBlock>
+      </CardSection>
     </div>
   );
 }

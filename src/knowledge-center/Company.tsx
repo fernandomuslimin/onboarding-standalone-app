@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
-import { COMPANY_CONFIDENCE, CompanyProfile, HistorySource } from "./data";
-import { AccordionBlock, CardSection, ChipList, FieldLabel, HistoryTextField, Icon, KC_PRIMARY_BTN, LowConfidenceMark, ProgressBar, TagRow, reviseText } from "./ui";
+import { CompanyProfile, HistorySource } from "./data";
+import { Bullets, CardSection, ChipList, FieldLabel, HistoryTextField, Icon, KC_PRIMARY_BTN, ProgressBar, reviseText } from "./ui";
 import { ReferenceableField, ReferenceableSection } from "../copilot/Referenceable";
 import { useRegisterCopilotAdapter } from "../copilot/CopilotContext";
 import { ResolvedReference } from "../copilot/types";
@@ -317,7 +317,7 @@ export function CompanySection({ profile, onChange, onLogField, reviewed, onTogg
 /* ─── Summary — matches docs/field_reference/summary-view-spec.md,
    Step 1 (Company Profile). Primary blocks 1–5 sit above the fold, laid
    out as a wide left column; Secondary blocks 6–8 sit in a narrower
-   right rail, tucked behind AccordionBlock's show-more — a desktop
+   right rail — always expanded (no collapse/show-more) — a desktop
    layout that spends the page's real width on the tiering the spec
    already defines, instead of one long single-column scroll. Blocks 9
    (dreamCustomer) and 10 (goalTimeline — not in this mock model) are
@@ -333,34 +333,19 @@ function CompanySummary({ profile, onViewDetails }: {
     <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 14 }}>
       {/* Block 1 — Header Strip (Primary, Field-Join) */}
       <div style={{ background: "var(--color-page)", border: "1px solid var(--color-border)", borderRadius: 14, padding: "16px 26px", boxShadow: "var(--shadow-card)" }}>
-        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 20, flexWrap: "wrap" }}>
-          <div style={{ minWidth: 0 }}>
-            <div style={{ display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap" }}>
-              <h2 style={{ fontSize: 21, fontWeight: 800, margin: 0 }}>{profile.companyName}</h2>
-              <a href={`https://${profile.website}`} target="_blank" rel="noopener noreferrer"
-                style={{ fontSize: 12.5, color: "var(--color-brand)", textDecoration: "none" }}>
-                {profile.website}
-              </a>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 7, fontSize: 12, color: "var(--color-muted)", margin: "5px 0 0" }}>
-              <ReferenceableField id="company:category" label="Category">
-                <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>{profile.category}<LowConfidenceMark value={COMPANY_CONFIDENCE.category} /></span>
-              </ReferenceableField>
-              <span style={{ opacity: 0.4 }}>·</span>
-              <ReferenceableField id="company:companySize" label="Company Size">
-                <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>{profile.companySize}<LowConfidenceMark value={COMPANY_CONFIDENCE.companySize} /></span>
-              </ReferenceableField>
-              <span style={{ opacity: 0.4 }}>·</span>
-              <ReferenceableField id="company:annualRevenue" label="Annual Revenue">
-                <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>{profile.annualRevenue}<LowConfidenceMark value={COMPANY_CONFIDENCE.annualRevenue} /></span>
-              </ReferenceableField>
-            </div>
-          </div>
-          <div style={{ flexShrink: 0 }}>
-            <button type="button" className="kc-primary-btn" title="View Details" style={{ ...KC_PRIMARY_BTN, padding: 0, width: 36, height: 36, justifyContent: "center" }} onClick={onViewDetails}>
-              <Icon name="edit" size={14} />
-            </button>
-          </div>
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 20, marginBottom: 12 }}>
+          <h2 style={{ fontSize: 21, fontWeight: 800, margin: 0 }}>{profile.companyName}</h2>
+          <button type="button" className="kc-primary-btn" title="View Details" style={{ ...KC_PRIMARY_BTN, padding: 0, width: 36, height: 36, justifyContent: "center", flexShrink: 0 }} onClick={onViewDetails}>
+            <Icon name="edit" size={14} />
+          </button>
+        </div>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 16, border: "1px solid var(--color-border)", borderRadius: 14, background: "var(--color-surface)", padding: "14px 16px" }}>
+          {([["category", "Category", profile.category], ["companySize", "Company Size", profile.companySize], ["annualRevenue", "Revenue", profile.annualRevenue]] as const).map(([key, label, value]) => (
+            <ReferenceableField key={key} id={`company:${key}`} label={label} style={{ flex: "1 1 150px", minWidth: 0 }}>
+              <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase", marginBottom: 4 }}>{label}</div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: "var(--color-heading)" }}>{value}</div>
+            </ReferenceableField>
+          ))}
         </div>
       </div>
 
@@ -379,10 +364,7 @@ function CompanySummary({ profile, onViewDetails }: {
           {/* Block 3 — What Makes You Different (Primary, AI-Synthesized) */}
           <ReferenceableField id="company:whatMakesYouDifferent" label="Competitive Differentiation">
             <CardSection icon="compass" title="Competitive Differentiation">
-              <p style={{ ...PROSE, display: "flex", alignItems: "flex-start", gap: 6 }}>
-                {differentiationParagraph(profile)}
-                <LowConfidenceMark value={COMPANY_CONFIDENCE.differentiators} />
-              </p>
+              <p style={PROSE}>{differentiationParagraph(profile)}</p>
             </CardSection>
           </ReferenceableField>
 
@@ -393,7 +375,7 @@ function CompanySummary({ profile, onViewDetails }: {
                 <p style={PROSE}>{profile.productServiceSummary}</p>
               </ReferenceableField>
               <ReferenceableField id="company:products" label="Products">
-                <TagRow items={profile.products} />
+                <Bullets items={profile.products} tone="brand" />
               </ReferenceableField>
             </div>
           </CardSection>
@@ -404,39 +386,36 @@ function CompanySummary({ profile, onViewDetails }: {
               <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
                 <ReferenceableField id="company:keySellingPoints" label="Key Selling Points">
                   <FieldLabel>Key Selling Points</FieldLabel>
-                  <TagRow items={profile.keySellingPoints} />
+                  <Bullets items={profile.keySellingPoints} tone="brand" />
                 </ReferenceableField>
                 <ReferenceableField id="company:notableCustomers" label="Notable Customers">
                   <FieldLabel>Notable Customers</FieldLabel>
-                  <TagRow items={profile.notableCustomers} />
+                  <Bullets items={profile.notableCustomers} />
                 </ReferenceableField>
               </div>
               <ReferenceableField id="company:proof" label="Proof">
-                <p style={{ ...PROSE, display: "flex", alignItems: "flex-start", gap: 6, color: "var(--color-muted)", fontStyle: "italic" }}>
-                  &ldquo;{profile.proof}&rdquo;
-                  <LowConfidenceMark value={COMPANY_CONFIDENCE.proof} />
-                </p>
+                <p style={{ ...PROSE, color: "var(--color-muted)", fontStyle: "italic" }}>&ldquo;{profile.proof}&rdquo;</p>
               </ReferenceableField>
             </div>
           </CardSection>
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 14, minWidth: 0 }}>
-          {/* Blocks 6–8 — Secondary (expandable) */}
-          <AccordionBlock icon="globe" title="Market Context" sectionId={companyBlockId("marketContext")}>
+          {/* Blocks 6–8 — Secondary, always visible (no collapse/expand) */}
+          <CardSection icon="globe" title="Market Context" sectionId={companyBlockId("marketContext")}>
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
               <ReferenceableField id="company:industries" label="Industries">
                 <FieldLabel>Industries</FieldLabel>
-                <TagRow items={profile.industries} />
+                <Bullets items={profile.industries} />
               </ReferenceableField>
               <ReferenceableField id="company:competitors" label="Competitors">
                 <FieldLabel>Competitors</FieldLabel>
-                <TagRow items={profile.competitors} />
+                <Bullets items={profile.competitors} />
               </ReferenceableField>
             </div>
-          </AccordionBlock>
+          </CardSection>
 
-          <AccordionBlock icon="dollar" title="Deal Snapshot" sectionId={companyBlockId("dealSnapshot")}>
+          <CardSection icon="dollar" title="Deal Snapshot" sectionId={companyBlockId("dealSnapshot")}>
             <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
               <ReferenceableField id="company:buyingMotion" label="Buying Motion">
                 <FieldLabel>Buying Motion</FieldLabel>
@@ -451,17 +430,13 @@ function CompanySummary({ profile, onViewDetails }: {
                 <p style={{ ...PROSE, margin: 0 }}>{profile.salesCycle}</p>
               </ReferenceableField>
             </div>
-          </AccordionBlock>
+          </CardSection>
 
-          <AccordionBlock icon="shield" title="Risks to Address" sectionId={companyBlockId("risksToAddress")}>
+          <CardSection icon="shield" title="Risks to Address" sectionId={companyBlockId("risksToAddress")}>
             <ReferenceableField id="company:trustRisksObjections" label="Trust Risks / Objections">
-              <ul style={{ margin: 0, padding: "0 0 0 16px", display: "flex", flexDirection: "column", gap: 5 }}>
-                {profile.trustRisksObjections.map((risk, i) => (
-                  <li key={i} style={{ fontSize: 12.5, color: "var(--color-heading)", lineHeight: 1.5 }}>{risk}</li>
-                ))}
-              </ul>
+              <Bullets items={profile.trustRisksObjections} />
             </ReferenceableField>
-          </AccordionBlock>
+          </CardSection>
         </div>
       </div>
     </div>

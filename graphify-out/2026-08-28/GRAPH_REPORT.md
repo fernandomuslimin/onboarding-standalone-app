@@ -1,7 +1,7 @@
 # Graph Report - onboarding-standalone-app  (2026-08-28)
 
 ## Corpus Check
-- 40 files · ~74,831 words
+- 40 files · ~74,933 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary

@@ -216,6 +216,25 @@ export function FieldValue({ value }: { value: string | string[] }) {
   return <p style={{ margin: 0, fontSize: 12.5, color: "var(--color-heading)", lineHeight: 1.6 }}>{value}</p>;
 }
 
+/* ─── Dot bullet list ─────────────────────────────────────────────
+   Mirrors onboarding-shell.tsx's BulletList exactly — the plain
+   dot-marker list style the review pages use for every read-only list
+   field, as opposed to a pill/chip, which onboarding never uses. */
+export function Bullets({ items, tone = "body" }: { items: string[]; tone?: "body" | "brand" }) {
+  const textColor = tone === "brand" ? "var(--color-brand)" : "var(--color-body)";
+  const dotColor = tone === "brand" ? "var(--color-brand)" : "var(--color-subtle)";
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+      {items.map((item, i) => (
+        <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+          <span style={{ width: 4, height: 4, borderRadius: "50%", background: dotColor, marginTop: 7, flexShrink: 0 }} />
+          <span style={{ fontSize: 12.5, color: textColor, lineHeight: 1.5 }}>{item}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 /* ─── Editable text (input / textarea) ───────────────────────────
    `onCommit` is an optional history hook: it fires once per focus→blur
    edit session (not per keystroke) when the value actually changed,
@@ -318,16 +337,6 @@ export function ChipList({ items, onChange, placeholder = "Add…" }: { items: s
   );
 }
 
-/* ─── Read-only tag list (no add input) ─────────────────────────── */
-export function TagRow({ items }: { items: string[] }) {
-  return (
-    <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-      {items.map((item, i) => (
-        <span key={i} style={{ fontSize: 11.5, color: "var(--color-heading)", border: "1px solid var(--color-border)", borderRadius: 999, padding: "3px 10px" }}>{item}</span>
-      ))}
-    </div>
-  );
-}
 
 /* ─── Checkbox pill group (firmographic filters) ────────────────── */
 export function CheckboxPills({ options, selected, onChange }: { options: string[]; selected: string[]; onChange: (v: string[]) => void }) {
