@@ -120,10 +120,10 @@ export function KnowledgeDashboard({ products, icps, personas, selection, onSele
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 22, maxWidth: 1080 }}>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 14 }}>
-        <StatTile icon="dollar" label="Total Pipeline" value={formatCurrencyShort(totalPipeline)} />
-        <StatTile icon="target" label="Opportunities" value={String(totalOpportunities)} />
-        <StatTile icon="route" label="Campaigns" value={String(totalCampaigns)} />
-        <StatTile icon="users" label="Personas" value={String(personas.length)} />
+        <StatTile label="Total Pipeline" value={formatCurrencyShort(totalPipeline)} />
+        <StatTile label="Opportunities" value={String(totalOpportunities)} />
+        <StatTile label="Campaigns" value={String(totalCampaigns)} />
+        <StatTile label="Personas" value={String(personas.length)} />
       </div>
 
       {TIER_ORDER.map((tier) => {

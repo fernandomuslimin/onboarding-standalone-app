@@ -82,80 +82,79 @@ export function ProductSummary({ product, onViewDetails }: { product: ProductDet
       <div className="kc-company-grid" style={{ display: "grid", gridTemplateColumns: "minmax(0, 1.6fr) minmax(300px, 1fr)", gap: 20, alignItems: "start" }}>
         <div style={{ display: "flex", flexDirection: "column", gap: 14, minWidth: 0 }}>
           {/* Block 3 — What It Does & Solves (Primary, AI-Synthesized) */}
-          <CardSection icon="message" title="Product Overview">
-            <ReferenceableField id={fieldId(product, "Value Proposition")} label="Value Proposition">
+          <ReferenceableField id={fieldId(product, "Value Proposition")} label="Value Proposition">
+            <CardSection title="Product Overview">
               <p style={PROSE}>{productOverviewParagraph(product)}</p>
-            </ReferenceableField>
-          </CardSection>
+            </CardSection>
+          </ReferenceableField>
 
           {/* Block 4 — Key Capabilities (Primary, Field-Join) */}
-          <CardSection icon="grid" title="Key Capabilities">
-            <ReferenceableField id={fieldId(product, "Key Features")} label="Key Features">
+          <ReferenceableField id={fieldId(product, "Key Features")} label="Key Features">
+            <CardSection title="Key Capabilities">
               <Bullets items={fieldList(product, "Key Features")} />
-            </ReferenceableField>
-          </CardSection>
+            </CardSection>
+          </ReferenceableField>
 
           {/* Block 5 — Who It's For (Primary, Field-Join) */}
-          <CardSection icon="target" title="Target Customer">
-            <ReferenceableField id={fieldId(product, "Ideal Customer")} label="Ideal Customer">
+          <ReferenceableField id={fieldId(product, "Ideal Customer")} label="Ideal Customer">
+            <CardSection title="Target Customer">
               <p style={PROSE}>{fieldText(product, "Ideal Customer")}</p>
-            </ReferenceableField>
-          </CardSection>
+            </CardSection>
+          </ReferenceableField>
 
           {/* Block 6 — Proof It Works (Primary, Field-Join) */}
-          <CardSection icon="handshake" title="Proof Points">
-            <ReferenceableField id={fieldId(product, "Proof Points")} label="Proof Points">
+          <ReferenceableField id={fieldId(product, "Proof Points")} label="Proof Points">
+            <CardSection title="Proof Points">
               <Bullets items={fieldList(product, "Proof Points")} />
-            </ReferenceableField>
-          </CardSection>
+            </CardSection>
+          </ReferenceableField>
 
           {/* Block 8 — Deal Basics (Primary, Field-Join) */}
-          <CardSection icon="dollar" title="Commercial Terms">
-            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-              <ReferenceableField id={fieldId(product, "Deal Type")} label="Deal Type">
-                <FieldLabel>Deal Type</FieldLabel>
-                <p style={{ ...PROSE, margin: 0 }}>{fieldText(product, "Deal Type")}</p>
-              </ReferenceableField>
-              <ReferenceableField id={fieldId(product, "ACV")} label="ACV">
-                <FieldLabel>ACV</FieldLabel>
-                <p style={{ ...PROSE, margin: 0 }}>{fieldText(product, "ACV")}</p>
-              </ReferenceableField>
-              <ReferenceableField id={fieldId(product, "Contract Length")} label="Contract Length">
-                <FieldLabel>Contract Length</FieldLabel>
-                <p style={{ ...PROSE, margin: 0 }}>{fieldText(product, "Contract Length")}</p>
-              </ReferenceableField>
-            </div>
-          </CardSection>
+          <ReferenceableField id={fieldId(product, "Deal Type")} label="Deal Type">
+            <CardSection title="Deal Type">
+              <p style={{ ...PROSE, margin: 0 }}>{fieldText(product, "Deal Type")}</p>
+            </CardSection>
+          </ReferenceableField>
+
+          <ReferenceableField id={fieldId(product, "ACV")} label="ACV">
+            <CardSection title="ACV">
+              <p style={{ ...PROSE, margin: 0 }}>{fieldText(product, "ACV")}</p>
+            </CardSection>
+          </ReferenceableField>
+
+          <ReferenceableField id={fieldId(product, "Contract Length")} label="Contract Length">
+            <CardSection title="Contract Length">
+              <p style={{ ...PROSE, margin: 0 }}>{fieldText(product, "Contract Length")}</p>
+            </CardSection>
+          </ReferenceableField>
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 14, minWidth: 0 }}>
           {/* Block 7 — Competitive Snapshot (Secondary, always expanded) */}
-          <CardSection icon="graph" title="Competitive Snapshot">
-            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              <ReferenceableField id={fieldId(product, "Competitors")} label="Competitors">
-                <FieldLabel>Competitors</FieldLabel>
-                <Bullets items={fieldList(product, "Competitors")} />
-              </ReferenceableField>
-              <ReferenceableField id={fieldId(product, "Market Maturity")} label="Market Maturity">
-                <FieldLabel>Market Maturity</FieldLabel>
-                <p style={{ ...PROSE, margin: 0 }}>{fieldText(product, "Market Maturity")}</p>
-              </ReferenceableField>
-            </div>
-          </CardSection>
+          <ReferenceableField id={fieldId(product, "Competitors")} label="Competitors">
+            <CardSection title="Competitors">
+              <Bullets items={fieldList(product, "Competitors")} />
+            </CardSection>
+          </ReferenceableField>
+
+          <ReferenceableField id={fieldId(product, "Market Maturity")} label="Market Maturity">
+            <CardSection title="Market Maturity">
+              <p style={{ ...PROSE, margin: 0 }}>{fieldText(product, "Market Maturity")}</p>
+            </CardSection>
+          </ReferenceableField>
 
           {/* Block 9 — Objections & Switch Triggers (Secondary, always expanded) */}
-          <CardSection icon="shield" title="Objections & Switch Triggers">
-            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-              <ReferenceableField id={fieldId(product, "Buyer Objections")} label="Buyer Objections">
-                <FieldLabel>Buyer Objections</FieldLabel>
-                <Bullets items={fieldList(product, "Buyer Objections")} />
-              </ReferenceableField>
-              <ReferenceableField id={fieldId(product, "Switch Triggers")} label="Switch Triggers">
-                <FieldLabel>Switch Triggers</FieldLabel>
-                <Bullets items={fieldList(product, "Switch Triggers")} />
-              </ReferenceableField>
-            </div>
-          </CardSection>
+          <ReferenceableField id={fieldId(product, "Buyer Objections")} label="Buyer Objections">
+            <CardSection title="Buyer Objections">
+              <Bullets items={fieldList(product, "Buyer Objections")} />
+            </CardSection>
+          </ReferenceableField>
+
+          <ReferenceableField id={fieldId(product, "Switch Triggers")} label="Switch Triggers">
+            <CardSection title="Switch Triggers">
+              <Bullets items={fieldList(product, "Switch Triggers")} />
+            </CardSection>
+          </ReferenceableField>
         </div>
       </div>
     </div>

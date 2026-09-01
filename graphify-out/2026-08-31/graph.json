@@ -4119,7 +4119,7 @@
       "label": "CARD_TITLE",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L123",
+      "source_location": "L122",
       "id": "knowledge_center_ui_card_title",
       "community": 24,
       "norm_label": "card_title"
@@ -4128,7 +4128,7 @@
       "label": "CARD_HEADER",
       "file_type": "code",
       "source_file": "src/knowledge-center/ui.tsx",
-      "source_location": "L125",
+      "source_location": "L124",
       "id": "knowledge_center_ui_card_header",
       "community": 24,
       "norm_label": "card_header"

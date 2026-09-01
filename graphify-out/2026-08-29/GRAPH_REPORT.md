@@ -1,11 +1,11 @@
-# Graph Report - onboarding-standalone-app  (2026-08-31)
+# Graph Report - onboarding-standalone-app  (2026-08-29)
 
 ## Corpus Check
-- 42 files · ~76,182 words
+- 42 files · ~76,277 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 686 nodes · 1160 edges · 43 communities (27 shown, 16 thin omitted)
+- 682 nodes · 1151 edges · 43 communities (27 shown, 16 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 6 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
@@ -46,7 +46,6 @@
 - [[_COMMUNITY_Community 29|Community 29]]
 - [[_COMMUNITY_Community 30|Community 30]]
 - [[_COMMUNITY_Community 31|Community 31]]
-- [[_COMMUNITY_Community 32|Community 32]]
 - [[_COMMUNITY_Community 33|Community 33]]
 - [[_COMMUNITY_Community 34|Community 34]]
 - [[_COMMUNITY_Community 35|Community 35]]
@@ -57,10 +56,11 @@
 - [[_COMMUNITY_Community 40|Community 40]]
 - [[_COMMUNITY_Community 41|Community 41]]
 - [[_COMMUNITY_Community 42|Community 42]]
+- [[_COMMUNITY_Community 43|Community 43]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `Step 4 — Persona` - 24 edges
-2. `Icon()` - 22 edges
+2. `Icon()` - 21 edges
 3. `OnboardingShell()` - 17 edges
 4. `Step 2 — Product` - 14 edges
 5. `compilerOptions` - 13 edges
@@ -75,12 +75,12 @@
   README.md → src/onboarding-shell.tsx
 - `index.html (dev entry HTML)` --references--> `src/main.tsx (React entry point)`  [EXTRACTED]
   index.html → src/main.tsx
-- `src/main.tsx (React entry point)` --references--> `OnboardingShell()`  [EXTRACTED]
-  src/main.tsx → src/onboarding-shell.tsx
-- `overallScore()` --semantically_similar_to--> `overallFit()`  [INFERRED] [semantically similar]
-  src/knowledge-center/data.ts → src/knowledge-center/Campaign.tsx
 - `StepClearedForLaunch()` --references--> `KnowledgeCenter()`  [INFERRED]
   src/onboarding-shell.tsx → src/knowledge-center/KnowledgeCenter.tsx
+- `src/main.tsx (React entry point)` --references--> `OnboardingShell()`  [EXTRACTED]
+  src/main.tsx → src/onboarding-shell.tsx
+- `ReferenceableBase()` --calls--> `useCopilot()`  [EXTRACTED]
+  src/copilot/Referenceable.tsx → src/copilot/CopilotContext.tsx
 
 ## Hyperedges (group relationships)
 - **Onboarding Wizard Step Sequence** — src_onboarding_shell_onboardingshell, src_onboarding_shell_stepsplash, src_onboarding_shell_stepwelcome, src_onboarding_shell_stepwebsite, src_onboarding_shell_stepproducts, src_onboarding_shell_stepconnect, src_onboarding_shell_stepresearch, src_onboarding_shell_stepcompanyresearch, src_onboarding_shell_steptamicp, src_onboarding_shell_steppersonas, src_onboarding_shell_stepoutreachcampaign, src_onboarding_shell_stepclearedforlaunch, knowledge_center_knowledgecenter_knowledgecenter [EXTRACTED 1.00]
@@ -94,23 +94,23 @@
 
 ### Community 0 - "Onboarding Step Data & Editing"
 Cohesion: 0.01
-Nodes (83): ALL_STEPS, AvailStatus, BACK_BTN, BRAND_HIGHLIGHTS, Campaign, CAMPAIGNS, CampaignStep, CARD (+75 more)
+Nodes (82): ALL_STEPS, AvailStatus, BACK_BTN, BRAND_HIGHLIGHTS, Campaign, CAMPAIGNS, CampaignStep, CARD (+74 more)
 
 ### Community 1 - "Community 1"
-Cohesion: 0.06
-Nodes (67): CampaignSection(), CHANNEL_ICON, ComboRow(), HEADER_CELL, overallFit(), STATUS_STYLE, tone(), CampaignSequenceView() (+59 more)
+Cohesion: 0.05
+Nodes (73): CampaignSection(), CHANNEL_ICON, ComboRow(), HEADER_CELL, overallFit(), STATUS_STYLE, tone(), HEADER_CELL (+65 more)
 
 ### Community 2 - "Community 2"
-Cohesion: 0.11
-Nodes (22): BASIC_FIELDS, CHIP_FIELDS, COMPANY_BLOCKS, COMPANY_TEXT_FIELDS, companyBlockId(), CompanySection(), CompanySummary(), DEEP_DIVE_FIELDS (+14 more)
+Cohesion: 0.16
+Nodes (16): RESOURCE_RUNS, ResourceRun, ResourcesSection(), Bullets(), ConfidenceBadge(), FieldLabel(), FieldValue(), FILLED_ICONS (+8 more)
 
 ### Community 3 - "Build Tooling & Dependencies"
 Cohesion: 0.05
 Nodes (34): dependencies, react, react-dom, devDependencies, playwright, @types/react, @types/react-dom, typescript (+26 more)
 
 ### Community 4 - "App Entry & Standalone Shim"
-Cohesion: 0.15
-Nodes (13): focusStyle(), isValidUrl(), Next.js Decoupling Shim (design rationale for standalone export), OnboardingShell(), StepConnect(), StepOutreachCampaign(), StepPersonas(), StepProducts() (+5 more)
+Cohesion: 0.14
+Nodes (14): focusStyle(), isValidUrl(), Next.js Decoupling Shim (design rationale for standalone export), OnboardingShell(), StepClearedForLaunch(), StepConnect(), StepOutreachCampaign(), StepPersonas() (+6 more)
 
 ### Community 5 - "AI Text Revision Helpers"
 Cohesion: 0.21
@@ -141,48 +141,44 @@ Cohesion: 0.12
 Nodes (14): index.html (dev entry HTML), Build, code:bash (npm install), code:bash (npm run build), code:bash (npm run build:single), code:bash (npm run build:single && cp dist-single/index.html onboarding), code:tsx (import { useRouter } from "next/navigation";), Onboarding — standalone (+6 more)
 
 ### Community 21 - "Community 21"
-Cohesion: 0.14
-Nodes (19): CopilotContext, CopilotContextValue, CopilotProvider(), useCopilot(), useRegisterCopilotAdapter(), CopilotWidget(), Message, classifyIntent() (+11 more)
+Cohesion: 0.10
+Nodes (24): BASIC_FIELDS, CHIP_FIELDS, COMPANY_BLOCKS, COMPANY_TEXT_FIELDS, companyBlockId(), CompanySection(), CompanySummary(), DEEP_DIVE_FIELDS (+16 more)
 
 ### Community 23 - "Community 23"
 Cohesion: 0.14
 Nodes (14): 10. Messaging Guidance — **Not Shown**, 11. Extended Commercials — **Not Shown**, 12. Additional Proof — **Not Shown**, 13. Scoring Input — **Not Shown**, 1. Header, 2. Elevator Pitch, 3. What It Does & Solves, 4. Key Capabilities (+6 more)
 
 ### Community 24 - "Community 24"
-Cohesion: 0.14
-Nodes (16): RESOURCE_RUNS, ResourceRun, ResourcesSection(), AccordionBlock(), CARD_HEADER, CARD_TITLE, ConfidenceBadge(), FieldLabel() (+8 more)
+Cohesion: 0.16
+Nodes (16): CopilotContext, CopilotContextValue, CopilotProvider(), useCopilot(), useRegisterCopilotAdapter(), CopilotWidget(), Message, classifyIntent() (+8 more)
 
 ### Community 30 - "Community 30"
-Cohesion: 0.08
-Nodes (21): icpsForProduct(), personasForIcp(), treeKey(), ChipItem, fieldConfidence(), fieldList(), fieldValue(), KnowledgeOverview() (+13 more)
+Cohesion: 0.09
+Nodes (14): ChipItem, fieldConfidence(), fieldList(), fieldValue(), LabeledField, LEVEL_ICON, LogField, OVERVIEW_TABS (+6 more)
 
 ### Community 31 - "Community 31"
 Cohesion: 0.08
 Nodes (24): 10. Qualification Snapshot, 11. Deeper Pain & Risk Context — **Not Shown**, 12. Challenges — **Not Shown**, 13. Decision-Making Detail — **Not Shown**, 14. Current-Solution Detail — **Not Shown**, 15. Buying Signals Detail — **Not Shown**, 16. Buyer Psychology — **Not Shown**, 17. Extended Messaging Guidance — **Not Shown** (+16 more)
 
-### Community 32 - "Community 32"
-Cohesion: 0.15
-Nodes (13): 10. Targeting Filters — **Not Shown**, 11. Scoring Input — **Not Shown**, 1. Header, 1. Header, 2. Who This Is & Why They Fit, 3. Firmographic Snapshot, 4. Pains & Goals, 5. Buying Signals (+5 more)
-
 ### Community 33 - "Community 33"
-Cohesion: 0.08
-Nodes (26): HEADER_CELL, KnowledgeDashboard(), NUM_CELL, Row(), Tier, TIER_META, TIER_ORDER, TIER_SHARE (+18 more)
+Cohesion: 0.12
+Nodes (18): Row(), campaignCombosForPersona(), HistorySource, personaPerformance(), activeTransform(), boxShadowFor(), BRANCH_COLORS, CARD_TINTS (+10 more)
 
 ### Community 34 - "Community 34"
-Cohesion: 0.14
-Nodes (10): COMPANY_SIZE_BUCKETS, FUNDING_STAGE_BUCKETS, BLOCK_LABEL, emptyIcp(), IcpDetailPane(), IcpSummary(), LogField, Bullets() (+2 more)
+Cohesion: 0.12
+Nodes (13): ReferenceableBase(), ReferenceableField(), ReferenceableSection(), COMPANY_SIZE_BUCKETS, FUNDING_STAGE_BUCKETS, BLOCK_LABEL, emptyIcp(), IcpDetailPane() (+5 more)
 
 ### Community 35 - "Community 35"
 Cohesion: 0.18
-Nodes (14): HistorySource, ProductField, emptyProduct(), fieldByLabel(), fieldId(), fieldList(), fieldText(), LogField (+6 more)
+Nodes (14): ProductField, emptyProduct(), fieldByLabel(), fieldId(), fieldList(), fieldText(), LogField, ProductDetailPane() (+6 more)
 
 ### Community 38 - "Community 38"
 Cohesion: 0.67
 Nodes (3): estimateFieldWeight(), IcpCandidateCard(), icpFieldId()
 
 ### Community 39 - "Community 39"
-Cohesion: 0.18
-Nodes (11): 10. Scoring Input — **Not Shown**, 1. Header Strip, 2. Who You Are & The Problem You Solve, 3. What Makes You Different, 4. What You Sell, 5. Proof & Credibility, 6. Market Context, 7. Deal Snapshot (+3 more)
+Cohesion: 0.15
+Nodes (13): 10. Targeting Filters — **Not Shown**, 11. Scoring Input — **Not Shown**, 1. Header, 1. Header, 2. Who This Is & Why They Fit, 3. Firmographic Snapshot, 4. Pains & Goals, 5. Buying Signals (+5 more)
 
 ### Community 40 - "Community 40"
 Cohesion: 0.67
@@ -190,9 +186,13 @@ Nodes (3): MasonryColumns(), splitAlternating(), splitBalanced()
 
 ### Community 41 - "Community 41"
 Cohesion: 0.13
-Nodes (16): PersonaField, emptyPersona(), LogField, PersonaDetailPane(), PersonaSummaryView(), PROSE, SECTION_ICON, sectionField() (+8 more)
+Nodes (20): CampaignSequenceView(), CHANNEL_ICON, ComboRow(), ComboTableHeader(), HEADER_CELL, overallFit(), STATUS_STYLE, tone() (+12 more)
 
 ### Community 42 - "Community 42"
+Cohesion: 0.18
+Nodes (11): 10. Scoring Input — **Not Shown**, 1. Header Strip, 2. Who You Are & The Problem You Solve, 3. What Makes You Different, 4. What You Sell, 5. Proof & Credibility, 6. Market Context, 7. Deal Snapshot (+3 more)
+
+### Community 43 - "Community 43"
 Cohesion: 0.25
 Nodes (7): General implementation notes, Implementation status, Mechanisms, Onboarding Review Wizard — Summary View Specification, Open items to resolve before/during implementation, Priority tiers, Purpose
 
@@ -201,7 +201,7 @@ Nodes (7): General implementation notes, Implementation status, Mechanisms, Onbo
   src/knowledge-center/data.ts · relation: references
 
 ## Knowledge Gaps
-- **306 isolated node(s):** `name`, `private`, `version`, `type`, `dev` (+301 more)
+- **305 isolated node(s):** `name`, `private`, `version`, `type`, `dev` (+300 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **16 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -210,15 +210,15 @@ _Questions this graph is uniquely positioned to answer:_
 
 - **What is the exact relationship between `CAMPAIGN_COMBOS` and `RoadmapPhase`?**
   _Edge tagged AMBIGUOUS (relation: references) - confidence is low._
-- **Why does `OnboardingShell()` connect `App Entry & Standalone Shim` to `Onboarding Step Data & Editing`, `Community 1`, `Community 18`, `Community 21`?**
-  _High betweenness centrality (0.106) - this node is a cross-community bridge._
-- **Why does `Icon()` connect `Community 41` to `Onboarding Step Data & Editing`, `Community 1`, `Community 2`, `Community 34`, `Community 33`, `Community 35`, `Community 24`, `Community 30`?**
-  _High betweenness centrality (0.051) - this node is a cross-community bridge._
+- **Why does `OnboardingShell()` connect `App Entry & Standalone Shim` to `Community 24`, `Community 1`, `Community 18`, `Onboarding Step Data & Editing`?**
+  _High betweenness centrality (0.107) - this node is a cross-community bridge._
+- **Why does `KnowledgeCenter()` connect `Community 1` to `Onboarding Step Data & Editing`, `Community 2`, `App Entry & Standalone Shim`, `Community 21`?**
+  _High betweenness centrality (0.040) - this node is a cross-community bridge._
 - **Why does `src/main.tsx (React entry point)` connect `Community 18` to `App Entry & Standalone Shim`?**
   _High betweenness centrality (0.039) - this node is a cross-community bridge._
 - **What connects `name`, `private`, `version` to the rest of the system?**
-  _307 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _306 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Onboarding Step Data & Editing` be split into smaller, more focused modules?**
-  _Cohesion score 0.013513513513513514 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.0136986301369863 - nodes in this community are weakly interconnected._
 - **Should `Community 1` be split into smaller, more focused modules?**
-  _Cohesion score 0.062342342342342344 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.05322128851540616 - nodes in this community are weakly interconnected._
