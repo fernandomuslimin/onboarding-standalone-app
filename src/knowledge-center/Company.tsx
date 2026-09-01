@@ -103,12 +103,10 @@ const SYNTHESIZED_BLOCKS: { key: "whoYouAre" | "whatMakesYouDifferent"; label: s
   { key: "whatMakesYouDifferent", label: "Competitive Differentiation", build: differentiationParagraph, fields: ["unlike", "weUniquely", "differentiators"] },
 ];
 
-// Section-level pin targets for the remaining summary blocks (Company
-// Overview / Competitive Differentiation already pin as a whole via their
-// SYNTHESIZED_BLOCKS field id above). Ids are namespaced "company:block:
-// {key}" so hovering/pinning the whole card works the same as pinning a
-// single field inside it — mirrors the same pattern in onboarding-shell.tsx's
-// StepCompanyResearch.
+// Legacy "company:block:{key}" pin targets. The summary now renders one
+// field per card, so every field is its own pin target and nothing emits a
+// block id any more — kept only so a reference pinned against an older
+// render still resolves instead of erroring.
 const COMPANY_BLOCKS: { key: string; label: string; fields: (keyof CompanyProfile)[] }[] = [
   { key: "productsOfferings", label: "Products & Offerings", fields: ["productServiceSummary", "products"] },
   { key: "proofCredibility", label: "Proof & Credibility", fields: ["keySellingPoints", "notableCustomers", "proof"] },
@@ -116,7 +114,6 @@ const COMPANY_BLOCKS: { key: string; label: string; fields: (keyof CompanyProfil
   { key: "dealSnapshot", label: "Deal Snapshot", fields: ["buyingMotion", "dealOverview", "salesCycle"] },
   { key: "risksToAddress", label: "Risks to Address", fields: ["trustRisksObjections"] },
 ];
-const companyBlockId = (key: string) => `company:block:${key}`;
 
 export function CompanySection({ profile, onChange, onLogField, reviewed, onToggleReviewed }: {
   profile: CompanyProfile; onChange: (key: keyof CompanyProfile, value: string | string[]) => void; onLogField: LogField;
@@ -262,31 +259,31 @@ export function CompanySection({ profile, onChange, onLogField, reviewed, onTogg
         {savedAt && <div style={{ fontSize: 11.5, color: "var(--color-success)", marginTop: 8 }}>Saved at {savedAt}</div>}
       </div>
 
-      <CardSection icon="briefcase" title="Company Basics">
+      <CardSection title="Company Basics">
         <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
           {BASIC_FIELDS.map((field) => <ProfileTextField key={field.key} field={field} profile={profile} onChange={patch} onLogField={onLogField} />)}
         </div>
       </CardSection>
 
-      <CardSection icon="message" title="Elevator Pitch">
+      <CardSection title="Elevator Pitch">
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           {PITCH_FIELDS.map((field) => <ProfileTextField key={field.key} field={field} profile={profile} onChange={patch} onLogField={onLogField} />)}
         </div>
       </CardSection>
 
-      <CardSection icon="compass" title="Positioning Statement">
+      <CardSection title="Positioning Statement">
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           {POSITIONING_FIELDS.map((field) => <ProfileTextField key={field.key} field={field} profile={profile} onChange={patch} onLogField={onLogField} />)}
         </div>
       </CardSection>
 
-      <CardSection icon="brain" title="Deep Dive">
+      <CardSection title="Deep Dive">
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           {DEEP_DIVE_FIELDS.map((field) => <ProfileTextField key={field.key} field={field} profile={profile} onChange={patch} onLogField={onLogField} />)}
         </div>
       </CardSection>
 
-      <CardSection icon="target" title="Market & Positioning">
+      <CardSection title="Market & Positioning">
         <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
           {CHIP_FIELDS.map(({ key, label }) => (
             <ReferenceableField key={key} id={`company:${key}`} label={label}>
@@ -297,7 +294,7 @@ export function CompanySection({ profile, onChange, onLogField, reviewed, onTogg
         </div>
       </CardSection>
 
-      <CardSection icon="handshake" title="Deal & Sales Cycle">
+      <CardSection title="Deal & Sales Cycle">
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           <ReferenceableField id="company:dealOverview" label="Deal Overview">
             <HistoryTextField label="Deal Overview" value={profile.dealOverview} onChange={(v) => patch("dealOverview", v)} multiline rows={3}
@@ -356,87 +353,90 @@ function CompanySummary({ profile, onViewDetails }: {
         <div style={{ display: "flex", flexDirection: "column", gap: 14, minWidth: 0 }}>
           {/* Block 2 — Who You Are & The Problem You Solve (Primary, AI-Synthesized) */}
           <ReferenceableField id="company:whoYouAre" label="Company Overview">
-            <CardSection icon="message" title="Company Overview">
+            <CardSection title="Company Overview">
               <p style={PROSE}>{whoYouAreParagraph(profile)}</p>
             </CardSection>
           </ReferenceableField>
 
           {/* Block 3 — What Makes You Different (Primary, AI-Synthesized) */}
           <ReferenceableField id="company:whatMakesYouDifferent" label="Competitive Differentiation">
-            <CardSection icon="compass" title="Competitive Differentiation">
+            <CardSection title="Competitive Differentiation">
               <p style={PROSE}>{differentiationParagraph(profile)}</p>
             </CardSection>
           </ReferenceableField>
 
           {/* Block 4 — What You Sell (Primary, Field-Join) */}
-          <CardSection icon="grid" title="Products & Offerings" sectionId={companyBlockId("productsOfferings")}>
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              <ReferenceableField id="company:productServiceSummary" label="Product / Service Summary">
-                <p style={PROSE}>{profile.productServiceSummary}</p>
-              </ReferenceableField>
-              <ReferenceableField id="company:products" label="Products">
-                <Bullets items={profile.products} tone="brand" />
-              </ReferenceableField>
-            </div>
-          </CardSection>
+          <ReferenceableField id="company:productServiceSummary" label="Product / Service Summary">
+            <CardSection title="Product / Service Summary">
+              <p style={PROSE}>{profile.productServiceSummary}</p>
+            </CardSection>
+          </ReferenceableField>
+
+          <ReferenceableField id="company:products" label="Products">
+            <CardSection title="Products">
+              <Bullets items={profile.products} />
+            </CardSection>
+          </ReferenceableField>
 
           {/* Block 5 — Proof & Credibility (Primary, Field-Join) */}
-          <CardSection icon="handshake" title="Proof & Credibility" sectionId={companyBlockId("proofCredibility")}>
-            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
-                <ReferenceableField id="company:keySellingPoints" label="Key Selling Points">
-                  <FieldLabel>Key Selling Points</FieldLabel>
-                  <Bullets items={profile.keySellingPoints} tone="brand" />
-                </ReferenceableField>
-                <ReferenceableField id="company:notableCustomers" label="Notable Customers">
-                  <FieldLabel>Notable Customers</FieldLabel>
-                  <Bullets items={profile.notableCustomers} />
-                </ReferenceableField>
-              </div>
-              <ReferenceableField id="company:proof" label="Proof">
-                <p style={{ ...PROSE, color: "var(--color-muted)", fontStyle: "italic" }}>&ldquo;{profile.proof}&rdquo;</p>
-              </ReferenceableField>
-            </div>
-          </CardSection>
+          <ReferenceableField id="company:keySellingPoints" label="Key Selling Points">
+            <CardSection title="Key Selling Points">
+              <Bullets items={profile.keySellingPoints} />
+            </CardSection>
+          </ReferenceableField>
+
+          <ReferenceableField id="company:notableCustomers" label="Notable Customers">
+            <CardSection title="Notable Customers">
+              <Bullets items={profile.notableCustomers} />
+            </CardSection>
+          </ReferenceableField>
+
+          <ReferenceableField id="company:proof" label="Proof">
+            <CardSection title="Proof">
+              <p style={{ ...PROSE, color: "var(--color-muted)", fontStyle: "italic" }}>&ldquo;{profile.proof}&rdquo;</p>
+            </CardSection>
+          </ReferenceableField>
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 14, minWidth: 0 }}>
-          {/* Blocks 6–8 — Secondary, always visible (no collapse/expand) */}
-          <CardSection icon="globe" title="Market Context" sectionId={companyBlockId("marketContext")}>
-            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-              <ReferenceableField id="company:industries" label="Industries">
-                <FieldLabel>Industries</FieldLabel>
-                <Bullets items={profile.industries} />
-              </ReferenceableField>
-              <ReferenceableField id="company:competitors" label="Competitors">
-                <FieldLabel>Competitors</FieldLabel>
-                <Bullets items={profile.competitors} />
-              </ReferenceableField>
-            </div>
-          </CardSection>
+          {/* Blocks 6–8 — Secondary, always visible (no collapse/expand).
+              One field per card, same as the onboarding review step, so every
+              field is its own pin target instead of sharing an umbrella card. */}
+          <ReferenceableField id="company:industries" label="Industries">
+            <CardSection title="Industries">
+              <Bullets items={profile.industries} />
+            </CardSection>
+          </ReferenceableField>
 
-          <CardSection icon="dollar" title="Deal Snapshot" sectionId={companyBlockId("dealSnapshot")}>
-            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-              <ReferenceableField id="company:buyingMotion" label="Buying Motion">
-                <FieldLabel>Buying Motion</FieldLabel>
-                <p style={{ ...PROSE, margin: 0 }}>{profile.buyingMotion}</p>
-              </ReferenceableField>
-              <ReferenceableField id="company:dealOverview" label="Deal Overview">
-                <FieldLabel>Deal Overview</FieldLabel>
-                <p style={{ ...PROSE, margin: 0 }}>{profile.dealOverview}</p>
-              </ReferenceableField>
-              <ReferenceableField id="company:salesCycle" label="Sales Cycle">
-                <FieldLabel>Sales Cycle</FieldLabel>
-                <p style={{ ...PROSE, margin: 0 }}>{profile.salesCycle}</p>
-              </ReferenceableField>
-            </div>
-          </CardSection>
+          <ReferenceableField id="company:competitors" label="Competitors">
+            <CardSection title="Competitors">
+              <Bullets items={profile.competitors} />
+            </CardSection>
+          </ReferenceableField>
 
-          <CardSection icon="shield" title="Risks to Address" sectionId={companyBlockId("risksToAddress")}>
-            <ReferenceableField id="company:trustRisksObjections" label="Trust Risks / Objections">
+          <ReferenceableField id="company:buyingMotion" label="Buying Motion">
+            <CardSection title="Buying Motion">
+              <p style={{ ...PROSE, margin: 0 }}>{profile.buyingMotion}</p>
+            </CardSection>
+          </ReferenceableField>
+
+          <ReferenceableField id="company:dealOverview" label="Deal Overview">
+            <CardSection title="Deal Overview">
+              <p style={{ ...PROSE, margin: 0 }}>{profile.dealOverview}</p>
+            </CardSection>
+          </ReferenceableField>
+
+          <ReferenceableField id="company:salesCycle" label="Sales Cycle">
+            <CardSection title="Sales Cycle">
+              <p style={{ ...PROSE, margin: 0 }}>{profile.salesCycle}</p>
+            </CardSection>
+          </ReferenceableField>
+
+          <ReferenceableField id="company:trustRisksObjections" label="Trust Risks / Objections">
+            <CardSection title="Risks to Address">
               <Bullets items={profile.trustRisksObjections} />
-            </ReferenceableField>
-          </CardSection>
+            </CardSection>
+          </ReferenceableField>
         </div>
       </div>
     </div>

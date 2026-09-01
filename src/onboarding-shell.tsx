@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { KnowledgeCenter } from "./knowledge-center/KnowledgeCenter";
+import { CARD_HEADER, CARD_PAD_X, CARD_TITLE, CARD_TITLE_GAP, Icon } from "./knowledge-center/ui";
 import { CopilotProvider, useRegisterCopilotAdapter } from "./copilot/CopilotContext";
 import { CopilotWidget } from "./copilot/CopilotWidget";
 import { ReferenceableField, ReferenceableSection } from "./copilot/Referenceable";
-import { ResolvedReference } from "./copilot/types";
+import { ResolvedReference, ResolvedValue } from "./copilot/types";
 
 /* ─── Standalone shims ──────────────────────────────────────────────
    The real app imports these from next/navigation and next/link.
@@ -70,10 +71,16 @@ const STYLES = `
   .ob-hero-flow-line { display: none !important; }
 }
 
-.ob-field-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); align-items: start; gap: 12px; }
+
+/* Balanced masonry columns for field cards — see MasonryColumns below. */
+.ob-masonry { display: grid; grid-template-columns: repeat(var(--ob-masonry-cols, 2), minmax(0, 1fr)); gap: 12px; align-items: start; }
 
 @media (max-width: 1080px) {
   .ob-company-grid { grid-template-columns: 1fr !important; }
+  .ob-masonry { grid-template-columns: repeat(min(var(--ob-masonry-cols, 2), 2), minmax(0, 1fr)); }
+}
+@media (max-width: 720px) {
+  .ob-masonry { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 640px) {
@@ -1866,18 +1873,29 @@ function StepResearch({ onFinish }: { onFinish: () => void }) {
    header, used to group each block of AI-drafted findings on the
    Company Research step so every section reads as one consistent
    card instead of ad-hoc boxes with mismatched borders. */
-function ResearchSectionCard({ icon, title, sectionId, children }: { icon: React.ReactNode; title: string; sectionId?: string; children: React.ReactNode }) {
-  const card = (
-    <div style={{ border: "1px solid var(--color-border)", borderRadius: 14, background: "var(--color-page)", overflow: "hidden" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 16px", borderBottom: "1px solid var(--color-border)", background: "var(--color-surface)" }}>
-        <span style={{ width: 26, height: 26, borderRadius: 8, background: "var(--color-brand-tint)", color: "var(--color-brand)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-          {icon}
-        </span>
-        <span style={{ flex: 1, minWidth: 0, fontSize: 12.5, fontWeight: 700, color: "var(--color-heading)", letterSpacing: "0.01em" }}>{title}</span>
+/* ─── Review field card ──────────────────────────────────────────────
+   The single card style shared by every review surface — Company
+   Research, Product, ICP and Persona in onboarding, and the matching
+   summary panes in the Knowledge Center (which render the identical
+   chrome via knowledge-center/ui.tsx's CardSection). Bold title over a
+   full-bleed hairline rule, no icon badge, so the whole product reads
+   as one card language — the shared CARD_HEADER/CARD_TITLE tokens in
+   ui.tsx are the single source of truth for both.
+══════════════════════════════════════════════════════════════════════ */
+
+function ReviewFieldCard({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div style={{ background: "var(--color-page)", border: "1px solid var(--color-border)", borderRadius: 14, padding: `${CARD_TITLE_GAP}px ${CARD_PAD_X}px 16px`, boxShadow: "var(--shadow-card)" }}>
+      <div style={CARD_HEADER}>
+        <h3 style={CARD_TITLE}>{label}</h3>
       </div>
-      <div style={{ padding: "16px 18px" }}>{children}</div>
+      {children}
     </div>
   );
+}
+
+function ResearchSectionCard({ title, sectionId, children }: { title: string; sectionId?: string; children: React.ReactNode }) {
+  const card = <ReviewFieldCard label={title}>{children}</ReviewFieldCard>;
   if (!sectionId) return card;
   return <ReferenceableSection id={sectionId} label={title} style={{ borderRadius: 14 }}>{card}</ReferenceableSection>;
 }
@@ -2040,10 +2058,10 @@ function buildInitialCompanyResearch(products: Product[]): CompanyResearchData {
       "AI personalization built into the core workflow",
       "Scales across multiple senders and domains",
     ],
-    notableCustomers: [],
+    notableCustomers: ["Northwind Analytics", "Fernway Health", "Cedar & Co Consulting"],
     proof: "Early customers report faster time-to-first-send than manually configured tools.",
-    industries: ["B2B SaaS", "Sales & marketing technology"],
-    competitors: [],
+    industries: ["B2B SaaS", "Sales & marketing technology", "Professional services", "Fintech"],
+    competitors: ["Outreach", "Apollo", "Instantly", "Smartlead"],
     buyingMotion: "Self-serve trial with sales assist for larger accounts.",
     dealOverview: "Starts as a self-serve trial, expanding to more seats and sending channels as reply-rate lift is proven.",
     salesCycle: "Typically 2–4 weeks for self-serve and mid-market accounts.",
@@ -2084,10 +2102,12 @@ function StepCompanyResearch({ products, onNext }: { products: Product[]; onNext
   ];
   const ALL_FIELDS = [...TEXT_FIELDS, ...LIST_FIELDS];
 
-  /* Section-level pin targets — one per visible block (Company Overview,
-     Products & Offerings, etc.), so hovering/pinning the whole card works
-     the same way as pinning a single field inside it. Ids are namespaced
-     "obc:block:{key}" so they never collide with a plain field id. */
+  /* Section-level pin targets, namespaced "obc:block:{key}" so they never
+     collide with a plain field id. Only "headerStrip" is still rendered as a
+     block — the rest of the summary is now one card per field, each pinning
+     its own "obc:{key}". They stay listed so a reference pinned against an
+     older render still resolves, and so the copilot can address a whole
+     block by name in a question. */
   const BLOCKS: { key: string; label: string; fields: (typeof ALL_FIELDS)[number]["key"][] }[] = [
     { key: "headerStrip", label: "Category, Size & Revenue", fields: ["category", "employeeCount", "revenue"] },
     { key: "companyOverview", label: "Company Overview", fields: ["whoYouAre"] },
@@ -2196,81 +2216,66 @@ function StepCompanyResearch({ products, onNext }: { products: Product[]; onNext
             collapses to a single column below 1080px, see .ob-company-grid
             in STYLES above. */}
         <div className="ob-company-grid" style={{ display: "grid", gridTemplateColumns: "minmax(0, 1.6fr) minmax(300px, 1fr)", gap: 20, alignItems: "start" }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 14, minWidth: 0 }}>
+          {/* One field per card, matching the Product/ICP/Persona review
+              steps — each card pins and edits its own field via "obc:{key}"
+              instead of sharing an umbrella block id. */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 12, minWidth: 0 }}>
             {/* Block 2 — Who You Are & The Problem You Solve */}
-            <ResearchSectionCard title="Company Overview" sectionId={blockId("companyOverview")}
-              icon={<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H9l-5 4v-4H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z" /></svg>}>
+            <ResearchSectionCard title="Company Overview" sectionId="obc:whoYouAre">
               <p style={{ fontSize: 13, color: "var(--color-body)", lineHeight: 1.6, margin: 0 }}>{whoYouAre}</p>
             </ResearchSectionCard>
 
             {/* Block 3 — What Makes You Different */}
-            <ResearchSectionCard title="Competitive Differentiation" sectionId={blockId("differentiation")}
-              icon={<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="7.5" /><circle cx="12" cy="12" r="2.5" /><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3" /></svg>}>
+            <ResearchSectionCard title="Competitive Differentiation" sectionId="obc:whatMakesYouDifferent">
               <p style={{ fontSize: 13, color: "var(--color-body)", lineHeight: 1.6, margin: 0 }}>{whatMakesYouDifferent}</p>
             </ResearchSectionCard>
 
             {/* Block 4 — What You Sell */}
-            <ResearchSectionCard title="Products & Offerings" sectionId={blockId("productsOfferings")}
-              icon={<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 8l2-5h14l2 5" /><rect x="3" y="8" width="18" height="12" rx="2" /><path d="M9 12.5h6" /></svg>}>
-              <div style={{ marginBottom: 10 }}>
-                <p style={{ fontSize: 13, color: "var(--color-body)", lineHeight: 1.6, margin: 0 }}>{productSummary}</p>
-              </div>
-              <BulletList items={productChips} tone="brand" />
+            <ResearchSectionCard title="Product / Service Summary" sectionId="obc:productSummary">
+              <p style={{ fontSize: 13, color: "var(--color-body)", lineHeight: 1.6, margin: 0 }}>{productSummary}</p>
+            </ResearchSectionCard>
+
+            <ResearchSectionCard title="Products" sectionId="obc:products">
+              <BulletList items={productChips} />
             </ResearchSectionCard>
 
             {/* Block 5 — Proof & Credibility */}
-            <ResearchSectionCard title="Proof & Credibility" sectionId={blockId("proofCredibility")}
-              icon={<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12l4-3 3 2 3-2 4 3" /><path d="M6 9v6l3 2.5L12 15M18 9v6l-3 2.5" /></svg>}>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 16, marginBottom: 12 }}>
-                <div>
-                  <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>Key Selling Points</div>
-                  <BulletList items={keySellingPoints} tone="brand" />
-                </div>
-                <div>
-                  <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>Notable Customers</div>
-                  <BulletList items={notableCustomers} />
-                </div>
-              </div>
-              <p style={{ fontSize: 12.5, color: "var(--color-muted)", fontStyle: "italic" as const, lineHeight: 1.6, margin: 0 }}>{proof}</p>
+            <ResearchSectionCard title="Key Selling Points" sectionId="obc:keySellingPoints">
+              <BulletList items={keySellingPoints} />
+            </ResearchSectionCard>
+
+            <ResearchSectionCard title="Notable Customers" sectionId="obc:notableCustomers">
+              <BulletList items={notableCustomers} />
+            </ResearchSectionCard>
+
+            <ResearchSectionCard title="Proof" sectionId="obc:proof">
+              <p style={{ fontSize: 13, color: "var(--color-muted)", fontStyle: "italic" as const, lineHeight: 1.6, margin: 0 }}>{proof}</p>
             </ResearchSectionCard>
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: 14, minWidth: 0 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 12, minWidth: 0 }}>
             {/* Blocks 6–8 — always shown in full, no collapse/expand */}
-            <ResearchSectionCard title="Market Context" sectionId={blockId("marketContext")}
-              icon={<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a14 14 0 0 1 0 18 14 14 0 0 1 0-18Z" /></svg>}>
-              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                <div>
-                  <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>Industries</div>
-                  <BulletList items={industries} />
-                </div>
-                <div>
-                  <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>Competitors</div>
-                  <BulletList items={competitors} />
-                </div>
-              </div>
+            <ResearchSectionCard title="Industries" sectionId="obc:industries">
+              <BulletList items={industries} />
             </ResearchSectionCard>
 
-            <ResearchSectionCard title="Deal Snapshot" sectionId={blockId("dealSnapshot")}
-              icon={<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 6.5v11M15 9.3c0-1.3-1.4-2.3-3-2.3s-3 1-3 2.3 1.2 2 3 2.3c1.8.3 3 1 3 2.4s-1.4 2.3-3 2.3-3-.9-3-2.2" /></svg>}>
-              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                <div>
-                  <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 4 }}>Buying Motion</div>
-                  <p style={{ fontSize: 12.5, color: "var(--color-body)", lineHeight: 1.6, margin: 0 }}>{buyingMotion}</p>
-                </div>
-                <div>
-                  <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 4 }}>Deal Overview</div>
-                  <p style={{ fontSize: 12.5, color: "var(--color-body)", lineHeight: 1.6, margin: 0 }}>{dealOverview}</p>
-                </div>
-                <div>
-                  <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 4 }}>Sales Cycle</div>
-                  <p style={{ fontSize: 12.5, color: "var(--color-body)", lineHeight: 1.6, margin: 0 }}>{salesCycle}</p>
-                </div>
-              </div>
+            <ResearchSectionCard title="Competitors" sectionId="obc:competitors">
+              <BulletList items={competitors} />
             </ResearchSectionCard>
 
-            <ResearchSectionCard title="Risks to Address" sectionId={blockId("risksToAddress")}
-              icon={<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3l7 3v6c0 4.5-3 8-7 9-4-1-7-4.5-7-9V6l7-3Z" /></svg>}>
+            <ResearchSectionCard title="Buying Motion" sectionId="obc:buyingMotion">
+              <p style={{ fontSize: 13, color: "var(--color-body)", lineHeight: 1.6, margin: 0 }}>{buyingMotion}</p>
+            </ResearchSectionCard>
+
+            <ResearchSectionCard title="Deal Overview" sectionId="obc:dealOverview">
+              <p style={{ fontSize: 13, color: "var(--color-body)", lineHeight: 1.6, margin: 0 }}>{dealOverview}</p>
+            </ResearchSectionCard>
+
+            <ResearchSectionCard title="Sales Cycle" sectionId="obc:salesCycle">
+              <p style={{ fontSize: 13, color: "var(--color-body)", lineHeight: 1.6, margin: 0 }}>{salesCycle}</p>
+            </ResearchSectionCard>
+
+            <ResearchSectionCard title="Risks to Address" sectionId="obc:trustRisks">
               <BulletList items={trustRisks} />
             </ResearchSectionCard>
           </div>
@@ -2297,14 +2302,13 @@ interface PSSection { label: string; content: PSContent }
 function PSField({ section }: { section: PSSection }) {
   const isList = Array.isArray(section.content);
   return (
-    <div style={{ background: "var(--color-page)", border: "1px solid var(--color-border)", borderRadius: 12, padding: "14px 16px" }}>
-      <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-brand)", letterSpacing: "0.05em", textTransform: "uppercase" as const, marginBottom: 8 }}>{section.label}</div>
+    <ReviewFieldCard label={section.label}>
       {isList ? (
         <BulletList items={section.content as string[]} />
       ) : (
         <p style={{ fontSize: 13, color: "var(--color-body)", lineHeight: 1.6, margin: 0 }}>{section.content as string}</p>
       )}
-    </div>
+    </ReviewFieldCard>
   );
 }
 
@@ -3049,13 +3053,15 @@ function ProductServicesPanel({ state, onChange, productIdx }: { state: PSProduc
           in STYLES above. */}
       <div className="ob-company-grid" style={{ display: "grid", gridTemplateColumns: "minmax(0, 1.6fr) minmax(300px, 1fr)", gap: 20, alignItems: "start" }}>
         {/* Blocks 3–6, 8 — Primary (Field-Join / AI-Synthesized) */}
-        <div className="ob-field-grid">
-          {state.sections.map((section) => (
-            <ReferenceableField key={section.label} id={`ob:product:${productIdx}:field:${section.label}`} label={section.label}>
+        <MasonryColumns items={state.sections.map((section) => ({
+          key: section.label,
+          weight: estimateFieldWeight(section.content),
+          node: (
+            <ReferenceableField id={`ob:product:${productIdx}:field:${section.label}`} label={section.label}>
               <PSField section={section} />
             </ReferenceableField>
-          ))}
-        </div>
+          ),
+        }))} />
 
         {/* Blocks 7, 9 — Secondary, always shown in full, no collapse/expand */}
         <div style={{ display: "flex", flexDirection: "column", gap: 10, minWidth: 0 }}>
@@ -3071,124 +3077,296 @@ function ProductServicesPanel({ state, onChange, productIdx }: { state: PSProduc
   );
 }
 
-/* One ICP candidate card — always shows the full detail (Blocks 1–6
-   Primary, plus Blocks 8–9 in a static "Market Sizing" card), no
-   collapse/expand. Block 7 "Candidate Personas" isn't duplicated here
-   — the Personas section right after this one already covers it. The
-   whole card is one Copilot pin target — content inside is plain, not
-   individually pinnable. */
+/* Renders one ICP field as its own bordered card — same shape as
+   PSField in the Product & Services panel — so ICPs and products read
+   as one consistent card-grid style instead of ICPs using plain
+   label/bullet stacks. */
+function IcpFieldCard({ label, content, tone }: { label: string; content: PSContent; tone?: "body" | "brand" }) {
+  const isList = Array.isArray(content);
+  return (
+    <ReviewFieldCard label={label}>
+      {isList ? (
+        <BulletList items={content as string[]} tone={tone} />
+      ) : (
+        <p style={{ fontSize: 13, color: "var(--color-body)", lineHeight: 1.6, margin: 0 }}>{content as string}</p>
+      )}
+    </ReviewFieldCard>
+  );
+}
+
+/* One ICP candidate's full detail (Blocks 1–6 Primary, plus Blocks 8–9
+   in a static "Market Sizing" card). Block 7 "Candidate Personas" isn't
+   duplicated here — the Personas section right after this one already
+   covers it. Rendered one at a time by IcpPanel's tab selector below,
+   the same way PersonasPanel shows one persona at a time. */
+/* Every visible field id is namespaced under this ICP so each card
+   (not just the whole candidate) is individually hoverable/pinnable in
+   Copilot — same granularity as ProductServicesPanel's per-field
+   ReferenceableField wraps. */
+function icpFieldId(productIdx: number, index: number, label: string): string {
+  return `ob:icp:${productIdx}:icp:${index}:field:${label}`;
+}
+
+/* Field-card labels that map 1:1 onto a single IcpCandidate property —
+   editable in place via reviseSectionContent, same as a Product field.
+   "Firmographic Snapshot" is synthesized from four properties at once,
+   so it's resolvable (viewable/pinnable) but not directly editable. */
+type IcpFieldKey = "painPoints" | "businessGoals" | "buyingTriggers" | "intentSignals" | "icpProof"
+  | "marketSize" | "techStack" | "businessModel" | "fundingStage" | "decisionMakingUnit";
+const ICP_FIELD_KEYS: Record<string, IcpFieldKey> = {
+  "Pain Points": "painPoints",
+  "Business Goals": "businessGoals",
+  "Buying Triggers": "buyingTriggers",
+  "Intent Signals": "intentSignals",
+  "Real Companies Like This": "icpProof",
+  "Market Size": "marketSize",
+  "Tech Stack Signals": "techStack",
+  "Business Model": "businessModel",
+  "Funding Stage": "fundingStage",
+  "Decision-Making Unit": "decisionMakingUnit",
+};
+
+function getIcpFieldValue(icp: IcpCandidate, label: string): ResolvedValue | undefined {
+  const key = ICP_FIELD_KEYS[label];
+  if (key) return icp[key];
+  if (label === "Firmographic Snapshot") return [...icp.targetIndustries, ...icp.companySize, icp.revenueRange, ...icp.geographies];
+  return undefined;
+}
+
+/* Rough rendered-height estimate for a field card's content, used only to
+   balance the two masonry columns — doesn't need to be pixel-accurate,
+   just proportionally right so a card with 4 long bullets isn't treated
+   the same as a one-line card. Tuned for the ~13px/20px-line-height card
+   body used throughout these panels. */
+const MASONRY_CHARS_PER_LINE = 46;
+const MASONRY_LINE_HEIGHT = 20;
+const MASONRY_CARD_CHROME = 28 + 16 * 2; // label row + card padding
+function estimateFieldWeight(content: PSContent): number {
+  const lines = Array.isArray(content)
+    ? content.reduce((sum, item) => sum + Math.max(1, Math.ceil(item.length / MASONRY_CHARS_PER_LINE)), 0)
+    : Math.max(1, Math.ceil(content.length / MASONRY_CHARS_PER_LINE)) * 1.6; // prose uses a taller line-height
+  return MASONRY_CARD_CHROME + lines * MASONRY_LINE_HEIGHT;
+}
+
+/* Greedy shortest-column-first fill: always add the next item to whichever
+   column currently weighs least. Simple, deterministic, and — unlike a
+   naive round-robin by index — keeps every column close in total height
+   even when items vary a lot in size (e.g. a 4-line "Opening Hook" next
+   to a 2-bullet "Goals" card). */
+function splitBalanced<T>(items: T[], columns: number, weightOf: (item: T) => number): T[][] {
+  const cols: T[][] = Array.from({ length: columns }, () => []);
+  const weights = new Array<number>(columns).fill(0);
+  for (const item of items) {
+    let target = 0;
+    for (let i = 1; i < columns; i++) if (weights[i] < weights[target]) target = i;
+    cols[target].push(item);
+    weights[target] += weightOf(item);
+  }
+  return cols;
+}
+
+/* Independent columns of uneven height (e.g. ICP's "Firmographic Snapshot"
+   next to a one-line "Pain Points") — a CSS grid sizes a whole row to its
+   tallest cell even with align-items: start, leaving a dead gap under the
+   shorter card. CSS multi-column (`columns:`) avoids that, but browsers
+   balance column heights inconsistently, which can misalign the top of
+   column two against its neighbors. Splitting into plain flex columns
+   keeps independent heights while guaranteeing all of them start flush at
+   the same top; items are distributed by estimated content weight (not
+   round-robin) so no column ends up much taller than the others.
+   `--ob-masonry-cols` lets the media queries in STYLES drop to fewer
+   columns on narrow viewports. */
+function MasonryColumns({ items, columns = 2 }: {
+  items: { key: string; node: React.ReactNode; weight?: number }[];
+  columns?: number;
+}) {
+  const cols = splitBalanced(items, columns, (item) => item.weight ?? 1);
+  return (
+    <div className="ob-masonry" style={{ "--ob-masonry-cols": columns } as React.CSSProperties}>
+      {cols.map((col, i) => (
+        <div key={i} style={{ display: "flex", flexDirection: "column", gap: 12, minWidth: 0 }}>
+          {col.map((item) => <div key={item.key}>{item.node}</div>)}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function IcpCandidateCard({ icp, index, productIdx }: {
   icp: IcpCandidate; index: number; productIdx: number;
 }) {
   return (
-    <ReferenceableField id={`ob:icp:${productIdx}:icp:${index}`} label={icp.name}>
-      <div style={{ borderRadius: 12, border: "1px solid var(--color-border)", background: "var(--color-page)", overflow: "hidden" }}>
-        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10, padding: "14px 16px" }}>
+    <div>
+      <ReferenceableField id={`ob:icp:${productIdx}:icp:${index}`} label={icp.name}>
+        <div style={{ display: "flex", alignItems: "flex-start", gap: 12, marginBottom: 14, background: "var(--color-page)", border: "1px solid var(--color-border)", borderRadius: 12, padding: "14px 16px" }}>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <span style={{ display: "block", fontSize: 13.5, fontWeight: 700, color: "var(--color-heading)", lineHeight: 1.4 }}>{icp.name}</span>
-            <span style={{ fontSize: 11, color: "var(--color-muted)" }}>{icp.growthStage}</span>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" as const }}>
+              <span style={{ flex: "1 1 160px", minWidth: 0, fontSize: 14.5, fontWeight: 700, color: "var(--color-heading)" }}>{icp.name}</span>
+              <span style={{ flexShrink: 0, fontSize: 11, color: "var(--color-muted)" }}>{icp.growthStage}</span>
+              <span style={{ flexShrink: 0, fontFamily: MONO_FONT, fontSize: 10.5, fontWeight: 700, padding: "4px 10px", borderRadius: 999, whiteSpace: "nowrap" as const, ...RECOMMENDATION_BADGE[icp.recommendation] }}>
+                {icp.recommendation}
+              </span>
+            </div>
+            {/* Block 2 — Who This Is & Why They Fit */}
+            <p style={{ fontSize: 12.5, color: "var(--color-body)", lineHeight: 1.6, margin: "8px 0 0" }}>{icp.summary}</p>
+            <p style={{ fontSize: 12.5, color: "var(--color-muted)", fontStyle: "italic" as const, lineHeight: 1.6, margin: "4px 0 0" }}>{icp.fitReasoning}</p>
           </div>
-          <span style={{ flexShrink: 0, fontFamily: MONO_FONT, fontSize: 10.5, fontWeight: 700, padding: "4px 10px", borderRadius: 999, whiteSpace: "nowrap" as const, ...RECOMMENDATION_BADGE[icp.recommendation] }}>
-            {icp.recommendation}
-          </span>
         </div>
-        <div className="ob-company-grid" style={{ padding: "0 16px 16px", display: "grid", gridTemplateColumns: "minmax(0, 1.6fr) minmax(280px, 1fr)", gap: 20, alignItems: "start" }}>
-            <div style={{ display: "flex", flexDirection: "column", gap: 12, minWidth: 0 }}>
-              {/* Block 2 — Who This Is & Why They Fit */}
-              <div>
-                <p style={{ fontSize: 12.5, color: "var(--color-body)", lineHeight: 1.6, margin: "0 0 6px" }}>{icp.summary}</p>
-                <p style={{ fontSize: 12.5, color: "var(--color-muted)", fontStyle: "italic" as const, lineHeight: 1.6, margin: 0 }}>{icp.fitReasoning}</p>
-              </div>
-              {/* Block 3 — Firmographic Snapshot */}
-              <div>
-                <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>Firmographic Snapshot</div>
-                <BulletList items={[...icp.targetIndustries, ...icp.companySize, icp.revenueRange, ...icp.geographies]} />
-              </div>
-              {/* Block 4 — Pains & Goals */}
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 16 }}>
-                <div>
-                  <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>Pain Points</div>
-                  <BulletList items={icp.painPoints} />
-                </div>
-                <div>
-                  <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>Business Goals</div>
-                  <BulletList items={icp.businessGoals} />
-                </div>
-              </div>
-              {/* Block 5 — Buying Signals */}
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 16 }}>
-                <div>
-                  <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>Buying Triggers</div>
-                  <BulletList items={icp.buyingTriggers} />
-                </div>
-                <div>
-                  <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>Intent Signals</div>
-                  <BulletList items={icp.intentSignals} />
-                </div>
-              </div>
-              {/* Block 6 — Real Companies Like This */}
-              {icp.icpProof.length > 0 && (
-                <div>
-                  <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>Real Companies Like This</div>
-                  <BulletList items={icp.icpProof} tone="brand" />
-                </div>
-              )}
-            </div>
+      </ReferenceableField>
 
-            {/* Blocks 8–9 — Secondary, always shown in full */}
-            <div style={{ minWidth: 0 }}>
-              <ResearchSectionCard title="Market Sizing & Additional Firmographics"
-                icon={<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 20V9M11 20V4M18 20v-7" /><path d="M2 20h20" /></svg>}>
-                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                  <div>
-                    <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 4 }}>Market Size</div>
-                    <p style={{ fontSize: 12.5, color: "var(--color-body)", lineHeight: 1.6, margin: 0 }}>{icp.marketSize}</p>
-                  </div>
-                  <div>
-                    <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>Tech Stack Signals</div>
-                    <BulletList items={icp.techStack} />
-                  </div>
-                  <div>
-                    <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 4 }}>Business Model</div>
-                    <p style={{ fontSize: 12.5, color: "var(--color-body)", lineHeight: 1.6, margin: 0 }}>{icp.businessModel}</p>
-                  </div>
-                  <div>
-                    <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 6 }}>Funding Stage</div>
-                    <BulletList items={icp.fundingStage} />
-                  </div>
-                  <div>
-                    <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.04em", textTransform: "uppercase" as const, marginBottom: 4 }}>Decision-Making Unit</div>
-                    <p style={{ fontSize: 12.5, color: "var(--color-body)", lineHeight: 1.6, margin: 0 }}>{icp.decisionMakingUnit}</p>
-                  </div>
-                </div>
-              </ResearchSectionCard>
-            </div>
+      <div className="ob-company-grid" style={{ display: "grid", gridTemplateColumns: "minmax(0, 1.6fr) minmax(280px, 1fr)", gap: 20, alignItems: "start" }}>
+          {/* Blocks 3–6 — Primary, one card per field, each individually pinnable. */}
+          <MasonryColumns items={[
+            {
+              key: "Firmographic Snapshot",
+              weight: estimateFieldWeight([...icp.targetIndustries, ...icp.companySize, icp.revenueRange, ...icp.geographies]),
+              node: (
+                <ReferenceableField id={icpFieldId(productIdx, index, "Firmographic Snapshot")} label="Firmographic Snapshot">
+                  <IcpFieldCard label="Firmographic Snapshot" content={[...icp.targetIndustries, ...icp.companySize, icp.revenueRange, ...icp.geographies]} />
+                </ReferenceableField>
+              ),
+            },
+            {
+              key: "Pain Points",
+              weight: estimateFieldWeight(icp.painPoints),
+              node: (
+                <ReferenceableField id={icpFieldId(productIdx, index, "Pain Points")} label="Pain Points">
+                  <IcpFieldCard label="Pain Points" content={icp.painPoints} />
+                </ReferenceableField>
+              ),
+            },
+            {
+              key: "Business Goals",
+              weight: estimateFieldWeight(icp.businessGoals),
+              node: (
+                <ReferenceableField id={icpFieldId(productIdx, index, "Business Goals")} label="Business Goals">
+                  <IcpFieldCard label="Business Goals" content={icp.businessGoals} />
+                </ReferenceableField>
+              ),
+            },
+            {
+              key: "Buying Triggers",
+              weight: estimateFieldWeight(icp.buyingTriggers),
+              node: (
+                <ReferenceableField id={icpFieldId(productIdx, index, "Buying Triggers")} label="Buying Triggers">
+                  <IcpFieldCard label="Buying Triggers" content={icp.buyingTriggers} />
+                </ReferenceableField>
+              ),
+            },
+            {
+              key: "Intent Signals",
+              weight: estimateFieldWeight(icp.intentSignals),
+              node: (
+                <ReferenceableField id={icpFieldId(productIdx, index, "Intent Signals")} label="Intent Signals">
+                  <IcpFieldCard label="Intent Signals" content={icp.intentSignals} />
+                </ReferenceableField>
+              ),
+            },
+            ...(icp.icpProof.length > 0 ? [{
+              key: "Real Companies Like This",
+              weight: estimateFieldWeight(icp.icpProof),
+              node: (
+                <ReferenceableField id={icpFieldId(productIdx, index, "Real Companies Like This")} label="Real Companies Like This">
+                  <IcpFieldCard label="Real Companies Like This" content={icp.icpProof} />
+                </ReferenceableField>
+              ),
+            }] : []),
+          ]} />
+
+          {/* Blocks 8–9 — Secondary, same field-card style as the primary
+              grid (not one umbrella card), each individually pinnable —
+              mirrors ProductServicesPanel's secondarySections column. */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 10, minWidth: 0 }}>
+            <ReferenceableField id={icpFieldId(productIdx, index, "Market Size")} label="Market Size">
+              <IcpFieldCard label="Market Size" content={icp.marketSize} />
+            </ReferenceableField>
+            <ReferenceableField id={icpFieldId(productIdx, index, "Tech Stack Signals")} label="Tech Stack Signals">
+              <IcpFieldCard label="Tech Stack Signals" content={icp.techStack} />
+            </ReferenceableField>
+            <ReferenceableField id={icpFieldId(productIdx, index, "Business Model")} label="Business Model">
+              <IcpFieldCard label="Business Model" content={icp.businessModel} />
+            </ReferenceableField>
+            <ReferenceableField id={icpFieldId(productIdx, index, "Funding Stage")} label="Funding Stage">
+              <IcpFieldCard label="Funding Stage" content={icp.fundingStage} />
+            </ReferenceableField>
+            <ReferenceableField id={icpFieldId(productIdx, index, "Decision-Making Unit")} label="Decision-Making Unit">
+              <IcpFieldCard label="Decision-Making Unit" content={icp.decisionMakingUnit} />
+            </ReferenceableField>
           </div>
-      </div>
-    </ReferenceableField>
+        </div>
+    </div>
   );
 }
 
-function IcpPanel({ tamDescription, icps, productIdx }: {
+/* Chip-tab selector + one-ICP-at-a-time approval, mirroring
+   PersonasPanel: pick an ICP, review it, approve it to unlock the
+   next. A locked tab can't be jumped to ahead of the first
+   not-yet-approved ICP. */
+function IcpPanel({ tamDescription, icps, approvedList, onApproveIcp, productIdx }: {
   tamDescription: string; icps: IcpCandidate[];
-  onChangeTam: (v: string) => void; onChangeIcps: (v: IcpCandidate[]) => void; productIdx: number;
+  onChangeTam: (v: string) => void; onChangeIcps: (v: IcpCandidate[]) => void;
+  approvedList: boolean[]; onApproveIcp: (i: number) => void; productIdx: number;
 }) {
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const icp = icps[selectedIndex];
+  const firstIncompleteIndex = approvedList.findIndex((a) => !a);
+  const unlockedUpTo = firstIncompleteIndex === -1 ? icps.length - 1 : firstIncompleteIndex;
+  const icpApproved = approvedList[selectedIndex];
+
+  function approveCurrent() {
+    onApproveIcp(selectedIndex);
+    if (selectedIndex < icps.length - 1) setSelectedIndex(selectedIndex + 1);
+  }
+
   return (
     <ReferenceableSection id={`ob:icp:${productIdx}`} label="Ideal Customer Profile">
     <div>
       <ReferenceableField id={`ob:icp:${productIdx}:tam`} label="Total Addressable Market">
-        <div style={{ display: "flex", gap: 10, alignItems: "flex-start", background: "var(--color-brand-faint)", border: "1px solid var(--color-border)", borderRadius: 12, padding: "14px 16px", marginBottom: 14 }}>
-          <span style={{ flexShrink: 0, width: 26, height: 26, borderRadius: 8, background: "var(--color-brand-tint)", color: "var(--color-brand)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 8v4l3 2" /></svg>
-          </span>
-          <p style={{ flex: 1, fontSize: 13, color: "var(--color-body)", lineHeight: 1.6, margin: 0 }}>{tamDescription}</p>
+        <div style={{ background: "var(--color-brand-faint)", border: "1px solid var(--color-border)", borderRadius: 12, padding: "14px 16px", marginBottom: 14 }}>
+          <p style={{ fontSize: 13, color: "var(--color-body)", lineHeight: 1.6, margin: 0 }}>{tamDescription}</p>
         </div>
       </ReferenceableField>
-      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-        {icps.map((icp, i) => (
-          <IcpCandidateCard key={i} icp={icp} index={i} productIdx={productIdx} />
-        ))}
-      </div>
+
+      {icps.length > 1 && (
+        <div style={{ display: "flex", gap: 8, marginBottom: 14, overflowX: "auto" as const, paddingBottom: 2 }}>
+          {icps.map((c, i) => {
+            const isCurrent = i === selectedIndex;
+            const done = approvedList[i];
+            const locked = i > unlockedUpTo;
+            return (
+              <button key={i} type="button" onClick={() => !locked && setSelectedIndex(i)} disabled={locked} title={c.name}
+                style={{
+                  display: "flex", alignItems: "center", gap: 7, flexShrink: 0, padding: "6px 12px 6px 6px", borderRadius: 999,
+                  border: "none", cursor: locked ? "not-allowed" : "pointer", fontFamily: "inherit", transition: "all 150ms",
+                  background: isCurrent ? "var(--color-brand)" : "var(--color-surface)", opacity: locked ? 0.5 : 1,
+                }}
+              >
+                <span style={{
+                  width: 22, height: 22, borderRadius: "50%", fontSize: 10.5, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center",
+                  background: done ? "var(--color-success)" : isCurrent ? "rgba(255,255,255,0.25)" : "var(--color-page)",
+                  color: done || isCurrent ? "#fff" : "var(--color-muted)",
+                }}>
+                  {done ? (
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5" /></svg>
+                  ) : i + 1}
+                </span>
+                <span style={{ fontSize: 12, fontWeight: 600, color: isCurrent ? "#fff" : "var(--color-body)", whiteSpace: "nowrap" as const }}>{c.name}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      <IcpCandidateCard icp={icp} index={selectedIndex} productIdx={productIdx} />
+
+      <button type="button" onClick={approveCurrent} className="ob-primary-btn" style={{ ...PRIMARY_BTN, width: "auto", padding: "10px 24px", fontSize: 13, marginTop: 14, borderRadius: 999, gap: 6 }}>
+        {icpApproved ? "Save changes" : (
+          <>
+            Approve this ICP
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5" /></svg>
+          </>
+        )}
+      </button>
     </div>
     </ReferenceableSection>
   );
@@ -3260,25 +3438,20 @@ function PersonasPanel({ personas, onChange, approvedList, onApprovePersona, pro
         </div>
       </ReferenceableField>
 
-      <div className="ob-company-grid" style={{ display: "grid", gridTemplateColumns: "minmax(0, 1.6fr) minmax(280px, 1fr)", gap: 20, alignItems: "start" }}>
-        <div className="ob-field-grid">
-          {persona.sections.map((section) => (
-            <ReferenceableField key={`${selectedIndex}-${section.label}`} id={`ob:personas:${productIdx}:persona:${selectedIndex}:field:${section.label}`} label={section.label}>
-              <PSField section={section} />
-            </ReferenceableField>
-          ))}
-        </div>
-
-        {persona.secondarySections.length > 0 && (
-          <div style={{ display: "flex", flexDirection: "column", gap: 10, minWidth: 0 }}>
-            {persona.secondarySections.map((section) => (
-              <ReferenceableField key={`${selectedIndex}-${section.label}`} id={`ob:personas:${productIdx}:persona:${selectedIndex}:field:${section.label}`} label={section.label}>
-                <PSField section={section} />
-              </ReferenceableField>
-            ))}
-          </div>
-        )}
-      </div>
+      {/* Blocks 3–10 — Primary sections plus the Secondary "Qualification
+          Snapshot" in one balanced 3-column masonry. A persona only has a
+          single secondary field, so giving it its own right rail (the way
+          Product/ICP do) left two-thirds of that column empty; folding it
+          into the same distribution keeps all three columns filled. */}
+      <MasonryColumns columns={3} items={[...persona.sections, ...persona.secondarySections].map((section) => ({
+        key: section.label,
+        weight: estimateFieldWeight(section.content),
+        node: (
+          <ReferenceableField id={`ob:personas:${productIdx}:persona:${selectedIndex}:field:${section.label}`} label={section.label}>
+            <PSField section={section} />
+          </ReferenceableField>
+        ),
+      }))} />
 
       <button type="button" onClick={approveCurrent} className="ob-primary-btn" style={{ ...PRIMARY_BTN, width: "auto", padding: "10px 24px", fontSize: 13, marginTop: 14, borderRadius: 999, gap: 6 }}>
         {personaApproved ? "Save changes" : (
@@ -3304,6 +3477,7 @@ interface ProductReviewState {
   product: PSProductState;
   tamDescription: string;
   icps: IcpCandidate[];
+  icpApproved: boolean[];
   personas: PersonaData[];
   personaApproved: boolean[];
   approved: { product: boolean; icp: boolean; personas: boolean };
@@ -3315,6 +3489,7 @@ function buildInitialProductReview(product: Product): ProductReviewState {
     product: buildInitialPSProduct(product),
     tamDescription: TAM_DESCRIPTION_DEFAULT,
     icps: ICP_CANDIDATES_DEFAULT.map((icp) => ({ ...icp })),
+    icpApproved: ICP_CANDIDATES_DEFAULT.map(() => false),
     personas: PERSONAS_DEFAULT.map((p) => ({ ...p, sections: p.sections.map((s) => ({ ...s })) })),
     personaApproved: PERSONAS_DEFAULT.map(() => false),
     approved: { product: false, icp: false, personas: false },
@@ -3364,6 +3539,15 @@ function StepProductReview({ products, onNext }: { products: Product[]; onNext: 
   }
   function approveSection(section: ReviewSectionKey) {
     patchCurrent({ approved: { ...current.approved, [section]: true }, activeSection: nextReviewSection(section) });
+  }
+  function approveIcp(i: number) {
+    const nextIcpApproved = current.icpApproved.map((a, idx) => (idx === i ? true : a));
+    const allIcpsDone = nextIcpApproved.every(Boolean);
+    patchCurrent({
+      icpApproved: nextIcpApproved,
+      approved: allIcpsDone ? { ...current.approved, icp: true } : current.approved,
+      activeSection: allIcpsDone ? nextReviewSection("icp") : current.activeSection,
+    });
   }
   function approvePersona(i: number) {
     const nextPersonaApproved = current.personaApproved.map((a, idx) => (idx === i ? true : a));
@@ -3415,6 +3599,12 @@ function StepProductReview({ products, onNext }: { products: Product[]; onNext: 
         if (sub === "icp") {
           const icp = state.icps[Number(parts[4])];
           if (!icp) return null;
+          const fieldLabel = parts[6];
+          if (fieldLabel) {
+            const value = getIcpFieldValue(icp, fieldLabel);
+            if (value === undefined) return null;
+            return { id, label: `${icp.name} — ${fieldLabel}`, value };
+          }
           return {
             id, label: icp.name,
             value: [
@@ -3491,6 +3681,16 @@ function StepProductReview({ products, onNext }: { products: Product[]; onNext: 
               const icpIdx = Number(parts[4]);
               const icp = state.icps[icpIdx];
               if (!icp) return resolve(null);
+              const fieldLabel = parts[6];
+              if (fieldLabel) {
+                const key = ICP_FIELD_KEYS[fieldLabel];
+                if (!key) return resolve({ changedSummary: "this card combines several fields — edit one of the underlying fields directly instead." });
+                const oldContent = icp[key];
+                const revisedContent = reviseSectionContent(oldContent, instruction);
+                if (JSON.stringify(revisedContent) === JSON.stringify(oldContent)) return resolve({ changedSummary: "no visible change." });
+                patchAt(productIdx, { icps: state.icps.map((c, i) => (i === icpIdx ? { ...c, [key]: revisedContent } : c)) });
+                return resolve({ changedSummary: `updated "${fieldLabel}".` });
+              }
               const revised = reviseIcpBundle({ tamDescription: "", icps: [icp] }, instruction).icps[0];
               if (revised.fitReasoning === icp.fitReasoning) return resolve({ changedSummary: "no visible change." });
               patchAt(productIdx, { icps: state.icps.map((c, i) => (i === icpIdx ? revised : c)) });
@@ -3603,15 +3803,18 @@ function StepProductReview({ products, onNext }: { products: Product[]; onNext: 
         approved={current.approved.icp}
         active={current.activeSection === "icp"}
         locked={!current.approved.product}
-        summary={`${current.icps.length} ICPs identified`}
+        summary={`${current.icpApproved.filter(Boolean).length}/${current.icps.length} ICPs approved`}
         onToggle={() => toggleSection("icp")}
         onApprove={() => approveSection("icp")}
+        hideApproveButton
       >
         <IcpPanel
           tamDescription={current.tamDescription}
           icps={current.icps}
           onChangeTam={(v) => patchCurrent({ tamDescription: v })}
           onChangeIcps={(v) => patchCurrent({ icps: v })}
+          approvedList={current.icpApproved}
+          onApproveIcp={approveIcp}
           productIdx={selectedIndex}
         />
       </CollapsibleReviewSection>

@@ -1,16 +1,16 @@
 # Graph Report - onboarding-standalone-app  (2026-08-28)
 
 ## Corpus Check
-- 40 files · ~74,933 words
+- 42 files · ~76,109 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 661 nodes · 1123 edges · 36 communities (22 shown, 14 thin omitted)
+- 675 nodes · 1140 edges · 40 communities (24 shown, 16 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 6 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `6e264f65`
+- Built from commit: `7d6d93e8`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -50,6 +50,10 @@
 - [[_COMMUNITY_Community 33|Community 33]]
 - [[_COMMUNITY_Community 34|Community 34]]
 - [[_COMMUNITY_Community 35|Community 35]]
+- [[_COMMUNITY_Community 36|Community 36]]
+- [[_COMMUNITY_Community 37|Community 37]]
+- [[_COMMUNITY_Community 38|Community 38]]
+- [[_COMMUNITY_Community 40|Community 40]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `Step 4 — Persona` - 24 edges
@@ -83,19 +87,19 @@
 - **Product / ICP / Persona Combination Data Model** — knowledge_center_data_productdetail, knowledge_center_data_icpdetail, knowledge_center_data_personadetail, knowledge_center_data_scorechain, knowledge_center_data_campaigncombo [INFERRED 0.90]
 - **Reviewed-Sections Progress Tracking Flow** — knowledge_center_knowledgecenter_knowledgecenter, knowledge_center_company_companysection, knowledge_center_product_productsection, knowledge_center_icp_icpsection, knowledge_center_persona_personasection [EXTRACTED 1.00]
 
-## Communities (36 total, 14 thin omitted)
+## Communities (40 total, 16 thin omitted)
 
 ### Community 0 - "Onboarding Step Data & Editing"
 Cohesion: 0.01
-Nodes (79): ALL_STEPS, AvailStatus, BACK_BTN, BRAND_HIGHLIGHTS, Campaign, CAMPAIGNS, CampaignStep, CARD (+71 more)
+Nodes (81): ALL_STEPS, AvailStatus, BACK_BTN, BRAND_HIGHLIGHTS, Campaign, CAMPAIGNS, CampaignStep, CARD (+73 more)
 
 ### Community 1 - "Community 1"
-Cohesion: 0.06
-Nodes (63): CampaignSection(), CHANNEL_ICON, ComboRow(), HEADER_CELL, overallFit(), STATUS_STYLE, tone(), CampaignSequenceView() (+55 more)
+Cohesion: 0.08
+Nodes (56): CampaignSection(), CHANNEL_ICON, ComboRow(), HEADER_CELL, overallFit(), STATUS_STYLE, tone(), CampaignSequenceView() (+48 more)
 
 ### Community 2 - "Community 2"
-Cohesion: 0.15
-Nodes (10): ReferenceableField(), ReferenceableSection(), HistorySource, BLOCK_LABEL, IcpSummary(), LogField, CheckboxPills(), EditableField() (+2 more)
+Cohesion: 0.14
+Nodes (15): displayValue(), ENTITY_LABEL, HistoryDrawer(), HistoryRow(), AccordionBlock(), ConfidenceBadge(), Drawer(), EmptyState() (+7 more)
 
 ### Community 3 - "Build Tooling & Dependencies"
 Cohesion: 0.05
@@ -134,16 +138,16 @@ Cohesion: 0.12
 Nodes (14): index.html (dev entry HTML), Build, code:bash (npm install), code:bash (npm run build), code:bash (npm run build:single), code:bash (npm run build:single && cp dist-single/index.html onboarding), code:tsx (import { useRouter } from "next/navigation";), Onboarding — standalone (+6 more)
 
 ### Community 21 - "Community 21"
-Cohesion: 0.15
-Nodes (17): CopilotContext, CopilotContextValue, CopilotProvider(), useCopilot(), useRegisterCopilotAdapter(), CopilotWidget(), Message, classifyIntent() (+9 more)
+Cohesion: 0.07
+Nodes (42): CopilotContext, CopilotContextValue, CopilotProvider(), useCopilot(), useRegisterCopilotAdapter(), CopilotWidget(), Message, classifyIntent() (+34 more)
 
 ### Community 23 - "Community 23"
 Cohesion: 0.04
 Nodes (45): 10. Messaging Guidance — **Not Shown**, 10. Scoring Input — **Not Shown**, 10. Targeting Filters — **Not Shown**, 11. Extended Commercials — **Not Shown**, 11. Scoring Input — **Not Shown**, 12. Additional Proof — **Not Shown**, 13. Scoring Input — **Not Shown**, 1. Header (+37 more)
 
 ### Community 24 - "Community 24"
-Cohesion: 0.16
-Nodes (15): AccordionBlock(), CardSection(), Drawer(), EmptyState(), FieldValue(), FILLED_ICONS, firstSentence(), Icon() (+7 more)
+Cohesion: 0.17
+Nodes (14): icpsForProduct(), personasForIcp(), treeKey(), Explorer(), KnowledgeOverview(), PersonaGroup(), IcpRow(), KnowledgeTree() (+6 more)
 
 ### Community 30 - "Community 30"
 Cohesion: 0.13
@@ -154,29 +158,37 @@ Cohesion: 0.08
 Nodes (24): 10. Qualification Snapshot, 11. Deeper Pain & Risk Context — **Not Shown**, 12. Challenges — **Not Shown**, 13. Decision-Making Detail — **Not Shown**, 14. Current-Solution Detail — **Not Shown**, 15. Buying Signals Detail — **Not Shown**, 16. Buyer Psychology — **Not Shown**, 17. Extended Messaging Guidance — **Not Shown** (+16 more)
 
 ### Community 32 - "Community 32"
-Cohesion: 0.24
-Nodes (8): LogField, PersonaSummaryView(), PROSE, SECTION_ICON, sectionField(), sectionFieldList(), KC_DANGER_BTN, ProgressBar()
+Cohesion: 0.20
+Nodes (10): HistoryEntityType, HistoryEntry, TreeNodeType, ExplorerView, ICP_LIST_FIELDS, ICP_TEXT_FIELDS, VIEWS, emptyPersona() (+2 more)
 
 ### Community 33 - "Community 33"
-Cohesion: 0.05
-Nodes (50): HEADER_CELL, KnowledgeDashboard(), NUM_CELL, Row(), Tier, TIER_META, TIER_ORDER, TIER_SHARE (+42 more)
+Cohesion: 0.06
+Nodes (34): HEADER_CELL, KnowledgeDashboard(), NUM_CELL, Row(), Tier, TIER_META, TIER_ORDER, TIER_SHARE (+26 more)
 
 ### Community 34 - "Community 34"
-Cohesion: 0.11
-Nodes (20): BASIC_FIELDS, CHIP_FIELDS, COMPANY_BLOCKS, COMPANY_TEXT_FIELDS, companyBlockId(), CompanySummary(), DEEP_DIVE_FIELDS, differentiationParagraph() (+12 more)
+Cohesion: 0.14
+Nodes (10): COMPANY_SIZE_BUCKETS, FUNDING_STAGE_BUCKETS, BLOCK_LABEL, emptyIcp(), IcpDetailPane(), IcpSummary(), LogField, Bullets() (+2 more)
 
 ### Community 35 - "Community 35"
-Cohesion: 0.22
-Nodes (12): fieldByLabel(), fieldId(), fieldList(), fieldText(), LogField, productOverviewParagraph(), ProductSummary(), PROSE (+4 more)
+Cohesion: 0.18
+Nodes (14): HistorySource, ProductField, emptyProduct(), fieldByLabel(), fieldId(), fieldList(), fieldText(), LogField (+6 more)
+
+### Community 38 - "Community 38"
+Cohesion: 0.67
+Nodes (3): estimateFieldWeight(), IcpCandidateCard(), icpFieldId()
+
+### Community 40 - "Community 40"
+Cohesion: 0.67
+Nodes (3): MasonryColumns(), splitAlternating(), splitBalanced()
 
 ## Ambiguous Edges - Review These
 - `CAMPAIGN_COMBOS` → `RoadmapPhase`  [AMBIGUOUS]
   src/knowledge-center/data.ts · relation: references
 
 ## Knowledge Gaps
-- **298 isolated node(s):** `name`, `private`, `version`, `type`, `dev` (+293 more)
+- **302 isolated node(s):** `name`, `private`, `version`, `type`, `dev` (+297 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **14 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **16 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
@@ -184,14 +196,14 @@ _Questions this graph is uniquely positioned to answer:_
 - **What is the exact relationship between `CAMPAIGN_COMBOS` and `RoadmapPhase`?**
   _Edge tagged AMBIGUOUS (relation: references) - confidence is low._
 - **Why does `OnboardingShell()` connect `App Entry & Standalone Shim` to `Onboarding Step Data & Editing`, `Community 1`, `Community 18`, `Community 21`?**
-  _High betweenness centrality (0.110) - this node is a cross-community bridge._
-- **Why does `KnowledgeCenter()` connect `Community 1` to `Community 24`, `Onboarding Step Data & Editing`, `App Entry & Standalone Shim`?**
-  _High betweenness centrality (0.042) - this node is a cross-community bridge._
+  _High betweenness centrality (0.107) - this node is a cross-community bridge._
+- **Why does `KnowledgeCenter()` connect `Community 1` to `Onboarding Step Data & Editing`, `App Entry & Standalone Shim`, `Community 21`?**
+  _High betweenness centrality (0.040) - this node is a cross-community bridge._
 - **What connects `name`, `private`, `version` to the rest of the system?**
-  _299 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _303 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Onboarding Step Data & Editing` be split into smaller, more focused modules?**
-  _Cohesion score 0.014184397163120567 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.013888888888888888 - nodes in this community are weakly interconnected._
 - **Should `Community 1` be split into smaller, more focused modules?**
-  _Cohesion score 0.0629399585921325 - nodes in this community are weakly interconnected._
-- **Should `Build Tooling & Dependencies` be split into smaller, more focused modules?**
-  _Cohesion score 0.05405405405405406 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.07680491551459294 - nodes in this community are weakly interconnected._
+- **Should `Community 2` be split into smaller, more focused modules?**
+  _Cohesion score 0.1437908496732026 - nodes in this community are weakly interconnected._

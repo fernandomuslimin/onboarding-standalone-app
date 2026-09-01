@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { HistorySource, PRODUCTS, PersonaDetail, PersonaField, personaPerformance } from "./data";
-import { Bullets, CardSection, ChipList, Drawer, EditableField, EmptyState, FieldLabel, FieldValue, HistoryTextField, Icon, IconName, KC_DANGER_BTN, KC_PRIMARY_BTN, StatTile, formatCurrencyShort } from "./ui";
+import { Bullets, CardSection, ChipList, Drawer, EditableField, EmptyState, FieldLabel, FieldValue, HistoryTextField, Icon, KC_DANGER_BTN, KC_PRIMARY_BTN, StatTile, formatCurrencyShort } from "./ui";
 import { ComboRow, ComboTableHeader, overallFit } from "./ComboRow";
 import { CampaignSequenceView } from "./CampaignSequenceView";
 import { ReferenceableField, ReferenceableSection } from "../copilot/Referenceable";
@@ -14,24 +14,6 @@ function sectionFieldList(persona: PersonaDetail, heading: string, label: string
   const v = sectionField(persona, heading, label);
   return Array.isArray(v) ? v : v ? [v] : [];
 }
-
-const SECTION_ICON: Record<string, IconName> = {
-  "Overview": "compass",
-  "Responsibilities": "briefcase",
-  "Goals": "flag",
-  "Pain Points": "target",
-  "Challenges": "shield",
-  "Decision Making": "brain",
-  "Current Solutions": "layers",
-  "Buying Behavior": "handshake",
-  "Buyer Psychology": "globe",
-  "Messaging Guidance": "message",
-  "Account Intelligence": "search",
-  "Prospecting & Search": "map",
-  "Representative Examples": "book",
-  "Outreach Strategy": "route",
-  "Qualification": "check",
-};
 
 export function emptyPersona(id: string, icpId: string): PersonaDetail {
   return { id, name: "Untitled persona", department: "—", matchPct: 0, icpId, subtitle: "", sections: [] };
@@ -65,11 +47,11 @@ function PerformanceSection({ persona }: { persona: PersonaDetail }) {
   const openCombo = combos.find((c) => c.id === openComboId) ?? null;
 
   return (
-    <CardSection icon="chart" title="Performance">
+    <CardSection title="Performance">
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 14, marginBottom: combos.length === 0 ? 0 : 18 }}>
-        <StatTile icon="grid" label="Products" value={String(products)} />
-        <StatTile icon="target" label="Opportunities" value={String(opportunities)} />
-        <StatTile icon="dollar" label="Pipeline" value={formatCurrencyShort(pipelineValue)} />
+        <StatTile label="Products" value={String(products)} />
+        <StatTile label="Opportunities" value={String(opportunities)} />
+        <StatTile label="Pipeline" value={formatCurrencyShort(pipelineValue)} />
       </div>
       {combos.length === 0 ? (
         <EmptyState icon="route" title="No campaigns yet" subtitle="Campaigns targeting this persona will appear here once created." />
@@ -98,7 +80,7 @@ function PerformanceSection({ persona }: { persona: PersonaDetail }) {
    22 (scoring input) are Hidden — Copilot only / internal-only — and
    stay out of this summary; they're still fully present and editable
    in the full detail view below. */
-function PersonaSummaryView({ persona, onViewDetails }: {
+export function PersonaSummaryView({ persona, onViewDetails }: {
   persona: PersonaDetail; onViewDetails: () => void;
 }) {
   const objections = sectionFieldList(persona, "Messaging Guidance", "Objections They Raise");
@@ -107,7 +89,8 @@ function PersonaSummaryView({ persona, onViewDetails }: {
 
   return (
     <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 14 }}>
-      {/* Block 1 — Header (Primary, Field-Join) */}
+      {/* Block 1 — Header (Primary, Field-Join). Stays full width above the
+          two-column grid, same as the ICP and Product summary views. */}
       <div style={{ background: "var(--color-page)", border: "1px solid var(--color-border)", borderRadius: 14, padding: "16px 26px", boxShadow: "var(--shadow-card)" }}>
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 20, flexWrap: "wrap" }}>
           <div style={{ minWidth: 0 }}>
@@ -122,94 +105,100 @@ function PersonaSummaryView({ persona, onViewDetails }: {
         </div>
       </div>
 
-      {/* Block 2 — Who They Are (Primary, Verbatim Passthrough) */}
-      <CardSection icon="compass" title="Overview">
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          <p style={PROSE}>{persona.subtitle}</p>
+      {/* Two columns: narrative blocks (2–5, 8–9) on the left, short
+          operational blocks (6–7, 10) on the right. Collapses to a single
+          column below 1024px via .kc-company-grid in ui.tsx's KC_STYLES. */}
+      <div className="kc-company-grid" style={{ display: "grid", gridTemplateColumns: "minmax(0, 1.6fr) minmax(280px, 1fr)", gap: 14, alignItems: "start" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 14, minWidth: 0 }}>
+          {/* Block 2 — Who They Are (Primary, Verbatim Passthrough) */}
           <ReferenceableField id={`persona:${persona.id}:section:Overview:field:Role Summary`} label="Role Summary">
-            <p style={PROSE}>{sectionField(persona, "Overview", "Role Summary")}</p>
+            <CardSection title="Overview">
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                <p style={PROSE}>{persona.subtitle}</p>
+                <p style={PROSE}>{sectionField(persona, "Overview", "Role Summary")}</p>
+              </div>
+            </CardSection>
           </ReferenceableField>
-        </div>
-      </CardSection>
 
-      {/* Block 3 — What They're Responsible For (Primary, Field-Join) */}
-      <CardSection icon="briefcase" title="Key Responsibilities">
-        <ReferenceableField id={`persona:${persona.id}:section:Responsibilities:field:Core Responsibilities`} label="Core Responsibilities">
-          <Bullets items={sectionFieldList(persona, "Responsibilities", "Core Responsibilities")} />
-        </ReferenceableField>
-      </CardSection>
+          {/* Block 3 — What They're Responsible For (Primary, Field-Join) */}
+          <ReferenceableField id={`persona:${persona.id}:section:Responsibilities:field:Core Responsibilities`} label="Core Responsibilities">
+            <CardSection title="Key Responsibilities">
+              <Bullets items={sectionFieldList(persona, "Responsibilities", "Core Responsibilities")} />
+            </CardSection>
+          </ReferenceableField>
 
-      {/* Block 4 — Goals (Primary, Field-Join) */}
-      <CardSection icon="flag" title="Goals">
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          {/* Block 4 — Goals (Primary, Field-Join) */}
           <ReferenceableField id={`persona:${persona.id}:section:Goals:field:Primary Goal`} label="Primary Goal">
-            <FieldLabel confidence={persona.sections.find((s) => s.heading === "Goals")?.fields.find((f) => f.label === "Primary Goal")?.confidence}>Primary Goal</FieldLabel>
-            <FieldValue value={sectionField(persona, "Goals", "Primary Goal") ?? ""} />
+            <CardSection title="Primary Goal">
+              <FieldValue value={sectionField(persona, "Goals", "Primary Goal") ?? ""} />
+            </CardSection>
           </ReferenceableField>
+
           <ReferenceableField id={`persona:${persona.id}:section:Goals:field:Secondary Goals`} label="Secondary Goals">
-            <FieldLabel>Secondary Goals</FieldLabel>
-            <Bullets items={sectionFieldList(persona, "Goals", "Secondary Goals")} />
+            <CardSection title="Secondary Goals">
+              <Bullets items={sectionFieldList(persona, "Goals", "Secondary Goals")} />
+            </CardSection>
+          </ReferenceableField>
+
+          {/* Block 5 — Primary Pain (Primary, Verbatim Passthrough) */}
+          <ReferenceableField id={`persona:${persona.id}:section:Pain Points:field:Primary Pain`} label="Primary Pain">
+            <CardSection title="Primary Pain">
+              <p style={PROSE}>{sectionField(persona, "Pain Points", "Primary Pain")}</p>
+            </CardSection>
+          </ReferenceableField>
+
+          {/* Block 8 — Objections to Expect (Primary, Field-Join) */}
+          {objections.length > 0 && (
+            <ReferenceableField id={`persona:${persona.id}:section:Messaging Guidance:field:Objections They Raise`} label="Objections They Raise">
+              <CardSection title="Anticipated Objections">
+                <Bullets items={objections} />
+              </CardSection>
+            </ReferenceableField>
+          )}
+
+          {/* Block 9 — Opening Hook (Primary, Verbatim Passthrough) */}
+          <ReferenceableField id={`persona:${persona.id}:section:Messaging Guidance:field:Opening Hook`} label="Opening Hook">
+            <CardSection title="Opening Hook">
+              <p style={{ ...PROSE, fontStyle: "italic" }}>&ldquo;{sectionField(persona, "Messaging Guidance", "Opening Hook")}&rdquo;</p>
+            </CardSection>
           </ReferenceableField>
         </div>
-      </CardSection>
 
-      {/* Block 5 — Primary Pain (Primary, Verbatim Passthrough) */}
-      <CardSection icon="target" title="Primary Pain">
-        <ReferenceableField id={`persona:${persona.id}:section:Pain Points:field:Primary Pain`} label="Primary Pain">
-          <p style={PROSE}>{sectionField(persona, "Pain Points", "Primary Pain")}</p>
-        </ReferenceableField>
-      </CardSection>
+        <div style={{ display: "flex", flexDirection: "column", gap: 14, minWidth: 0 }}>
+          {/* Block 6 — Current Tools (Primary, Field-Join) */}
+          <ReferenceableField id={`persona:${persona.id}:section:Current Solutions:field:Tools In Use`} label="Tools In Use">
+            <CardSection title="Current Tools">
+              <Bullets items={sectionFieldList(persona, "Current Solutions", "Tools In Use")} />
+            </CardSection>
+          </ReferenceableField>
 
-      {/* Block 6 — Current Tools (Primary, Field-Join) */}
-      <CardSection icon="layers" title="Current Tools">
-        <ReferenceableField id={`persona:${persona.id}:section:Current Solutions:field:Tools In Use`} label="Tools In Use">
-          <Bullets items={sectionFieldList(persona, "Current Solutions", "Tools In Use")} />
-        </ReferenceableField>
-      </CardSection>
-
-      {/* Block 7 — Best Way to Reach Them (Primary, Field-Join) */}
-      <CardSection icon="route" title="Preferred Outreach Channels">
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16 }}>
+          {/* Block 7 — Best Way to Reach Them (Primary, Field-Join) */}
           <ReferenceableField id={`persona:${persona.id}:section:Outreach Strategy:field:Best Channel`} label="Best Channel">
-            <FieldLabel>Best Channel</FieldLabel>
-            <FieldValue value={bestChannel ?? "—"} />
+            <CardSection title="Best Channel">
+              <FieldValue value={bestChannel ?? "—"} />
+            </CardSection>
           </ReferenceableField>
+
           <ReferenceableField id={`persona:${persona.id}:section:Outreach Strategy:field:Best Time To Reach`} label="Best Time To Reach">
-            <FieldLabel>Best Time to Reach</FieldLabel>
-            <FieldValue value={bestTime ?? "—"} />
+            <CardSection title="Best Time to Reach">
+              <FieldValue value={bestTime ?? "—"} />
+            </CardSection>
           </ReferenceableField>
-        </div>
-      </CardSection>
 
-      {/* Block 8 — Objections to Expect (Primary, Field-Join) */}
-      {objections.length > 0 && (
-        <CardSection icon="shield" title="Anticipated Objections">
-          <ReferenceableField id={`persona:${persona.id}:section:Messaging Guidance:field:Objections They Raise`} label="Objections They Raise">
-            <Bullets items={objections} />
-          </ReferenceableField>
-        </CardSection>
-      )}
-
-      {/* Block 9 — Opening Hook (Primary, Verbatim Passthrough) */}
-      <CardSection icon="message" title="Opening Hook">
-        <ReferenceableField id={`persona:${persona.id}:section:Messaging Guidance:field:Opening Hook`} label="Opening Hook">
-          <p style={{ ...PROSE, fontStyle: "italic" }}>&ldquo;{sectionField(persona, "Messaging Guidance", "Opening Hook")}&rdquo;</p>
-        </ReferenceableField>
-      </CardSection>
-
-      {/* Block 10 — Qualification Snapshot (Secondary, always expanded) */}
-      <CardSection icon="check" title="Qualification Snapshot">
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          {/* Block 10 — Qualification Snapshot (Secondary, always expanded) */}
           <ReferenceableField id={`persona:${persona.id}:section:Qualification:field:Warm Lead`} label="Warm Lead">
-            <FieldLabel>Warm Lead</FieldLabel>
-            <FieldValue value={sectionField(persona, "Qualification", "Warm Lead") ?? "—"} />
+            <CardSection title="Warm Lead">
+              <FieldValue value={sectionField(persona, "Qualification", "Warm Lead") ?? "—"} />
+            </CardSection>
           </ReferenceableField>
+
           <ReferenceableField id={`persona:${persona.id}:section:Qualification:field:Meeting-Ready`} label="Meeting-Ready">
-            <FieldLabel>Meeting-Ready</FieldLabel>
-            <FieldValue value={sectionField(persona, "Qualification", "Meeting-Ready") ?? "—"} />
+            <CardSection title="Meeting-Ready">
+              <FieldValue value={sectionField(persona, "Qualification", "Meeting-Ready") ?? "—"} />
+            </CardSection>
           </ReferenceableField>
         </div>
-      </CardSection>
+      </div>
     </div>
   );
 }
@@ -261,7 +250,7 @@ export function PersonaDetailPane({ persona, onPatchName, onPatchField, onDelete
       <PerformanceSection persona={persona} />
 
       {persona.sections.map((section, si) => (
-        <CardSection key={section.heading} icon={SECTION_ICON[section.heading] ?? "list"} title={section.heading}>
+        <CardSection key={section.heading} title={section.heading}>
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             {section.fields.map((field, fi) => (
               <ReferenceableField key={field.label} id={`persona:${persona.id}:section:${section.heading}:field:${field.label}`} label={`${section.heading}: ${field.label}`}>

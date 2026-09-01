@@ -26,13 +26,13 @@ export function CampaignSequenceView({ combo }: { combo: CampaignCombo }) {
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14 }}>
-        <StatTile icon="target" label="Overall Fit" value={overallFit(combo).toFixed(1)} />
-        <StatTile icon="grid" label="Opportunities" value={String(combo.opportunities)} />
-        <StatTile icon="dollar" label="Pipeline" value={formatCurrencyShort(combo.pipelineValue)} />
-        <StatTile icon="list" label="Steps" value={String(combo.sequence.length)} />
+        <StatTile label="Overall Fit" value={overallFit(combo).toFixed(1)} />
+        <StatTile label="Opportunities" value={String(combo.opportunities)} />
+        <StatTile label="Pipeline" value={formatCurrencyShort(combo.pipelineValue)} />
+        <StatTile label="Steps" value={String(combo.sequence.length)} />
       </div>
 
-      <CardSection icon="route" title="Sequence">
+      <CardSection title="Sequence">
         <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
           {combo.sequence.map((step, i) => (
             <div key={i} style={{ display: "flex", gap: 14, paddingBottom: i === combo.sequence.length - 1 ? 0 : 18 }}>

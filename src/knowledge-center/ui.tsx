@@ -15,7 +15,7 @@ export type IconName =
   | "building" | "globe" | "users" | "target" | "flag" | "briefcase" | "dollar"
   | "chart" | "search" | "message" | "shield" | "list" | "folder" | "phone"
   | "mail" | "linkedin" | "check" | "clock" | "external" | "chevron-down"
-  | "chevron-left" | "plus" | "minus" | "trash" | "graph" | "grid" | "filter" | "brain"
+  | "chevron-left" | "chevron-right" | "plus" | "minus" | "trash" | "graph" | "grid" | "filter" | "brain"
   | "compass" | "layers" | "route" | "handshake" | "book" | "map" | "edit" | "info" | "close";
 
 const ICON_PATHS: Record<IconName, React.ReactNode> = {
@@ -40,6 +40,7 @@ const ICON_PATHS: Record<IconName, React.ReactNode> = {
   external: <><path d="M14 4h6v6" /><path d="M20 4l-9 9" /><path d="M19 13v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h6" /></>,
   "chevron-down": <path d="M6 9l6 6 6-6" />,
   "chevron-left": <path d="M15 18l-6-6 6-6" />,
+  "chevron-right": <path d="M9 6l6 6-6 6" />,
   plus: <path d="M12 5v14M5 12h14" />,
   minus: <path d="M5 12h14" />,
   trash: <><path d="M4 7h16" /><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" /><path d="M6 7l1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13" /><path d="M10 11v6M14 11v6" /></>,
@@ -105,17 +106,33 @@ export function ProgressBar({ pct, height = 6 }: { pct: number; height?: number 
   );
 }
 
-/* ─── Card section (icon + heading wrapper) ────────────────────── */
-export function CardSection({ icon, title, sectionId, children, right }: { icon: IconName; title: string; sectionId?: string; children: React.ReactNode; right?: React.ReactNode }) {
+/* ─── Card header ────────────────────────────────────────────────
+   The single header style shared by every titled card in the product —
+   CardSection and AccordionBlock here, ReviewFieldCard in
+   onboarding-shell.tsx. Title alone: no icon badge, no divider rule. The
+   card's own border already does the containing, and at ~13 cards per
+   screen a rule in each one reads as stripes; the title's weight and size
+   carry the hierarchy on their own. */
+export const CARD_PAD_X = 22;
+
+/* Space above the title and below it — kept equal so the title sits evenly
+   between the card edge and the body. CardSection's padding-top and
+   CARD_HEADER's margin-bottom both read from this, so they can't drift. */
+export const CARD_TITLE_GAP = 10;
+
+export const CARD_TITLE: React.CSSProperties = { fontSize: 14.5, fontWeight: 700, margin: 0, color: "var(--color-heading)" };
+
+export const CARD_HEADER: React.CSSProperties = {
+  display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12,
+  padding: 0, margin: `0 0 ${CARD_TITLE_GAP}px`,
+};
+
+/* ─── Card section (heading wrapper) ───────────────────────────── */
+export function CardSection({ title, sectionId, children, right }: { title: string; sectionId?: string; children: React.ReactNode; right?: React.ReactNode }) {
   const card = (
-    <div style={{ background: "var(--color-page)", border: "1px solid var(--color-border)", borderRadius: 14, padding: "20px 22px", boxShadow: "var(--shadow-card)" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16, gap: 12 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
-          <div style={{ width: 26, height: 26, borderRadius: 8, background: "var(--color-brand-tint)", color: "var(--color-brand)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-            <Icon name={icon} size={14} />
-          </div>
-          <h3 style={{ fontSize: 14.5, fontWeight: 700, margin: 0 }}>{title}</h3>
-        </div>
+    <div style={{ background: "var(--color-page)", border: "1px solid var(--color-border)", borderRadius: 14, padding: `${CARD_TITLE_GAP}px ${CARD_PAD_X}px 16px`, boxShadow: "var(--shadow-card)" }}>
+      <div style={CARD_HEADER}>
+        <h3 style={CARD_TITLE}>{title}</h3>
         {right}
       </div>
       {children}
@@ -142,20 +159,15 @@ export function LowConfidenceMark({ value, threshold = 70 }: { value?: number; t
    summary-view blocks the spec marks "Secondary (expandable)": on
    the page, but tucked behind a show-more so Primary blocks stay
    above the fold. */
-export function AccordionBlock({ icon, title, sectionId, children, defaultOpen = false }: {
-  icon: IconName; title: string; sectionId?: string; children: React.ReactNode; defaultOpen?: boolean;
+export function AccordionBlock({ title, sectionId, children, defaultOpen = false }: {
+  title: string; sectionId?: string; children: React.ReactNode; defaultOpen?: boolean;
 }) {
   const [open, setOpen] = useState(defaultOpen);
   const card = (
     <div style={{ background: "var(--color-page)", border: "1px solid var(--color-border)", borderRadius: 14, boxShadow: "var(--shadow-card)", overflow: "hidden" }}>
       <button type="button" onClick={() => setOpen((o) => !o)} className="kc-list-row"
         style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: sectionId ? "14px 38px 14px 20px" : "14px 20px", background: "transparent", border: "none", cursor: "pointer", fontFamily: KC_FONT, textAlign: "left" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
-          <div style={{ width: 26, height: 26, borderRadius: 8, background: "var(--color-brand-tint)", color: "var(--color-brand)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-            <Icon name={icon} size={14} />
-          </div>
-          <h3 style={{ fontSize: 14.5, fontWeight: 700, margin: 0 }}>{title}</h3>
-        </div>
+        <h3 style={CARD_TITLE}>{title}</h3>
         <span style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11.5, fontWeight: 700, color: "var(--color-muted)" }}>
           {open ? "Show less" : "Show more"}
           <span style={{ display: "flex", transform: open ? "rotate(180deg)" : "none", transition: "transform 150ms var(--ease-apple)" }}>
@@ -178,15 +190,10 @@ export function formatCurrencyShort(value: number): string {
 }
 
 /* ─── Stat tile (count / currency, no progress bar) ─────────────── */
-export function StatTile({ icon, label, value }: { icon: IconName; label: string; value: string }) {
+export function StatTile({ label, value }: { label: string; value: string }) {
   return (
     <div style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)", borderRadius: 12, padding: "14px 16px" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-        <div style={{ width: 22, height: 22, borderRadius: 7, background: "var(--color-brand-tint)", color: "var(--color-brand)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-          <Icon name={icon} size={12} />
-        </div>
-        <span style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.05em", textTransform: "uppercase" }}>{label}</span>
-      </div>
+      <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--color-muted)", letterSpacing: "0.05em", textTransform: "uppercase", marginBottom: 8 }}>{label}</div>
       <div style={{ fontSize: 20, fontWeight: 800, color: "var(--color-heading)" }}>{value}</div>
     </div>
   );

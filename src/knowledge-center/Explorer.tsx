@@ -211,6 +211,11 @@ export function Explorer({ reviewedKeys, onToggleReviewed, onNodeTypeChange, com
         const listSpec = ICP_LIST_FIELDS.find((f) => f.key === fieldKey);
         if (listSpec) return { id, label: `${icp.name} — ${listSpec.label}`, value: icp[listSpec.key] as string[] };
         if (fieldKey === "marketSizePct") return { id, label: `${icp.name} — Market Size`, value: `${icp.marketSizePct}% of the product's addressable market.` };
+        // Synthesized from four properties at once, so it's resolvable but not
+        // directly editable — same as the onboarding review card's version.
+        if (fieldKey === "firmographicSnapshot") {
+          return { id, label: `${icp.name} — Firmographic Snapshot`, value: [...icp.targetIndustries, ...icp.companySizes, icp.revenueRange, ...icp.geographies] };
+        }
         return null;
       }
       return {
@@ -237,7 +242,7 @@ export function Explorer({ reviewedKeys, onToggleReviewed, onNodeTypeChange, com
               logField("icp", icpId, icp.name, textSpec.label, oldValue, revised, "ai", instruction);
               return resolve({ changedSummary: `updated "${textSpec.label}".` });
             }
-            if (ICP_LIST_FIELDS.some((f) => f.key === fieldKey) || fieldKey === "marketSizePct") {
+            if (ICP_LIST_FIELDS.some((f) => f.key === fieldKey) || fieldKey === "marketSizePct" || fieldKey === "firmographicSnapshot") {
               return resolve({ changedSummary: "this is a list field — ask a question about it instead, list fields aren't editable via the copilot yet." });
             }
             return resolve(null);
